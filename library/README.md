@@ -406,8 +406,8 @@ Real examples:
 
 - **Docs** – [agentic-plugin.com/roadmap](https://agentic-plugin.com/roadmap/)
 - **GitHub Issues** – [github.com/renduples/agentic-plugin/issues](https://github.com/renduples/agentic-plugin/issues)
-- **Discussions** – [agentic-plugin.com/discussions](https://agentic-plugin.com/discussions/)
-- **Ask Agent** – [agentic-plugin.com/agent-chat](https://agentic-plugin.com/agent-chat/)
+- **GitHub Discussions** – [github.com/renduples/agentic-plugin/discussions](https://github.com/renduples/agentic-plugin/discussions)
+- **Ask Agent (Product Q&A)** – [agentic-plugin.com/agent-chat](https://agentic-plugin.com/agent-chat/)
 - **Discord** – Chat with developers
 - **Twitter** – @agenticplugin
 

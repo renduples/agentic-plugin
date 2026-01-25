@@ -241,6 +241,12 @@ We welcome contributions! Here's how:
 - GPL v2 or later only
 - No external phone-home functionality
 
+## 🆘 Support & Help
+
+- Open issues: https://github.com/renduples/agentic-plugin/issues
+- Join discussions: https://github.com/renduples/agentic-plugin/discussions
+- Ask Agent (product Q&A): https://agentic-plugin.com/agent-chat/
+
 ---
 
 ## 📋 Requirements
