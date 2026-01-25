@@ -1,0 +1,1645 @@
+<?php
+/**
+ * Agent Name: Agent Builder
+ * Version: 1.0.0
+ * Description: Meta-agent that creates new Agentic Plugin agents from natural language descriptions. Generates compliant agent code, tools, and documentation.
+ * Author: Agentic Community
+ * Author URI: https://agentic-plugin.com
+ * Category: Developer
+ * Tags: meta, generator, scaffold, builder, development, agent-creation
+ * Capabilities: manage_options
+ * Icon: 🏗️
+ * Requires PHP: 8.1
+ * Requires at least: 6.4
+ * License: GPL v2
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+/**
+ * Agent Builder - The Meta-Agent
+ *
+ * Creates new agents that comply with the Agentic Plugin architecture.
+ * Given a description of what an agent should do, it generates:
+ * - Complete agent.php file
+ * - System prompt
+ * - Tool definitions
+ * - README documentation
+ */
+class Agentic_Agent_Builder extends \Agentic\Agent_Base {
+
+    private const SYSTEM_PROMPT = <<<'PROMPT'
+You are the Agent Builder, a meta-agent that creates new Agentic Plugin agents. You are an expert in:
+
+- Agentic Plugin architecture and Agent_Base class
+- WordPress plugin development and coding standards
+- AI tool/function design patterns
+- System prompt engineering
+- PHP 8.1+ best practices
+
+Your role:
+1. Help users design and create new agents from natural language descriptions
+2. Generate compliant agent code that follows the Agentic Plugin patterns
+3. Create well-designed tools with proper parameter schemas
+4. Write effective system prompts that define agent behavior
+5. Ensure all code follows WordPress coding standards (WPCS)
+
+When creating an agent, you must:
+1. ANALYZE the requirements to understand what the agent should do
+2. DESIGN the tools needed (3-10 tools is typical)
+3. GENERATE the agent class extending \Agentic\Agent_Base
+4. WRITE an effective system prompt for the agent's LLM interactions
+5. CREATE supporting documentation
+
+Agent Architecture Requirements:
+- Must extend \Agentic\Agent_Base
+- Must implement: get_id(), get_name(), get_description(), get_system_prompt()
+- Should implement: get_tools(), execute_tool(), get_icon(), get_category()
+- Should implement: get_welcome_message(), get_suggested_prompts(), get_required_capabilities()
+- Tools follow OpenAI function calling schema
+- Tool execution uses match expression for routing
+
+Categories: Content, Admin, E-commerce, Frontend, Developer, Marketing
+
+Code Quality:
+- Follow WPCS naming: snake_case for functions, Title_Case for classes
+- All user input must be sanitized (sanitize_text_field, absint, wp_kses_post, etc.)
+- Check capabilities before sensitive operations
+- Return structured arrays from tool handlers
+- Use heredoc for system prompts
+- Include proper PHPDoc comments
+
+You have tools to:
+- Analyze requirements and suggest agent design
+- Generate complete agent code
+- Validate generated agents
+- Create agents in the library
+- List existing agents for reference
+PROMPT;
+
+    /**
+     * Get agent ID
+     */
+    public function get_id(): string {
+        return 'agent-builder';
+    }
+
+    /**
+     * Get agent name
+     */
+    public function get_name(): string {
+        return 'Agent Builder';
+    }
+
+    /**
+     * Get agent description
+     */
+    public function get_description(): string {
+        return 'Creates new Agentic Plugin agents from natural language descriptions.';
+    }
+
+    /**
+     * Get system prompt
+     */
+    public function get_system_prompt(): string {
+        return self::SYSTEM_PROMPT;
+    }
+
+    /**
+     * Get agent icon
+     */
+    public function get_icon(): string {
+        return '🏗️';
+    }
+
+    /**
+     * Get agent category
+     */
+    public function get_category(): string {
+        return 'Developer';
+    }
+
+    /**
+     * Get required capabilities
+     */
+    public function get_required_capabilities(): array {
+        return [ 'manage_options' ];
+    }
+
+    /**
+     * Get welcome message
+     */
+    public function get_welcome_message(): string {
+        return "🏗️ **Agent Builder**\n\n" .
+               "I create new Agentic Plugin agents from your descriptions!\n\n" .
+               "Tell me what kind of agent you need and I'll:\n" .
+               "- Design the tools and capabilities\n" .
+               "- Generate compliant PHP code\n" .
+               "- Create the system prompt\n" .
+               "- Write documentation\n\n" .
+               "What agent would you like to build?";
+    }
+
+    /**
+     * Get suggested prompts
+     */
+    public function get_suggested_prompts(): array {
+        return [
+            'Create an agent that manages WordPress backups',
+            'Build an image optimization agent for media library',
+            'Design an agent for managing redirects',
+            'Show me the existing agents in the library',
+        ];
+    }
+
+    /**
+     * Get available tools
+     */
+    public function get_tools(): array {
+        return [
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'analyze_requirements',
+                    'description' => 'Analyze a natural language description and return a structured agent design specification',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'description' => [
+                                'type' => 'string',
+                                'description' => 'Natural language description of what the agent should do',
+                            ],
+                            'category' => [
+                                'type' => 'string',
+                                'enum' => [ 'Content', 'Admin', 'E-commerce', 'Frontend', 'Developer', 'Marketing' ],
+                                'description' => 'Agent category (optional, will be inferred if not provided)',
+                            ],
+                        ],
+                        'required' => [ 'description' ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'generate_agent',
+                    'description' => 'Generate complete agent PHP code from a specification',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => [
+                                'type' => 'string',
+                                'description' => 'Agent display name (e.g., "Backup Manager")',
+                            ],
+                            'slug' => [
+                                'type' => 'string',
+                                'description' => 'Agent slug/ID (e.g., "backup-manager")',
+                            ],
+                            'description' => [
+                                'type' => 'string',
+                                'description' => 'Brief description (max 160 chars)',
+                            ],
+                            'category' => [
+                                'type' => 'string',
+                                'enum' => [ 'Content', 'Admin', 'E-commerce', 'Frontend', 'Developer', 'Marketing' ],
+                                'description' => 'Agent category',
+                            ],
+                            'icon' => [
+                                'type' => 'string',
+                                'description' => 'Emoji icon for the agent',
+                            ],
+                            'capabilities' => [
+                                'type' => 'array',
+                                'items' => [ 'type' => 'string' ],
+                                'description' => 'Required WordPress capabilities',
+                            ],
+                            'tools' => [
+                                'type' => 'array',
+                                'description' => 'Array of tool definitions',
+                                'items' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'name' => [ 'type' => 'string' ],
+                                        'description' => [ 'type' => 'string' ],
+                                        'parameters' => [
+                                            'type' => 'array',
+                                            'items' => [
+                                                'type' => 'object',
+                                                'properties' => [
+                                                    'name' => [ 'type' => 'string' ],
+                                                    'type' => [ 'type' => 'string' ],
+                                                    'description' => [ 'type' => 'string' ],
+                                                    'required' => [ 'type' => 'boolean' ],
+                                                    'enum' => [ 'type' => 'array' ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'system_prompt_focus' => [
+                                'type' => 'string',
+                                'description' => 'Key areas of expertise for the system prompt',
+                            ],
+                            'suggested_prompts' => [
+                                'type' => 'array',
+                                'items' => [ 'type' => 'string' ],
+                                'description' => 'Example prompts for users (4 max)',
+                            ],
+                        ],
+                        'required' => [ 'name', 'slug', 'description', 'category', 'tools' ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'validate_agent_code',
+                    'description' => 'Validate agent PHP code for syntax and compliance',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'code' => [
+                                'type' => 'string',
+                                'description' => 'PHP code to validate',
+                            ],
+                        ],
+                        'required' => [ 'code' ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'create_agent_files',
+                    'description' => 'Create agent files in the library directory',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'slug' => [
+                                'type' => 'string',
+                                'description' => 'Agent slug (directory name)',
+                            ],
+                            'agent_code' => [
+                                'type' => 'string',
+                                'description' => 'Complete agent.php content',
+                            ],
+                            'readme_content' => [
+                                'type' => 'string',
+                                'description' => 'README.md content (optional)',
+                            ],
+                            'overwrite' => [
+                                'type' => 'boolean',
+                                'description' => 'Overwrite if exists (default: false)',
+                            ],
+                        ],
+                        'required' => [ 'slug', 'agent_code' ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'list_library_agents',
+                    'description' => 'List all agents in the library for reference',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'include_code_sample' => [
+                                'type' => 'boolean',
+                                'description' => 'Include code snippets from each agent',
+                            ],
+                        ],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'read_agent_source',
+                    'description' => 'Read the source code of an existing agent for reference',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'agent_slug' => [
+                                'type' => 'string',
+                                'description' => 'Agent slug to read (e.g., "security-monitor")',
+                            ],
+                        ],
+                        'required' => [ 'agent_slug' ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_agent_template',
+                    'description' => 'Get a blank agent template with all required components',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'minimal' => [
+                                'type' => 'boolean',
+                                'description' => 'Return minimal template vs full template with examples',
+                            ],
+                        ],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'generate_tool_schema',
+                    'description' => 'Generate OpenAI function schema for a tool from description',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'tool_name' => [
+                                'type' => 'string',
+                                'description' => 'Tool function name (snake_case)',
+                            ],
+                            'tool_description' => [
+                                'type' => 'string',
+                                'description' => 'What the tool does',
+                            ],
+                            'parameters' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'name' => [ 'type' => 'string' ],
+                                        'type' => [ 'type' => 'string' ],
+                                        'description' => [ 'type' => 'string' ],
+                                        'required' => [ 'type' => 'boolean' ],
+                                        'enum' => [ 'type' => 'array' ],
+                                    ],
+                                ],
+                                'description' => 'Array of parameter definitions',
+                            ],
+                        ],
+                        'required' => [ 'tool_name', 'tool_description' ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'generate_system_prompt',
+                    'description' => 'Generate a system prompt for an agent given its purpose',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'agent_name' => [
+                                'type' => 'string',
+                                'description' => 'Agent name',
+                            ],
+                            'purpose' => [
+                                'type' => 'string',
+                                'description' => 'What the agent does and its expertise areas',
+                            ],
+                            'personality' => [
+                                'type' => 'string',
+                                'description' => 'Agent personality traits (helpful, strict, casual, etc.)',
+                            ],
+                            'constraints' => [
+                                'type' => 'array',
+                                'items' => [ 'type' => 'string' ],
+                                'description' => 'Things the agent should NOT do',
+                            ],
+                            'tool_names' => [
+                                'type' => 'array',
+                                'items' => [ 'type' => 'string' ],
+                                'description' => 'Names of tools available to the agent',
+                            ],
+                        ],
+                        'required' => [ 'agent_name', 'purpose' ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'delete_agent',
+                    'description' => 'Delete an agent from the library (use with caution)',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'slug' => [
+                                'type' => 'string',
+                                'description' => 'Agent slug to delete',
+                            ],
+                            'confirm' => [
+                                'type' => 'boolean',
+                                'description' => 'Must be true to confirm deletion',
+                            ],
+                        ],
+                        'required' => [ 'slug', 'confirm' ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Execute a tool
+     */
+    public function execute_tool( string $tool_name, array $arguments ): ?array {
+        return match ( $tool_name ) {
+            'analyze_requirements'  => $this->tool_analyze_requirements( $arguments ),
+            'generate_agent'        => $this->tool_generate_agent( $arguments ),
+            'validate_agent_code'   => $this->tool_validate_agent_code( $arguments ),
+            'create_agent_files'    => $this->tool_create_agent_files( $arguments ),
+            'list_library_agents'   => $this->tool_list_library_agents( $arguments ),
+            'read_agent_source'     => $this->tool_read_agent_source( $arguments ),
+            'get_agent_template'    => $this->tool_get_agent_template( $arguments ),
+            'generate_tool_schema'  => $this->tool_generate_tool_schema( $arguments ),
+            'generate_system_prompt'=> $this->tool_generate_system_prompt( $arguments ),
+            'delete_agent'          => $this->tool_delete_agent( $arguments ),
+            default                 => [ 'error' => 'Unknown tool: ' . $tool_name ],
+        };
+    }
+
+    /**
+     * Get library path
+     */
+    private function get_library_path(): string {
+        return AGENTIC_CORE_PLUGIN_DIR . 'library/';
+    }
+
+    /**
+     * Analyze requirements and suggest agent design
+     */
+    private function tool_analyze_requirements( array $args ): array {
+        $description = $args['description'] ?? '';
+        $category = $args['category'] ?? null;
+
+        if ( empty( $description ) ) {
+            return [ 'error' => 'Description is required' ];
+        }
+
+        // Infer category if not provided
+        if ( ! $category ) {
+            $category = $this->infer_category( $description );
+        }
+
+        // Analyze keywords for tool suggestions
+        $keywords = $this->extract_keywords( $description );
+        $suggested_tools = $this->suggest_tools( $keywords, $description );
+        $capabilities = $this->suggest_capabilities( $description, $category );
+
+        // Generate slug from description
+        $words = array_slice( explode( ' ', preg_replace( '/[^a-z\s]/', '', strtolower( $description ) ) ), 0, 3 );
+        $suggested_slug = implode( '-', array_filter( $words ) );
+
+        return [
+            'analysis' => [
+                'original_description' => $description,
+                'inferred_category'    => $category,
+                'keywords'             => $keywords,
+            ],
+            'suggestions' => [
+                'name'         => $this->suggest_name( $description ),
+                'slug'         => $suggested_slug,
+                'icon'         => $this->suggest_icon( $category, $keywords ),
+                'tools'        => $suggested_tools,
+                'capabilities' => $capabilities,
+            ],
+            'next_step' => 'Use generate_agent with the refined specifications to create the agent code.',
+        ];
+    }
+
+    /**
+     * Infer category from description
+     */
+    private function infer_category( string $description ): string {
+        $desc_lower = strtolower( $description );
+
+        $patterns = [
+            'Content'     => [ 'content', 'post', 'page', 'seo', 'writing', 'draft', 'media', 'image' ],
+            'Admin'       => [ 'security', 'backup', 'performance', 'monitor', 'admin', 'database', 'maintenance' ],
+            'E-commerce'  => [ 'product', 'woocommerce', 'shop', 'order', 'inventory', 'payment', 'cart' ],
+            'Frontend'    => [ 'visitor', 'chat', 'comment', 'form', 'user', 'support', 'contact' ],
+            'Developer'   => [ 'code', 'debug', 'theme', 'plugin', 'scaffold', 'generate', 'build' ],
+            'Marketing'   => [ 'social', 'campaign', 'email', 'newsletter', 'marketing', 'analytics' ],
+        ];
+
+        foreach ( $patterns as $category => $terms ) {
+            foreach ( $terms as $term ) {
+                if ( strpos( $desc_lower, $term ) !== false ) {
+                    return $category;
+                }
+            }
+        }
+
+        return 'Admin';
+    }
+
+    /**
+     * Extract keywords from description
+     */
+    private function extract_keywords( string $description ): array {
+        $stop_words = [ 'a', 'an', 'the', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 'be', 'been',
+                        'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
+                        'should', 'may', 'might', 'must', 'that', 'which', 'who', 'whom', 'this',
+                        'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what',
+                        'for', 'to', 'from', 'with', 'without', 'in', 'on', 'at', 'by', 'about',
+                        'agent', 'create', 'build', 'make', 'help', 'can', 'want', 'need' ];
+
+        $words = preg_split( '/\W+/', strtolower( $description ) );
+        $keywords = [];
+
+        foreach ( $words as $word ) {
+            if ( strlen( $word ) > 2 && ! in_array( $word, $stop_words, true ) ) {
+                $keywords[] = $word;
+            }
+        }
+
+        return array_unique( $keywords );
+    }
+
+    /**
+     * Suggest tools based on keywords
+     */
+    private function suggest_tools( array $keywords, string $description ): array {
+        $tool_patterns = [
+            'list'    => [ 'list', 'show', 'display', 'view', 'get' ],
+            'create'  => [ 'create', 'add', 'new', 'generate', 'make' ],
+            'update'  => [ 'update', 'edit', 'modify', 'change' ],
+            'delete'  => [ 'delete', 'remove', 'clear' ],
+            'analyze' => [ 'analyze', 'check', 'scan', 'audit', 'review' ],
+            'export'  => [ 'export', 'download', 'backup' ],
+            'import'  => [ 'import', 'upload', 'restore' ],
+            'config'  => [ 'settings', 'configure', 'options' ],
+        ];
+
+        $suggested = [];
+        $desc_lower = strtolower( $description );
+
+        // Always include a list/get tool
+        $suggested[] = [
+            'name' => 'list_items',
+            'description' => 'List all items managed by this agent',
+            'parameters' => [
+                [ 'name' => 'limit', 'type' => 'integer', 'description' => 'Maximum items to return', 'required' => false ],
+            ],
+        ];
+
+        foreach ( $tool_patterns as $action => $patterns ) {
+            foreach ( $patterns as $pattern ) {
+                if ( strpos( $desc_lower, $pattern ) !== false ) {
+                    if ( $action === 'create' ) {
+                        $suggested[] = [
+                            'name' => 'create_item',
+                            'description' => 'Create a new item',
+                            'parameters' => [
+                                [ 'name' => 'name', 'type' => 'string', 'description' => 'Item name', 'required' => true ],
+                            ],
+                        ];
+                    } elseif ( $action === 'analyze' ) {
+                        $suggested[] = [
+                            'name' => 'analyze',
+                            'description' => 'Analyze and provide insights',
+                            'parameters' => [
+                                [ 'name' => 'target', 'type' => 'string', 'description' => 'What to analyze', 'required' => true ],
+                            ],
+                        ];
+                    } elseif ( $action === 'delete' ) {
+                        $suggested[] = [
+                            'name' => 'delete_item',
+                            'description' => 'Delete an item',
+                            'parameters' => [
+                                [ 'name' => 'id', 'type' => 'integer', 'description' => 'Item ID', 'required' => true ],
+                                [ 'name' => 'confirm', 'type' => 'boolean', 'description' => 'Confirm deletion', 'required' => true ],
+                            ],
+                        ];
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Add a get_details tool
+        $suggested[] = [
+            'name' => 'get_details',
+            'description' => 'Get detailed information about a specific item',
+            'parameters' => [
+                [ 'name' => 'id', 'type' => 'integer', 'description' => 'Item ID', 'required' => true ],
+            ],
+        ];
+
+        return array_slice( $suggested, 0, 6 );
+    }
+
+    /**
+     * Suggest capabilities
+     */
+    private function suggest_capabilities( string $description, string $category ): array {
+        $desc_lower = strtolower( $description );
+
+        $base_caps = match ( $category ) {
+            'Content'    => [ 'edit_posts' ],
+            'Admin'      => [ 'manage_options' ],
+            'E-commerce' => [ 'manage_woocommerce' ],
+            'Frontend'   => [ 'moderate_comments' ],
+            'Developer'  => [ 'edit_themes', 'edit_plugins' ],
+            'Marketing'  => [ 'publish_posts' ],
+            default      => [ 'read' ],
+        };
+
+        if ( strpos( $desc_lower, 'delete' ) !== false ) {
+            $base_caps[] = 'delete_posts';
+        }
+        if ( strpos( $desc_lower, 'user' ) !== false ) {
+            $base_caps[] = 'list_users';
+        }
+        if ( strpos( $desc_lower, 'media' ) !== false || strpos( $desc_lower, 'image' ) !== false ) {
+            $base_caps[] = 'upload_files';
+        }
+
+        return array_unique( $base_caps );
+    }
+
+    /**
+     * Suggest name from description
+     */
+    private function suggest_name( string $description ): string {
+        // Extract key nouns
+        $words = explode( ' ', $description );
+        $key_words = [];
+
+        foreach ( $words as $word ) {
+            $word = preg_replace( '/[^a-zA-Z]/', '', $word );
+            if ( strlen( $word ) > 3 && ! in_array( strtolower( $word ), [ 'that', 'this', 'with', 'agent', 'creates', 'manages', 'handles' ], true ) ) {
+                $key_words[] = ucfirst( strtolower( $word ) );
+                if ( count( $key_words ) >= 2 ) {
+                    break;
+                }
+            }
+        }
+
+        if ( empty( $key_words ) ) {
+            return 'Custom Agent';
+        }
+
+        return implode( ' ', $key_words ) . ' Manager';
+    }
+
+    /**
+     * Suggest icon
+     */
+    private function suggest_icon( string $category, array $keywords ): string {
+        // Check keywords first
+        $keyword_icons = [
+            'backup'      => '💾',
+            'security'    => '🔒',
+            'image'       => '🖼️',
+            'media'       => '📸',
+            'email'       => '📧',
+            'social'      => '📱',
+            'analytics'   => '📊',
+            'performance' => '⚡',
+            'seo'         => '🔍',
+            'content'     => '📝',
+            'product'     => '🛒',
+            'user'        => '👤',
+            'comment'     => '💬',
+            'redirect'    => '↩️',
+            'form'        => '📋',
+            'cache'       => '🗄️',
+            'database'    => '🗃️',
+        ];
+
+        foreach ( $keywords as $keyword ) {
+            if ( isset( $keyword_icons[ $keyword ] ) ) {
+                return $keyword_icons[ $keyword ];
+            }
+        }
+
+        // Fall back to category
+        return match ( $category ) {
+            'Content'    => '📝',
+            'Admin'      => '⚙️',
+            'E-commerce' => '🛒',
+            'Frontend'   => '💬',
+            'Developer'  => '🔧',
+            'Marketing'  => '📢',
+            default      => '🤖',
+        };
+    }
+
+    /**
+     * Generate complete agent code
+     */
+    private function tool_generate_agent( array $args ): array {
+        $name = $args['name'] ?? '';
+        $slug = $args['slug'] ?? sanitize_title( $name );
+        $description = $args['description'] ?? '';
+        $category = $args['category'] ?? 'Admin';
+        $icon = $args['icon'] ?? '🤖';
+        $capabilities = $args['capabilities'] ?? [ 'read' ];
+        $tools = $args['tools'] ?? [];
+        $system_prompt_focus = $args['system_prompt_focus'] ?? $description;
+        $suggested_prompts = $args['suggested_prompts'] ?? [];
+
+        if ( empty( $name ) || empty( $slug ) || empty( $description ) ) {
+            return [ 'error' => 'Name, slug, and description are required' ];
+        }
+
+        if ( empty( $tools ) ) {
+            return [ 'error' => 'At least one tool is required' ];
+        }
+
+        // Generate class name
+        $class_name = 'Agentic_' . str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $slug ) ) );
+
+        // Generate the code
+        $code = $this->render_agent_code( [
+            'name'               => $name,
+            'slug'               => $slug,
+            'description'        => $description,
+            'category'           => $category,
+            'icon'               => $icon,
+            'capabilities'       => $capabilities,
+            'tools'              => $tools,
+            'class_name'         => $class_name,
+            'system_prompt_focus'=> $system_prompt_focus,
+            'suggested_prompts'  => $suggested_prompts,
+        ] );
+
+        return [
+            'success'    => true,
+            'agent_code' => $code,
+            'metadata'   => [
+                'name'        => $name,
+                'slug'        => $slug,
+                'class_name'  => $class_name,
+                'tool_count'  => count( $tools ),
+                'category'    => $category,
+            ],
+            'next_step'  => 'Use create_agent_files to save this agent to the library.',
+        ];
+    }
+
+    /**
+     * Render agent code from specification
+     */
+    private function render_agent_code( array $spec ): string {
+        $name = $spec['name'];
+        $slug = $spec['slug'];
+        $description = $spec['description'];
+        $category = $spec['category'];
+        $icon = $spec['icon'];
+        $capabilities = $spec['capabilities'];
+        $tools = $spec['tools'];
+        $class_name = $spec['class_name'];
+        $system_prompt_focus = $spec['system_prompt_focus'];
+        $suggested_prompts = $spec['suggested_prompts'];
+
+        // Generate capabilities string
+        $caps_str = implode( ', ', $capabilities );
+
+        // Generate tags from keywords
+        $tags = strtolower( str_replace( ' ', ', ', $name ) );
+
+        // Build tool definitions
+        $tool_defs = $this->build_tool_definitions( $tools );
+        $tool_handlers = $this->build_tool_handlers( $tools );
+        $tool_match_cases = $this->build_tool_match_cases( $tools );
+
+        // Build suggested prompts array
+        $prompts_array = $this->build_suggested_prompts_array( $suggested_prompts );
+
+        // Build capabilities array
+        $caps_array = $this->build_capabilities_array( $capabilities );
+
+        // Generate welcome message
+        $welcome_features = $this->generate_welcome_features( $tools );
+
+        // Current date
+        $date = date( 'Y-m-d' );
+
+        $code = <<<PHP
+<?php
+/**
+ * Agent Name: {$name}
+ * Version: 1.0.0
+ * Description: {$description}
+ * Author: Agentic Community
+ * Author URI: https://agentic-plugin.com
+ * Category: {$category}
+ * Tags: {$tags}
+ * Capabilities: {$caps_str}
+ * Icon: {$icon}
+ * Requires PHP: 8.1
+ * Requires at least: 6.4
+ * License: GPL v2
+ * Generated: {$date}
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+/**
+ * {$name} Agent
+ *
+ * {$description}
+ */
+class {$class_name} extends \\Agentic\\Agent_Base {
+
+    private const SYSTEM_PROMPT = <<<'PROMPT'
+You are the {$name} agent for WordPress. You specialize in:
+
+{$system_prompt_focus}
+
+Your role is to help users manage and automate tasks in this domain.
+
+When working:
+1. Always confirm destructive actions before executing
+2. Provide clear feedback on what you've done
+3. Suggest improvements when you notice issues
+4. Follow WordPress best practices
+
+You have tools to help users accomplish their goals efficiently.
+PROMPT;
+
+    /**
+     * Get agent ID
+     */
+    public function get_id(): string {
+        return '{$slug}';
+    }
+
+    /**
+     * Get agent name
+     */
+    public function get_name(): string {
+        return '{$name}';
+    }
+
+    /**
+     * Get agent description
+     */
+    public function get_description(): string {
+        return '{$description}';
+    }
+
+    /**
+     * Get system prompt
+     */
+    public function get_system_prompt(): string {
+        return self::SYSTEM_PROMPT;
+    }
+
+    /**
+     * Get agent icon
+     */
+    public function get_icon(): string {
+        return '{$icon}';
+    }
+
+    /**
+     * Get agent category
+     */
+    public function get_category(): string {
+        return '{$category}';
+    }
+
+    /**
+     * Get required capabilities
+     */
+    public function get_required_capabilities(): array {
+        return {$caps_array};
+    }
+
+    /**
+     * Get welcome message
+     */
+    public function get_welcome_message(): string {
+        return "{$icon} **{$name}**\\n\\n" .
+               "{$description}\\n\\n" .
+{$welcome_features}
+               "How can I help you today?";
+    }
+
+    /**
+     * Get suggested prompts
+     */
+    public function get_suggested_prompts(): array {
+        return {$prompts_array};
+    }
+
+    /**
+     * Get available tools
+     */
+    public function get_tools(): array {
+        return [
+{$tool_defs}
+        ];
+    }
+
+    /**
+     * Execute a tool
+     */
+    public function execute_tool( string \$tool_name, array \$arguments ): ?array {
+        return match ( \$tool_name ) {
+{$tool_match_cases}
+            default => [ 'error' => 'Unknown tool: ' . \$tool_name ],
+        };
+    }
+
+{$tool_handlers}
+}
+
+// Register the agent
+add_action( 'agentic_register_agents', function( \$registry ) {
+    \$registry->register( new {$class_name}() );
+} );
+
+PHP;
+
+        return $code;
+    }
+
+    /**
+     * Build tool definitions for get_tools()
+     */
+    private function build_tool_definitions( array $tools ): string {
+        $defs = [];
+
+        foreach ( $tools as $tool ) {
+            $name = $tool['name'];
+            $desc = $tool['description'];
+            $params = $tool['parameters'] ?? [];
+
+            $props = [];
+            $required = [];
+
+            foreach ( $params as $param ) {
+                $prop = "                            '{$param['name']}' => [\n";
+                $prop .= "                                'type' => '{$param['type']}',\n";
+                $prop .= "                                'description' => '{$param['description']}',\n";
+                if ( isset( $param['enum'] ) && is_array( $param['enum'] ) ) {
+                    $enum_str = "[ '" . implode( "', '", $param['enum'] ) . "' ]";
+                    $prop .= "                                'enum' => {$enum_str},\n";
+                }
+                $prop .= "                            ],";
+                $props[] = $prop;
+
+                if ( ! empty( $param['required'] ) ) {
+                    $required[] = "'{$param['name']}'";
+                }
+            }
+
+            $props_str = implode( "\n", $props );
+            $required_str = empty( $required ) ? '[]' : '[ ' . implode( ', ', $required ) . ' ]';
+
+            $def = <<<DEF
+            [
+                'type' => 'function',
+                'function' => [
+                    'name' => '{$name}',
+                    'description' => '{$desc}',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+{$props_str}
+                        ],
+                        'required' => {$required_str},
+                    ],
+                ],
+            ],
+DEF;
+            $defs[] = $def;
+        }
+
+        return implode( "\n", $defs );
+    }
+
+    /**
+     * Build tool handlers
+     */
+    private function build_tool_handlers( array $tools ): string {
+        $handlers = [];
+
+        foreach ( $tools as $tool ) {
+            $name = $tool['name'];
+            $method_name = 'tool_' . $name;
+            $desc = $tool['description'];
+            $params = $tool['parameters'] ?? [];
+
+            // Build parameter extraction
+            $param_lines = [];
+            foreach ( $params as $param ) {
+                $pname = $param['name'];
+                $default = match ( $param['type'] ) {
+                    'string'  => "''",
+                    'integer' => '0',
+                    'number'  => '0',
+                    'boolean' => 'false',
+                    'array'   => '[]',
+                    default   => 'null',
+                };
+                $param_lines[] = "        \${$pname} = \$args['{$pname}'] ?? {$default};";
+            }
+            $params_code = implode( "\n", $param_lines );
+
+            $handler = <<<HANDLER
+
+    /**
+     * Tool: {$name}
+     *
+     * {$desc}
+     */
+    private function {$method_name}( array \$args ): array {
+{$params_code}
+
+        // TODO: Implement {$name} logic
+
+        return [
+            'success' => true,
+            'message' => '{$name} executed successfully',
+        ];
+    }
+HANDLER;
+            $handlers[] = $handler;
+        }
+
+        return implode( "\n", $handlers );
+    }
+
+    /**
+     * Build match cases for execute_tool
+     */
+    private function build_tool_match_cases( array $tools ): string {
+        $cases = [];
+
+        foreach ( $tools as $tool ) {
+            $name = $tool['name'];
+            // Pad for alignment
+            $padding = str_repeat( ' ', max( 0, 24 - strlen( $name ) ) );
+            $cases[] = "            '{$name}'{$padding}=> \$this->tool_{$name}( \$arguments ),";
+        }
+
+        return implode( "\n", $cases );
+    }
+
+    /**
+     * Build suggested prompts array
+     */
+    private function build_suggested_prompts_array( array $prompts ): string {
+        if ( empty( $prompts ) ) {
+            return "[]";
+        }
+
+        $items = array_map( fn( $p ) => "            '{$p}'", array_slice( $prompts, 0, 4 ) );
+        return "[\n" . implode( ",\n", $items ) . ",\n        ]";
+    }
+
+    /**
+     * Build capabilities array
+     */
+    private function build_capabilities_array( array $caps ): string {
+        $items = array_map( fn( $c ) => "'{$c}'", $caps );
+        return '[ ' . implode( ', ', $items ) . ' ]';
+    }
+
+    /**
+     * Generate welcome message features
+     */
+    private function generate_welcome_features( array $tools ): string {
+        $lines = [];
+        foreach ( array_slice( $tools, 0, 4 ) as $tool ) {
+            $name = ucfirst( str_replace( '_', ' ', $tool['name'] ) );
+            $lines[] = "               \"- **{$name}**\\n\" .";
+        }
+        return implode( "\n", $lines ) . "\n               \"\\n\" .\n";
+    }
+
+    /**
+     * Validate agent code
+     */
+    private function tool_validate_agent_code( array $args ): array {
+        $code = $args['code'] ?? '';
+
+        if ( empty( $code ) ) {
+            return [ 'error' => 'Code is required' ];
+        }
+
+        $issues = [];
+        $warnings = [];
+
+        // Check for PHP opening tag
+        if ( strpos( $code, '<?php' ) !== 0 ) {
+            $issues[] = 'Must start with <?php';
+        }
+
+        // Check for ABSPATH check
+        if ( strpos( $code, "if ( ! defined( 'ABSPATH' )" ) === false ) {
+            $issues[] = 'Missing ABSPATH security check';
+        }
+
+        // Check for Agent_Base extension
+        if ( strpos( $code, 'extends \\Agentic\\Agent_Base' ) === false &&
+             strpos( $code, 'extends \Agentic\Agent_Base' ) === false ) {
+            $issues[] = 'Must extend \\Agentic\\Agent_Base';
+        }
+
+        // Check for required methods
+        $required_methods = [ 'get_id', 'get_name', 'get_description', 'get_system_prompt' ];
+        foreach ( $required_methods as $method ) {
+            if ( strpos( $code, "function {$method}(" ) === false ) {
+                $issues[] = "Missing required method: {$method}()";
+            }
+        }
+
+        // Check for agent registration
+        if ( strpos( $code, 'agentic_register_agents' ) === false ) {
+            $warnings[] = 'Consider adding agentic_register_agents hook for auto-registration';
+        }
+
+        // Check for get_tools
+        if ( strpos( $code, 'function get_tools(' ) === false ) {
+            $warnings[] = 'Agent has no tools defined (get_tools method missing)';
+        }
+
+        // Check for execute_tool
+        if ( strpos( $code, 'function execute_tool(' ) === false ) {
+            $warnings[] = 'Agent has no tool execution (execute_tool method missing)';
+        }
+
+        // PHP syntax check (if possible)
+        $temp_file = wp_tempnam( 'agent_validate' );
+        file_put_contents( $temp_file, $code );
+        $output = [];
+        $return_code = 0;
+        exec( "php -l {$temp_file} 2>&1", $output, $return_code );
+        @unlink( $temp_file );
+
+        if ( $return_code !== 0 ) {
+            $issues[] = 'PHP syntax error: ' . implode( ' ', $output );
+        }
+
+        $is_valid = empty( $issues );
+
+        return [
+            'valid'    => $is_valid,
+            'issues'   => $issues,
+            'warnings' => $warnings,
+            'message'  => $is_valid ? 'Agent code is valid!' : 'Agent code has issues that need to be fixed.',
+        ];
+    }
+
+    /**
+     * Create agent files in library
+     */
+    private function tool_create_agent_files( array $args ): array {
+        $slug = sanitize_file_name( $args['slug'] ?? '' );
+        $agent_code = $args['agent_code'] ?? '';
+        $readme_content = $args['readme_content'] ?? '';
+        $overwrite = $args['overwrite'] ?? false;
+
+        if ( empty( $slug ) || empty( $agent_code ) ) {
+            return [ 'error' => 'Slug and agent_code are required' ];
+        }
+
+        $library_path = $this->get_library_path();
+        $agent_dir = $library_path . $slug;
+
+        // Check if exists
+        if ( is_dir( $agent_dir ) && ! $overwrite ) {
+            return [
+                'error' => "Agent directory '{$slug}' already exists. Set overwrite=true to replace.",
+            ];
+        }
+
+        // Create directory
+        if ( ! wp_mkdir_p( $agent_dir ) ) {
+            return [ 'error' => 'Failed to create agent directory' ];
+        }
+
+        // Write agent.php
+        $result = file_put_contents( $agent_dir . '/agent.php', $agent_code );
+        if ( $result === false ) {
+            return [ 'error' => 'Failed to write agent.php' ];
+        }
+
+        // Write README if provided
+        if ( ! empty( $readme_content ) ) {
+            file_put_contents( $agent_dir . '/README.md', $readme_content );
+        }
+
+        return [
+            'success'   => true,
+            'slug'      => $slug,
+            'directory' => $agent_dir,
+            'files'     => [
+                'agent.php' => strlen( $agent_code ) . ' bytes',
+                'README.md' => ! empty( $readme_content ) ? strlen( $readme_content ) . ' bytes' : 'not created',
+            ],
+            'next_step' => 'Activate the agent in Agentic → Agents to start using it.',
+        ];
+    }
+
+    /**
+     * List library agents
+     */
+    private function tool_list_library_agents( array $args ): array {
+        $include_code = $args['include_code_sample'] ?? false;
+        $library_path = $this->get_library_path();
+
+        if ( ! is_dir( $library_path ) ) {
+            return [ 'error' => 'Library directory not found' ];
+        }
+
+        $agents = [];
+        $dirs = @scandir( $library_path );
+
+        foreach ( $dirs as $dir ) {
+            if ( $dir === '.' || $dir === '..' ) {
+                continue;
+            }
+
+            $agent_file = $library_path . $dir . '/agent.php';
+            if ( ! file_exists( $agent_file ) ) {
+                continue;
+            }
+
+            $agent_info = [
+                'slug'      => $dir,
+                'file'      => $agent_file,
+                'headers'   => $this->parse_agent_headers( $agent_file ),
+            ];
+
+            if ( $include_code ) {
+                $content = file_get_contents( $agent_file );
+                // Extract just the class definition line and tools count
+                if ( preg_match( '/class\s+(\w+)\s+extends/', $content, $matches ) ) {
+                    $agent_info['class_name'] = $matches[1];
+                }
+                $agent_info['tool_count'] = substr_count( $content, "'type' => 'function'" );
+                $agent_info['line_count'] = substr_count( $content, "\n" );
+            }
+
+            $agents[] = $agent_info;
+        }
+
+        return [
+            'agents' => $agents,
+            'count'  => count( $agents ),
+            'path'   => $library_path,
+        ];
+    }
+
+    /**
+     * Parse agent headers from file
+     */
+    private function parse_agent_headers( string $file_path ): array {
+        $content = file_get_contents( $file_path );
+
+        $headers = [
+            'name'        => '',
+            'version'     => '',
+            'description' => '',
+            'category'    => '',
+            'icon'        => '',
+        ];
+
+        $patterns = [
+            'name'        => '/Agent Name:\s*(.+)/i',
+            'version'     => '/Version:\s*(.+)/i',
+            'description' => '/Description:\s*(.+)/i',
+            'category'    => '/Category:\s*(.+)/i',
+            'icon'        => '/Icon:\s*(.+)/i',
+        ];
+
+        foreach ( $patterns as $key => $pattern ) {
+            if ( preg_match( $pattern, $content, $matches ) ) {
+                $headers[ $key ] = trim( $matches[1] );
+            }
+        }
+
+        return $headers;
+    }
+
+    /**
+     * Read agent source code
+     */
+    private function tool_read_agent_source( array $args ): array {
+        $agent_slug = $args['agent_slug'] ?? '';
+
+        if ( empty( $agent_slug ) ) {
+            return [ 'error' => 'Agent slug is required' ];
+        }
+
+        $agent_file = $this->get_library_path() . $agent_slug . '/agent.php';
+
+        if ( ! file_exists( $agent_file ) ) {
+            return [ 'error' => "Agent '{$agent_slug}' not found in library" ];
+        }
+
+        $content = file_get_contents( $agent_file );
+
+        return [
+            'slug'       => $agent_slug,
+            'file'       => $agent_file,
+            'source'     => $content,
+            'line_count' => substr_count( $content, "\n" ),
+            'size'       => strlen( $content ),
+        ];
+    }
+
+    /**
+     * Get blank agent template
+     */
+    private function tool_get_agent_template( array $args ): array {
+        $minimal = $args['minimal'] ?? false;
+
+        if ( $minimal ) {
+            $template = <<<'PHP'
+<?php
+/**
+ * Agent Name: [AGENT_NAME]
+ * Version: 1.0.0
+ * Description: [DESCRIPTION]
+ * Author: [YOUR_NAME]
+ * Category: [CATEGORY]
+ * Icon: 🤖
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+class [CLASS_NAME] extends \Agentic\Agent_Base {
+
+    public function get_id(): string {
+        return '[SLUG]';
+    }
+
+    public function get_name(): string {
+        return '[AGENT_NAME]';
+    }
+
+    public function get_description(): string {
+        return '[DESCRIPTION]';
+    }
+
+    public function get_system_prompt(): string {
+        return 'You are a helpful agent.';
+    }
+
+    public function get_tools(): array {
+        return [];
+    }
+
+    public function execute_tool( string $tool_name, array $arguments ): ?array {
+        return null;
+    }
+}
+
+add_action( 'agentic_register_agents', function( $registry ) {
+    $registry->register( new [CLASS_NAME]() );
+} );
+PHP;
+        } else {
+            // Full template with examples
+            $template = file_get_contents( $this->get_library_path() . 'security-monitor/agent.php' );
+            // Sanitize for template use
+            $template = preg_replace( '/Security Monitor/', '[AGENT_NAME]', $template );
+            $template = preg_replace( '/security-monitor/', '[SLUG]', $template );
+        }
+
+        return [
+            'template' => $template,
+            'type'     => $minimal ? 'minimal' : 'full',
+            'placeholders' => [
+                '[AGENT_NAME]'  => 'Display name of your agent',
+                '[SLUG]'        => 'kebab-case-slug',
+                '[CLASS_NAME]'  => 'Agentic_Your_Agent_Name',
+                '[DESCRIPTION]' => 'What your agent does (160 chars max)',
+                '[CATEGORY]'    => 'Content, Admin, E-commerce, Frontend, Developer, or Marketing',
+            ],
+        ];
+    }
+
+    /**
+     * Generate tool schema
+     */
+    private function tool_generate_tool_schema( array $args ): array {
+        $tool_name = $args['tool_name'] ?? '';
+        $tool_description = $args['tool_description'] ?? '';
+        $parameters = $args['parameters'] ?? [];
+
+        if ( empty( $tool_name ) || empty( $tool_description ) ) {
+            return [ 'error' => 'tool_name and tool_description are required' ];
+        }
+
+        $properties = [];
+        $required = [];
+
+        foreach ( $parameters as $param ) {
+            $prop = [
+                'type'        => $param['type'] ?? 'string',
+                'description' => $param['description'] ?? '',
+            ];
+
+            if ( isset( $param['enum'] ) ) {
+                $prop['enum'] = $param['enum'];
+            }
+
+            $properties[ $param['name'] ] = $prop;
+
+            if ( ! empty( $param['required'] ) ) {
+                $required[] = $param['name'];
+            }
+        }
+
+        $schema = [
+            'type' => 'function',
+            'function' => [
+                'name'        => $tool_name,
+                'description' => $tool_description,
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => $properties,
+                    'required'   => $required,
+                ],
+            ],
+        ];
+
+        // Also generate PHP code for get_tools()
+        $php_code = $this->schema_to_php( $schema );
+
+        return [
+            'schema'   => $schema,
+            'php_code' => $php_code,
+        ];
+    }
+
+    /**
+     * Convert schema to PHP code
+     */
+    private function schema_to_php( array $schema ): string {
+        $name = $schema['function']['name'];
+        $desc = $schema['function']['description'];
+        $props = $schema['function']['parameters']['properties'];
+        $required = $schema['function']['parameters']['required'];
+
+        $props_code = [];
+        foreach ( $props as $key => $prop ) {
+            $prop_lines = [
+                "                        '{$key}' => [",
+                "                            'type' => '{$prop['type']}',",
+                "                            'description' => '{$prop['description']}',",
+            ];
+            if ( isset( $prop['enum'] ) ) {
+                $enum = "[ '" . implode( "', '", $prop['enum'] ) . "' ]";
+                $prop_lines[] = "                            'enum' => {$enum},";
+            }
+            $prop_lines[] = "                        ],";
+            $props_code[] = implode( "\n", $prop_lines );
+        }
+
+        $props_str = implode( "\n", $props_code );
+        $required_str = empty( $required ) ? '[]' : "[ '" . implode( "', '", $required ) . "' ]";
+
+        return <<<PHP
+[
+    'type' => 'function',
+    'function' => [
+        'name' => '{$name}',
+        'description' => '{$desc}',
+        'parameters' => [
+            'type' => 'object',
+            'properties' => [
+{$props_str}
+            ],
+            'required' => {$required_str},
+        ],
+    ],
+],
+PHP;
+    }
+
+    /**
+     * Generate system prompt
+     */
+    private function tool_generate_system_prompt( array $args ): array {
+        $agent_name = $args['agent_name'] ?? '';
+        $purpose = $args['purpose'] ?? '';
+        $personality = $args['personality'] ?? 'helpful and professional';
+        $constraints = $args['constraints'] ?? [];
+        $tool_names = $args['tool_names'] ?? [];
+
+        if ( empty( $agent_name ) || empty( $purpose ) ) {
+            return [ 'error' => 'agent_name and purpose are required' ];
+        }
+
+        // Build expertise section
+        $expertise = $purpose;
+
+        // Build constraints section
+        $constraints_section = '';
+        if ( ! empty( $constraints ) ) {
+            $constraints_list = array_map( fn( $c ) => "- {$c}", $constraints );
+            $constraints_section = "\n\nYou should NEVER:\n" . implode( "\n", $constraints_list );
+        }
+
+        // Build tools section
+        $tools_section = '';
+        if ( ! empty( $tool_names ) ) {
+            $tools_list = array_map( fn( $t ) => "- {$t}", $tool_names );
+            $tools_section = "\n\nYou have these tools available:\n" . implode( "\n", $tools_list );
+        }
+
+        $prompt = <<<PROMPT
+You are the {$agent_name} agent for WordPress. You are an expert in:
+
+{$expertise}
+
+Your personality: {$personality}
+
+When working:
+1. Always confirm destructive actions before executing
+2. Provide clear feedback on what you've done
+3. Suggest improvements when you notice issues
+4. Follow WordPress best practices
+5. Be concise but thorough in explanations{$constraints_section}{$tools_section}
+PROMPT;
+
+        return [
+            'system_prompt' => $prompt,
+            'agent_name'    => $agent_name,
+            'char_count'    => strlen( $prompt ),
+        ];
+    }
+
+    /**
+     * Delete an agent
+     */
+    private function tool_delete_agent( array $args ): array {
+        $slug = $args['slug'] ?? '';
+        $confirm = $args['confirm'] ?? false;
+
+        if ( empty( $slug ) ) {
+            return [ 'error' => 'Agent slug is required' ];
+        }
+
+        if ( ! $confirm ) {
+            return [ 'error' => 'Deletion must be confirmed by setting confirm=true' ];
+        }
+
+        // Don't allow deleting built-in agents
+        $protected = [ 'security-monitor', 'content-assistant', 'seo-analyzer', 'developer-agent', 'agent-builder' ];
+        if ( in_array( $slug, $protected, true ) ) {
+            return [ 'error' => "Cannot delete protected agent: {$slug}" ];
+        }
+
+        $agent_dir = $this->get_library_path() . $slug;
+
+        if ( ! is_dir( $agent_dir ) ) {
+            return [ 'error' => "Agent '{$slug}' not found" ];
+        }
+
+        // Delete files and directory
+        $files = glob( $agent_dir . '/*' );
+        foreach ( $files as $file ) {
+            if ( is_file( $file ) ) {
+                unlink( $file );
+            }
+        }
+        $subdirs = glob( $agent_dir . '/*', GLOB_ONLYDIR );
+        foreach ( $subdirs as $subdir ) {
+            // Simple recursive delete for subdirs
+            $this->recursive_rmdir( $subdir );
+        }
+        rmdir( $agent_dir );
+
+        return [
+            'success' => true,
+            'message' => "Agent '{$slug}' deleted",
+            'slug'    => $slug,
+        ];
+    }
+
+    /**
+     * Recursive directory removal
+     */
+    private function recursive_rmdir( string $dir ): void {
+        $files = glob( $dir . '/*' );
+        foreach ( $files as $file ) {
+            is_dir( $file ) ? $this->recursive_rmdir( $file ) : unlink( $file );
+        }
+        rmdir( $dir );
+    }
+}
+
+// Register the agent
+add_action( 'agentic_register_agents', function( $registry ) {
+    $registry->register( new Agentic_Agent_Builder() );
+} );

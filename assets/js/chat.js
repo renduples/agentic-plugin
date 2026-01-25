@@ -1,0 +1,317 @@
+/**
+ * Agentic Chat Interface
+ * 
+ * Supports per-agent session isolation - each agent has its own
+ * conversation history and session ID.
+ */
+(function() {
+    'use strict';
+
+    // Get current agent from data attribute
+    const chatContainer = document.getElementById('agentic-chat');
+    const currentAgentId = chatContainer ? chatContainer.dataset.agentId || 'default' : 'default';
+
+    // State - keyed by agent
+    let conversationHistory = [];
+    let sessionId = localStorage.getItem(`agentic_session_${currentAgentId}`) || generateUUID();
+    let isProcessing = false;
+    let totalTokens = 0;
+    let totalCost = 0;
+
+    // Store session ID for this agent
+    localStorage.setItem(`agentic_session_${currentAgentId}`, sessionId);
+
+    // Elements
+    const form = document.getElementById('agentic-chat-form');
+    const input = document.getElementById('agentic-input');
+    const messages = document.getElementById('agentic-messages');
+    const sendBtn = document.getElementById('agentic-send');
+    const typingIndicator = document.getElementById('agentic-typing');
+    const clearBtn = document.getElementById('agentic-clear-chat');
+    const stats = document.getElementById('agentic-stats');
+    const agentSelect = document.getElementById('agentic-agent-select');
+
+    // Initialize
+    function init() {
+        if (!form) return;
+
+        form.addEventListener('submit', handleSubmit);
+        input.addEventListener('keydown', handleKeydown);
+        input.addEventListener('input', autoResize);
+        clearBtn.addEventListener('click', clearConversation);
+
+        // Handle agent switching
+        if (agentSelect) {
+            agentSelect.addEventListener('change', handleAgentSwitch);
+        }
+
+        // Load saved conversation for current agent
+        loadConversation();
+    }
+
+    // Handle agent switch from dropdown
+    function handleAgentSwitch(e) {
+        const newAgentId = e.target.value;
+        
+        // Reload page with new agent (simplest approach for full state reset)
+        const url = new URL(window.location.href);
+        url.searchParams.set('agent', newAgentId);
+        window.location.href = url.toString();
+    }
+
+    // Handle form submission
+    async function handleSubmit(e) {
+        e.preventDefault();
+        
+        const message = input.value.trim();
+        if (!message || isProcessing) return;
+
+        // Add user message to UI
+        addMessage(message, 'user');
+        
+        // Clear input
+        input.value = '';
+        input.style.height = 'auto';
+
+        // Add to history
+        conversationHistory.push({ role: 'user', content: message });
+        saveConversation();
+
+        // Send to agent
+        await sendMessage(message);
+    }
+
+    // Handle keyboard shortcuts
+    function handleKeydown(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            form.dispatchEvent(new Event('submit'));
+        }
+    }
+
+    // Auto-resize textarea
+    function autoResize() {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+    }
+
+    // Add message to UI
+    function addMessage(content, role, meta = {}) {
+        const div = document.createElement('div');
+        div.className = `agentic-message agentic-message-${role}`;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'agentic-message-content';
+        contentDiv.innerHTML = role === 'agent' ? renderMarkdown(content) : escapeHtml(content);
+
+        div.appendChild(contentDiv);
+
+        // Add meta info for agent messages
+        if (role === 'agent' && (meta.tokens || meta.tools || meta.cached)) {
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'agentic-message-meta';
+            
+            if (meta.cached) {
+                metaDiv.innerHTML += `<span class="agentic-cached-indicator" title="Response served from cache">⚡ cached</span>`;
+            }
+            if (meta.tokens) {
+                metaDiv.innerHTML += `<span>Tokens: ${meta.tokens}</span>`;
+            }
+            if (meta.cost) {
+                metaDiv.innerHTML += `<span>Cost: $${meta.cost.toFixed(6)}</span>`;
+            }
+
+            div.appendChild(metaDiv);
+
+            // Show tools used
+            if (meta.tools && meta.tools.length > 0) {
+                const toolsDiv = document.createElement('div');
+                toolsDiv.className = 'agentic-tools-used';
+                meta.tools.forEach(tool => {
+                    const tag = document.createElement('span');
+                    tag.className = 'agentic-tool-tag';
+                    tag.textContent = tool;
+                    toolsDiv.appendChild(tag);
+                });
+                div.appendChild(toolsDiv);
+            }
+        }
+
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Send message to API
+    async function sendMessage(message) {
+        isProcessing = true;
+        sendBtn.disabled = true;
+        typingIndicator.style.display = 'flex';
+
+        try {
+            const response = await fetch(agenticChat.restUrl + 'chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': agenticChat.nonce
+                },
+                body: JSON.stringify({
+                    message: message,
+                    session_id: sessionId,
+                    agent_id: currentAgentId,
+                    history: conversationHistory.slice(-20) // Last 20 messages for context
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                addMessage('Error: ' + data.response, 'agent');
+            } else {
+                // Add to history
+                conversationHistory.push({ role: 'assistant', content: data.response });
+                saveConversation();
+
+                // Update totals
+                totalTokens += data.tokens_used || 0;
+                totalCost += data.cost || 0;
+                updateStats();
+
+                // Show cache indicator if response was cached
+                const meta = {
+                    tokens: data.tokens_used,
+                    cost: data.cost,
+                    tools: data.tools_used,
+                    cached: data.cached || false
+                };
+
+                // Add to UI
+                addMessage(data.response, 'agent', meta);
+            }
+        } catch (error) {
+            console.error('Chat error:', error);
+            addMessage('Sorry, there was an error connecting to the agent. Please try again.', 'agent');
+        } finally {
+            isProcessing = false;
+            sendBtn.disabled = false;
+            typingIndicator.style.display = 'none';
+        }
+    }
+
+    // Update stats display
+    function updateStats() {
+        stats.innerHTML = `Tokens: ${totalTokens.toLocaleString()} | Cost: $${totalCost.toFixed(4)}`;
+    }
+
+    // Save conversation to localStorage (per-agent)
+    function saveConversation() {
+        localStorage.setItem(`agentic_history_${currentAgentId}`, JSON.stringify(conversationHistory));
+    }
+
+    // Load conversation from localStorage (per-agent)
+    function loadConversation() {
+        const saved = localStorage.getItem(`agentic_history_${currentAgentId}`);
+        if (saved) {
+            try {
+                conversationHistory = JSON.parse(saved);
+                // Replay messages to UI (skip initial greeting)
+                conversationHistory.forEach(msg => {
+                    addMessage(msg.content, msg.role === 'user' ? 'user' : 'agent');
+                });
+            } catch (e) {
+                conversationHistory = [];
+            }
+        }
+    }
+
+    // Clear conversation (for current agent only)
+    function clearConversation() {
+        if (!confirm('Clear the conversation history?')) return;
+        
+        conversationHistory = [];
+        localStorage.removeItem(`agentic_history_${currentAgentId}`);
+        sessionId = generateUUID();
+        localStorage.setItem(`agentic_session_${currentAgentId}`, sessionId);
+        totalTokens = 0;
+        totalCost = 0;
+        updateStats();
+
+        // Clear messages except the first greeting
+        while (messages.children.length > 1) {
+            messages.removeChild(messages.lastChild);
+        }
+    }
+
+    // Simple markdown renderer
+    function renderMarkdown(text) {
+        if (!text) return '';
+        
+        // Escape HTML first
+        let html = escapeHtml(text);
+
+        // Code blocks
+        html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
+        
+        // Inline code
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Headers
+        html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+        html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+        html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+        
+        // Bold and italic
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        
+        // Lists
+        html = html.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+        
+        // Numbered lists
+        html = html.replace(/^\s*\d+\.\s+(.*)$/gm, '<li>$1</li>');
+        
+        // Blockquotes
+        html = html.replace(/^>\s+(.*)$/gm, '<blockquote>$1</blockquote>');
+        
+        // Paragraphs
+        html = html.replace(/\n\n/g, '</p><p>');
+        html = '<p>' + html + '</p>';
+        html = html.replace(/<p><\/p>/g, '');
+        html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+        html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+        html = html.replace(/<p>(<ul>)/g, '$1');
+        html = html.replace(/(<\/ul>)<\/p>/g, '$1');
+        html = html.replace(/<p>(<pre>)/g, '$1');
+        html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+        html = html.replace(/<p>(<blockquote>)/g, '$1');
+        html = html.replace(/(<\/blockquote>)<\/p>/g, '$1');
+
+        return html;
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Generate UUID
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
