@@ -2,7 +2,8 @@
 /**
  * REST API endpoints
  *
- * @package Agentic_WordPress
+ * @package Agentic_Plugin
+ * @since 0.1.0
  */
 
 declare(strict_types=1);
@@ -262,6 +263,9 @@ class REST_API {
     /**
      * Execute an approved action
      *
+     * SECURITY: Git commit operations disabled. File changes are written but not auto-committed.
+     * Administrators should commit changes manually via a secure terminal.
+     *
      * @param array $approval Approval record.
      * @return void
      */
@@ -274,12 +278,8 @@ class REST_API {
 
             if ( ! empty( $params['content'] ) && is_writable( dirname( $full_path ) ) ) {
                 file_put_contents( $full_path, $params['content'] );
-
-                $message = "feat: Applied approved code change to {$params['path']}";
-                $cwd = getcwd();
-                chdir( $repo_path );
-                exec( "git add " . escapeshellarg( $params['path'] ) . " && git commit -m " . escapeshellarg( $message ) );
-                chdir( $cwd );
+                // Git commands intentionally removed for security.
+                // Changes are written to disk but require manual commit via terminal.
             }
         }
     }

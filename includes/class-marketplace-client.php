@@ -6,6 +6,7 @@
  * Provides one-click install functionality for agents.
  *
  * @package Agentic_Plugin
+ * @since 0.1.0
  * @since 0.2.0
  */
 

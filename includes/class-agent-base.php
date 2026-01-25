@@ -5,7 +5,8 @@
  * All agents extend this class to provide their identity, system prompt,
  * and available tools. The Agent Controller uses this to run conversations.
  *
- * @package Agentic
+ * @package Agentic_Plugin
+ * @since 0.1.0
  */
 
 namespace Agentic;

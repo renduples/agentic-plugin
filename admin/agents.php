@@ -5,7 +5,7 @@
  * Similar to WordPress Plugins page - lists all installed agents
  * with activate/deactivate functionality.
  *
- * @package Agentic_Core
+ * @package Agentic_Plugin
  * @since 0.2.0
  */
 

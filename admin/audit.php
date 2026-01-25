@@ -2,7 +2,8 @@
 /**
  * Agentic Audit Log Page
  *
- * @package Agentic_WordPress
+ * @package Agentic_Plugin
+ * @since 0.1.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

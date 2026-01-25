@@ -5,7 +5,7 @@
  * Similar to WordPress Add New Plugin page - browse and install agents
  * from the library.
  *
- * @package Agentic_Core
+ * @package Agentic_Plugin
  * @since 0.2.0
  */
 

@@ -5,7 +5,8 @@
  * Caches LLM responses for identical messages to save tokens and reduce latency.
  * Uses WordPress transients for storage with configurable TTL.
  *
- * @package Agentic
+ * @package Agentic_Plugin
+ * @since 0.1.0
  */
 
 namespace Agentic;

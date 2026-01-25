@@ -2,7 +2,8 @@
 /**
  * Approval Queue
  *
- * @package Agentic_WordPress
+ * @package Agentic_Plugin
+ * @since 0.1.0
  */
 
 declare(strict_types=1);

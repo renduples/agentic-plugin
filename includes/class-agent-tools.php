@@ -666,22 +666,16 @@ class Agent_Tools {
     /**
      * Execute a git command
      *
+     * SECURITY: Git commands are disabled to prevent command execution vulnerabilities.
+     * This method now returns false to disable git operations.
+     *
      * @param string $command Git command.
      * @return string|false Output or false on failure.
      */
     private function git_exec( string $command ): string|false {
-        $cwd = getcwd();
-        chdir( $this->repo_path );
-        
-        exec( $command . ' 2>&1', $output, $return_var );
-        
-        chdir( $cwd );
-        
-        if ( $return_var !== 0 ) {
-            return false;
-        }
-        
-        return implode( "\n", $output );
+        // Git command execution is intentionally disabled for security.
+        // Future implementation should use a safe git library or background job.
+        return false;
     }
 
     /**
