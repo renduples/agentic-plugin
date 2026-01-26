@@ -76,10 +76,18 @@ $model         = $llm->get_model();
 
 		<div class="agentic-card">
 			<h2>Quick Actions</h2>
+			<?php if ( ! $is_configured ) : ?>
+				<p>
+					<span class="dashicons dashicons-no-alt" style="color: #b91c1c; vertical-align: -2px;"></span>
+					Chatbot offline
+				</p>
+			<?php endif; ?>
 			<p>
-				<a href="<?php echo esc_url( home_url( '/agent-chat/' ) ); ?>" class="button button-primary" target="_blank">
-					Open Chat Interface
-				</a>
+				<?php if ( $is_configured ) : ?>
+					<a href="<?php echo esc_url( home_url( '/agent-chat/' ) ); ?>" class="button button-primary" target="_blank">
+						Open Chat Interface
+					</a>
+				<?php endif; ?>
 			</p>
 			<p>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-approvals' ) ); ?>" class="button">
