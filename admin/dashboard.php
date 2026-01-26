@@ -29,16 +29,6 @@ $model         = $llm->get_model();
 		Agentic Plugin
 	</h1>
 
-	<?php if ( ! $is_configured ) : ?>
-	<div class="notice notice-warning">
-		<p>
-			<strong>LLM API key not configured.</strong>
-			Set your preferred provider and API key so the Developer Agent can build plugins and themes.
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-settings' ) ); ?>">Configure now</a>
-		</p>
-	</div>
-	<?php endif; ?>
-
 	<div class="agentic-dashboard-grid">
 		<div class="agentic-card">
 			<h2>Status</h2>
@@ -53,11 +43,11 @@ $model         = $llm->get_model();
 				</tr>
 				<tr>
 					<td><strong>AI Provider</strong></td>
-					<td><?php echo $is_configured ? esc_html( strtoupper( $provider ) ) . ' (Connected)' : '<span style="color: #b91c1c;">Not configured</span>'; ?></td>
+					<td><?php echo $is_configured ? esc_html( strtoupper( $provider ) ) . ' (Connected)' : '<a href="' . esc_url( admin_url( 'admin.php?page=agentic-settings' ) ) . '">Configure now</a>'; ?></td>
 				</tr>
 				<tr>
 					<td><strong>Model</strong></td>
-					<td><?php echo esc_html( $model ); ?></td>
+					<td><?php echo $is_configured ? esc_html( $model ) : 'None'; ?></td>
 				</tr>
 			</table>
 		</div>
