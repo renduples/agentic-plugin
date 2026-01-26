@@ -17,26 +17,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 
 if ( isset( $_POST['agentic_save_settings'] ) && check_admin_referer( 'agentic_settings_nonce' ) ) {
-	$repo_path_input = sanitize_text_field( $_POST['agentic_repo_path'] ?? ABSPATH );
-	$repo_path_real  = realpath( $repo_path_input );
-	$is_repo_valid   = false;
-
-	if ( $repo_path_real && is_dir( $repo_path_real ) ) {
-		$root = trailingslashit( realpath( ABSPATH ) );
-		$repo = trailingslashit( $repo_path_real );
-		if ( str_starts_with( $repo, $root ) && is_readable( $repo ) && is_writable( $repo ) ) {
-			$is_repo_valid = true;
-		}
-	}
-
 	// Core settings
-	update_option( 'agentic_xai_api_key', sanitize_text_field( $_POST['agentic_xai_api_key'] ?? '' ) );
-	update_option( 'agentic_model', sanitize_text_field( $_POST['agentic_model'] ?? 'grok-3' ) );
-	if ( $is_repo_valid ) {
-		update_option( 'agentic_repo_path', $repo_path_real );
-	} else {
-		echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid repository path. It must be an existing, writable directory inside your WordPress install.', 'agentic-core' ) . '</p></div>';
-	}
+	update_option( 'agentic_llm_provider', sanitize_text_field( $_POST['agentic_llm_provider'] ?? 'openai' ) );
+	update_option( 'agentic_llm_api_key', sanitize_text_field( $_POST['agentic_llm_api_key'] ?? '' ) );
+	update_option( 'agentic_model', sanitize_text_field( $_POST['agentic_model'] ?? 'gpt-4o' ) );
 	update_option( 'agentic_agent_mode', sanitize_text_field( $_POST['agentic_agent_mode'] ?? 'supervised' ) );
 
 	// Cache settings
@@ -85,10 +69,10 @@ if ( isset( $_POST['agentic_save_settings'] ) && check_admin_referer( 'agentic_s
 }
 
 // Get current values
-$api_key    = get_option( 'agentic_xai_api_key', '' );
-$model      = get_option( 'agentic_model', 'grok-3' );
-$repo_path  = get_option( 'agentic_repo_path', ABSPATH );
-$agent_mode = get_option( 'agentic_agent_mode', 'supervised' );
+$llm_provider = get_option( 'agentic_llm_provider', 'openai' );
+$api_key      = get_option( 'agentic_llm_api_key', '' );
+$model        = get_option( 'agentic_model', 'gpt-4o' );
+$agent_mode   = get_option( 'agentic_agent_mode', 'supervised' );
 
 // Cache settings
 $cache_enabled = get_option( 'agentic_response_cache_enabled', true );
@@ -110,19 +94,41 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 		<table class="form-table">
 			<tr>
 				<th scope="row">
-					<label for="agentic_xai_api_key">xAI API Key</label>
+					<label for="agentic_llm_provider">LLM Provider</label>
+				</th>
+				<td>
+					<select name="agentic_llm_provider" id="agentic_llm_provider">
+						<option value="openai" <?php selected( $llm_provider, 'openai' ); ?>>OpenAI</option>
+						<option value="anthropic" <?php selected( $llm_provider, 'anthropic' ); ?>>Anthropic (Claude)</option>
+						<option value="xai" <?php selected( $llm_provider, 'xai' ); ?>>xAI (Grok)</option>
+						<option value="google" <?php selected( $llm_provider, 'google' ); ?>>Google (Gemini)</option>
+						<option value="mistral" <?php selected( $llm_provider, 'mistral' ); ?>>Mistral AI</option>
+					</select>
+					<p class="description">
+						Choose your preferred AI provider for the agent builder.
+					</p>
+				</td>
+			</tr>
+
+			<tr>
+				<th scope="row">
+					<label for="agentic_llm_api_key">API Key</label>
 				</th>
 				<td>
 					<input 
 						type="password" 
-						name="agentic_xai_api_key" 
-						id="agentic_xai_api_key" 
+						name="agentic_llm_api_key" 
+						id="agentic_llm_api_key" 
 						value="<?php echo esc_attr( $api_key ); ?>" 
 						class="regular-text"
 					/>
-					<p class="description">
-						Your xAI API key for Grok. Get one from <a href="https://console.x.ai/" target="_blank">console.x.ai</a>
+					<button type="button" id="agentic-test-api" class="button" style="margin-left: 8px;">
+						<span class="dashicons dashicons-controls-play" style="margin-right: 4px; vertical-align: -2px;"></span>Test
+					</button>
+					<p class="description" id="agentic-api-key-help">
+						<!-- Updated dynamically based on provider -->
 					</p>
+					<div id="agentic-test-result" style="margin-top: 8px;"></div>
 					<?php if ( ! empty( $api_key ) ) : ?>
 						<p><span class="dashicons dashicons-yes-alt" style="color: #22c55e;"></span> API key is set</p>
 					<?php endif; ?>
@@ -131,36 +137,14 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 
 			<tr>
 				<th scope="row">
-					<label for="agentic_model">Grok Model</label>
+					<label for="agentic_model">Model</label>
 				</th>
 				<td>
-					<select name="agentic_model" id="agentic_model">
-						<option value="grok-3" <?php selected( $model, 'grok-3' ); ?>>Grok 3 (Recommended)</option>
-						<option value="grok-3-fast" <?php selected( $model, 'grok-3-fast' ); ?>>Grok 3 Fast (Lower latency)</option>
-						<option value="grok-3-mini" <?php selected( $model, 'grok-3-mini' ); ?>>Grok 3 Mini (Efficient)</option>
-						<option value="grok-3-mini-fast" <?php selected( $model, 'grok-3-mini-fast' ); ?>>Grok 3 Mini Fast (Fastest)</option>
+					<select name="agentic_model" id="agentic_model" data-current-model="<?php echo esc_attr( $model ); ?>">
+						<!-- Options populated dynamically based on provider -->
 					</select>
-					<p class="description">
-						The Grok model to use for agent responses. Grok 3 provides the best results.
-					</p>
-				</td>
-			</tr>
-
-			<tr>
-				<th scope="row">
-					<label for="agentic_repo_path">Repository Path</label>
-				</th>
-				<td>
-					<input 
-						type="text" 
-						name="agentic_repo_path" 
-						id="agentic_repo_path" 
-						value="<?php echo esc_attr( $repo_path ); ?>" 
-						class="large-text"
-					/>
-					<p class="description">
-						Absolute path to the git repository the agent can access.
-						Default: <code><?php echo esc_html( ABSPATH ); ?></code>
+					<p class="description" id="agentic-model-help">
+						<!-- Updated dynamically based on provider -->
 					</p>
 				</td>
 			</tr>
@@ -466,7 +450,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 		</table>
 
 		<h2>Permissions</h2>
-		<p>Configure what actions the agent can perform autonomously vs. with approval.</p>
+		<p>Configure what actions the agent can perform autonomously vs. with approval. The builder is sandboxed to <code>wp-content/plugins</code> and <code>wp-content/themes</code>.</p>
 		
 		<table class="widefat" style="max-width: 600px;">
 			<thead>
@@ -727,17 +711,13 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 		</p>
 	</form>
 
-	<hr>
-
-	<h2>API Test</h2>
-	<p>Test the connection to OpenAI:</p>
-	<button type="button" id="agentic-test-api" class="button">Test API Connection</button>
-	<div id="agentic-test-result" style="margin-top: 10px;"></div>
-
 	<script>
 	document.getElementById('agentic-test-api').addEventListener('click', async function() {
 		const result = document.getElementById('agentic-test-result');
-		result.innerHTML = '<span class="spinner is-active" style="float: none;"></span> Testing...';
+		const btn = this;
+		btn.disabled = true;
+		const originalText = btn.innerHTML;
+		btn.innerHTML = '<span class="spinner" style="float: none; vertical-align: -2px; margin-right: 4px;"></span>Testing...';
 		
 		try {
 			const response = await fetch('<?php echo esc_js( rest_url( 'agentic/v1/status' ) ); ?>', {
@@ -748,12 +728,15 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			const data = await response.json();
 			
 			if (data.configured) {
-				result.innerHTML = '<span style="color: #22c55e;">✓ API is configured and ready!</span>';
+				result.innerHTML = '<p style="color: #22c55e; margin: 0;"><span class="dashicons dashicons-yes-alt" style="vertical-align: -2px;"></span> ✓ API is configured and ready!</p>';
 			} else {
-				result.innerHTML = '<span style="color: #b91c1c;">✗ API key not configured</span>';
+				result.innerHTML = '<p style="color: #b91c1c; margin: 0;"><span class="dashicons dashicons-no-alt" style="vertical-align: -2px;"></span> ✗ API key not configured</p>';
 			}
 		} catch (error) {
-			result.innerHTML = '<span style="color: #b91c1c;">✗ Error: ' + error.message + '</span>';
+			result.innerHTML = '<p style="color: #b91c1c; margin: 0;"><span class="dashicons dashicons-no-alt" style="vertical-align: -2px;"></span> ✗ Error: ' + error.message + '</p>';
+		} finally {
+			btn.disabled = false;
+			btn.innerHTML = originalText;
 		}
 	});
 	</script>

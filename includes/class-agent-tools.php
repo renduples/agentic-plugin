@@ -23,6 +23,13 @@ class Agent_Tools {
 	private string $repo_path;
 
 	/**
+	 * Allowed root directories inside wp-content
+	 *
+	 * @var array<int, string>
+	 */
+	private array $allowed_roots = array();
+
+	/**
 	 * Agent tool handlers registered by installed agents
 	 *
 	 * @var array<string, callable>
@@ -40,8 +47,38 @@ class Agent_Tools {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->repo_path = get_option( 'agentic_repo_path', ABSPATH );
-		$this->audit     = new Audit_Log();
+		$this->repo_path    = self::get_allowed_repo_base();
+		$this->allowed_roots = array(
+			trailingslashit( WP_CONTENT_DIR . '/plugins' ),
+			trailingslashit( WP_CONTENT_DIR . '/themes' ),
+		);
+		$this->audit = new Audit_Log();
+	}
+
+	/**
+	 * Base path the agent can access (wp-content).
+	 *
+	 * @return string
+	 */
+	public static function get_allowed_repo_base(): string {
+		return WP_CONTENT_DIR;
+	}
+
+	/**
+	 * Check if a relative path stays inside plugins/ or themes/.
+	 *
+	 * @param string $path Relative path.
+	 * @return bool
+	 */
+	public static function is_allowed_subpath( string $path ): bool {
+		$clean = ltrim( str_replace( '..', '', $path ), '/\\' );
+
+		return (
+			$clean === 'plugins' ||
+			$clean === 'themes' ||
+			str_starts_with( $clean, 'plugins/' ) ||
+			str_starts_with( $clean, 'themes/' )
+		);
 	}
 
 	/**
@@ -309,6 +346,12 @@ class Agent_Tools {
 	private function read_file( string $path ): array {
 		// Security: prevent path traversal
 		$path      = $this->sanitize_path( $path );
+
+		if ( ! self::is_allowed_subpath( $path ) ) {
+			return array(
+				'error' => 'Path not allowed. Only plugins/ or themes/ are accessible.',
+			);
+		}
 		$full_path = $this->repo_path . '/' . $path;
 
 		if ( ! file_exists( $full_path ) ) {
@@ -347,7 +390,34 @@ class Agent_Tools {
 	 * @return array Directory listing.
 	 */
 	private function list_directory( string $path ): array {
-		$path      = $this->sanitize_path( $path );
+		$path = $this->sanitize_path( $path );
+
+		// If no path provided, list allowed roots.
+		if ( $path === '' ) {
+			$items = array();
+			foreach ( $this->allowed_roots as $root ) {
+				if ( is_dir( $root ) ) {
+					$items[] = array(
+						'name' => basename( rtrim( $root, '/\\' ) ),
+						'type' => 'directory',
+						'size' => null,
+					);
+				}
+			}
+
+			return array(
+				'path'  => '',
+				'items' => $items,
+			);
+		}
+
+		if ( ! self::is_allowed_subpath( $path ) ) {
+			return array(
+				'error' => 'Path not allowed. Only plugins/ or themes/ are accessible.',
+				'path'  => $path,
+			);
+		}
+
 		$full_path = $this->repo_path . '/' . $path;
 
 		if ( ! is_dir( $full_path ) ) {
@@ -385,35 +455,38 @@ class Agent_Tools {
 	 */
 	private function search_code( string $pattern, ?string $file_type = null ): array {
 		$results = array();
-		$glob    = $file_type ? "*.{$file_type}" : '*.*';
 
-		$iterator = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator( $this->repo_path )
-		);
-
+		$paths = array_filter( $this->allowed_roots, 'is_dir' );
 		$count = 0;
-		foreach ( $iterator as $file ) {
-			if ( $count >= 50 ) {
-				break;
-			}
 
-			if ( $file->isFile() && ( ! $file_type || $file->getExtension() === $file_type ) ) {
-				// Skip vendor/node_modules
-				if ( strpos( $file->getPathname(), 'vendor/' ) !== false || strpos( $file->getPathname(), 'node_modules/' ) !== false ) {
-					continue;
+		foreach ( $paths as $path ) {
+			$iterator = new \RecursiveIteratorIterator(
+				new \RecursiveDirectoryIterator( $path )
+			);
+
+			foreach ( $iterator as $file ) {
+				if ( $count >= 50 ) {
+					break 2;
 				}
 
-				$content = file_get_contents( $file->getPathname() );
-				if ( preg_match( "/{$pattern}/i", $content, $matches, PREG_OFFSET_CAPTURE ) ) {
-					$relative_path = str_replace( $this->repo_path . '/', '', $file->getPathname() );
-					$line_number   = substr_count( substr( $content, 0, $matches[0][1] ), "\n" ) + 1;
+				if ( $file->isFile() && ( ! $file_type || $file->getExtension() === $file_type ) ) {
+					// Skip vendor/node_modules
+					if ( strpos( $file->getPathname(), 'vendor/' ) !== false || strpos( $file->getPathname(), 'node_modules/' ) !== false ) {
+						continue;
+					}
 
-					$results[] = array(
-						'file'  => $relative_path,
-						'line'  => $line_number,
-						'match' => $matches[0][0],
-					);
-					++$count;
+					$content = file_get_contents( $file->getPathname() );
+					if ( preg_match( "/{$pattern}/i", $content, $matches, PREG_OFFSET_CAPTURE ) ) {
+						$relative_path = str_replace( trailingslashit( $this->repo_path ), '', $file->getPathname() );
+						$line_number   = substr_count( substr( $content, 0, $matches[0][1] ), "\n" ) + 1;
+
+						$results[] = array(
+							'file'  => $relative_path,
+							'line'  => $line_number,
+							'match' => $matches[0][0],
+						);
+						++$count;
+					}
 				}
 			}
 		}
@@ -571,6 +644,11 @@ class Agent_Tools {
 		}
 
 		$path      = $this->sanitize_path( $path );
+
+		if ( ! self::is_allowed_subpath( $path ) ) {
+			return array( 'error' => 'Path not allowed. Only plugins/ or themes/ are accessible.' );
+		}
+
 		$full_path = $this->repo_path . '/' . $path;
 
 		// Backup existing content
@@ -618,6 +696,10 @@ class Agent_Tools {
 	 */
 	private function request_code_change( string $path, string $content, string $reasoning ): array {
 		$path      = $this->sanitize_path( $path );
+
+		if ( ! self::is_allowed_subpath( $path ) ) {
+			return array( 'error' => 'Path not allowed. Only plugins/ or themes/ are accessible.' );
+		}
 		$full_path = $this->repo_path . '/' . $path;
 
 		// Generate branch name

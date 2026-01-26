@@ -198,12 +198,14 @@ class REST_API {
 	 * @return \WP_REST_Response
 	 */
 	public function get_status( \WP_REST_Request $request ): \WP_REST_Response {
-		$openai = new OpenAI_Client();
+		$llm = new LLM_Client();
 
 		return new \WP_REST_Response(
 			array(
 				'version'      => AGENTIC_CORE_VERSION,
-				'configured'   => $openai->is_configured(),
+				'configured'   => $llm->is_configured(),
+				'provider'     => $llm->get_provider(),
+				'model'        => $llm->get_model(),
 				'mode'         => get_option( 'agentic_agent_mode', 'supervised' ),
 				'capabilities' => array(
 					'chat'         => true,
@@ -305,16 +307,16 @@ class REST_API {
 		$params = json_decode( $approval['params'], true );
 
 		if ( $approval['action'] === 'code_change' && ! empty( $params['path'] ) ) {
-			$repo_path      = realpath( get_option( 'agentic_repo_path', ABSPATH ) );
+			$repo_path      = Agent_Tools::get_allowed_repo_base();
 			$target_subpath = ltrim( str_replace( '..', '', $params['path'] ), '/\\' );
 
-			if ( ! $repo_path || ! is_dir( $repo_path ) ) {
+			if ( ! Agent_Tools::is_allowed_subpath( $target_subpath ) ) {
 				return;
 			}
 
 			$full_path = realpath( $repo_path . '/' . $target_subpath );
 
-			if ( ! $full_path || ! str_starts_with( $full_path, trailingslashit( $repo_path ) ) ) {
+			if ( ! $full_path || ! str_starts_with( $full_path, trailingslashit( realpath( $repo_path ) ) ) ) {
 				return;
 			}
 

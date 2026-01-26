@@ -17,11 +17,11 @@ namespace Agentic\Core;
 class Agent_Controller {
 
 	/**
-	 * OpenAI client
+	 * LLM client
 	 *
-	 * @var OpenAI_Client
+	 * @var LLM_Client
 	 */
-	private OpenAI_Client $openai;
+	private LLM_Client $llm;
 
 	/**
 	 * Core agent tools
@@ -53,7 +53,7 @@ class Agent_Controller {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->openai     = new OpenAI_Client();
+		$this->llm        = new LLM_Client();
 		$this->core_tools = new Agent_Tools();
 		$this->audit      = new Audit_Log();
 	}
@@ -173,7 +173,7 @@ class Agent_Controller {
 			);
 		}
 
-		if ( ! $this->openai->is_configured() ) {
+		if ( ! $this->llm->is_configured() ) {
 			return array(
 				'response' => 'The AI service is not configured. Please ask an administrator to set up the API key in Settings > Agentic.',
 				'error'    => true,
@@ -234,7 +234,7 @@ class Agent_Controller {
 			++$iterations;
 
 			// Pass empty tools array if no tools defined
-			$result = $this->openai->chat( $messages, $tools ?: null );
+			$result = $this->llm->chat( $messages, $tools ?: null );
 
 			if ( is_wp_error( $result ) ) {
 				return array(
@@ -244,7 +244,7 @@ class Agent_Controller {
 				);
 			}
 
-			$usage         = $this->openai->get_usage( $result );
+			$usage         = $this->llm->get_usage( $result );
 			$total_tokens += $usage['total_tokens'];
 
 			$choice = $result['choices'][0] ?? null;

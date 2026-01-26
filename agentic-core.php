@@ -504,6 +504,15 @@ final class Agentic_Core {
      * @return void
      */
     public function render_settings_page(): void {
+        // Enqueue settings page script.
+        wp_enqueue_script(
+            'agentic-settings',
+            AGENTIC_CORE_PLUGIN_URL . 'assets/js/settings.js',
+            array(),
+            AGENTIC_CORE_VERSION,
+            true
+        );
+
         // Enqueue license management script.
         wp_enqueue_script(
             'agentic-license',
@@ -597,8 +606,9 @@ final class Agentic_Core {
         // Set default options
         add_option( 'agentic_agent_mode', 'supervised' );
         add_option( 'agentic_audit_enabled', true );
-        add_option( 'agentic_model', 'grok-3' );
-        add_option( 'agentic_repo_path', dirname( ABSPATH ) );
+        add_option( 'agentic_llm_provider', 'openai' );
+        add_option( 'agentic_llm_api_key', '' );
+        add_option( 'agentic_model', 'gpt-4o' );
 
         // Create database tables
         $this->create_tables();

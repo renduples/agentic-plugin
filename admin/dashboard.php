@@ -10,17 +10,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Agentic\Core\Audit_Log;
+use Agentic\Core\LLM_Client;
 
 if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die( esc_html__( 'You do not have permission to access this page.', 'agentic-core' ) );
 }
 
-use Agentic\Core\OpenAI_Client;
-
 $audit         = new Audit_Log();
 $stats         = $audit->get_stats( 'week' );
-$openai        = new OpenAI_Client();
-$is_configured = $openai->is_configured();
+$llm           = new LLM_Client();
+$is_configured = $llm->is_configured();
+$provider      = $llm->get_provider();
+$model         = $llm->get_model();
 ?>
 <div class="wrap agentic-admin">
 	<h1>
@@ -31,8 +32,8 @@ $is_configured = $openai->is_configured();
 	<?php if ( ! $is_configured ) : ?>
 	<div class="notice notice-warning">
 		<p>
-			<strong>xAI API key not configured.</strong>
-			The Developer Agent requires an xAI API key for Grok to function.
+			<strong>LLM API key not configured.</strong>
+			Set your preferred provider and API key so the Developer Agent can build plugins and themes.
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-settings' ) ); ?>">Configure now</a>
 		</p>
 	</div>
@@ -52,11 +53,11 @@ $is_configured = $openai->is_configured();
 				</tr>
 				<tr>
 					<td><strong>AI Provider</strong></td>
-					<td><?php echo $is_configured ? 'xAI Grok (Connected)' : '<span style="color: #b91c1c;">Not configured</span>'; ?></td>
+					<td><?php echo $is_configured ? esc_html( strtoupper( $provider ) ) . ' (Connected)' : '<span style="color: #b91c1c;">Not configured</span>'; ?></td>
 				</tr>
 				<tr>
 					<td><strong>Model</strong></td>
-					<td><?php echo esc_html( get_option( 'agentic_model', 'grok-3' ) ); ?></td>
+					<td><?php echo esc_html( $model ); ?></td>
 				</tr>
 			</table>
 		</div>
