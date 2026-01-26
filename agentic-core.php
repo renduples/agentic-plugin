@@ -331,6 +331,10 @@ final class Agentic_Core {
         require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/class-response-cache.php';
         require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/class-shortcodes.php';
 
+        // License management.
+        require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/class-license-manager.php';
+        require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/license-ajax-handlers.php';
+
         // Marketplace components
         require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/class-marketplace-client.php';
 
@@ -501,6 +505,25 @@ final class Agentic_Core {
      * @return void
      */
     public function render_settings_page(): void {
+        // Enqueue license management script.
+        wp_enqueue_script(
+            'agentic-license',
+            AGENTIC_CORE_PLUGIN_URL . 'assets/js/license.js',
+            array( 'jquery' ),
+            AGENTIC_CORE_VERSION,
+            true
+        );
+
+        wp_localize_script(
+            'agentic-license',
+            'agenticLicense',
+            array(
+                'nonce'      => wp_create_nonce( 'agentic_license_nonce' ),
+                'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+                'pricingUrl' => 'https://agentic-plugin.com/pricing/',
+            )
+        );
+
         include AGENTIC_CORE_PLUGIN_DIR . 'admin/settings.php';
     }
 

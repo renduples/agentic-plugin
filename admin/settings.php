@@ -184,6 +184,141 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			</tr>
 		</table>
 
+		<h2>License</h2>
+		<p>Enter your license key to unlock premium features including access to the Agent Marketplace.</p>
+		
+		<?php
+		$license_info = \Agentic\License_Manager::get_license_info();
+		$license_key  = \Agentic\License_Manager::get_license_key();
+		$is_valid     = \Agentic\License_Manager::is_valid();
+		?>
+		
+		<?php if ( $is_valid && $license_info && 'active' === $license_info['status'] ) : ?>
+			<div class="notice notice-success inline" style="padding: 12px; margin: 15px 0;">
+				<p style="margin: 0; display: flex; align-items: center; gap: 8px;">
+					<span class="dashicons dashicons-yes-alt" style="color: #22c55e;"></span>
+					<strong>License Active</strong>
+				</p>
+			</div>
+			
+			<table class="form-table">
+				<tr>
+					<th scope="row">Status</th>
+					<td>
+						<span style="color: #22c55e; font-weight: 600;">● Active</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">License Key</th>
+					<td>
+						<code style="font-size: 14px;"><?php echo esc_html( $license_key ); ?></code>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Expires</th>
+					<td>
+						<?php
+						$expires_date = isset( $license_info['expires_at'] ) ? date_i18n( 'F j, Y', strtotime( $license_info['expires_at'] ) ) : 'Unknown';
+						echo esc_html( $expires_date );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Activations</th>
+					<td>
+						<?php
+						$used  = $license_info['activations_used'] ?? 0;
+						$limit = $license_info['activations_limit'] ?? 0;
+						echo esc_html( $used . ' / ' . $limit . ' sites' );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Features</th>
+					<td>
+						<?php
+						$features = $license_info['features'] ?? array();
+						if ( ! empty( $features ) ) {
+							$feature_labels = array(
+								'marketplace_access' => 'Agent Marketplace Access',
+								'agent_upload'       => 'Upload & Sell Agents',
+								'premium_support'    => 'Premium Support',
+							);
+							echo '<ul style="margin: 0; padding-left: 20px;">';
+							foreach ( $features as $feature ) {
+								$label = $feature_labels[ $feature ] ?? ucwords( str_replace( '_', ' ', $feature ) );
+								echo '<li>' . esc_html( $label ) . '</li>';
+							}
+							echo '</ul>';
+						} else {
+							echo 'Standard features';
+						}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Actions</th>
+					<td>
+						<button type="button" class="button" id="agentic-deactivate-license">
+							Deactivate License
+						</button>
+						<button type="button" class="button" id="agentic-refresh-license" style="margin-left: 8px;">
+							Refresh Status
+						</button>
+						<p class="description">
+							Deactivate to free up this activation slot for another site.
+						</p>
+					</td>
+				</tr>
+			</table>
+		<?php else : ?>
+			<div class="notice notice-warning inline" style="padding: 12px; margin: 15px 0;">
+				<p style="margin: 0;">
+					<span class="dashicons dashicons-warning" style="color: #f59e0b;"></span>
+					No active license. Premium features are disabled.
+				</p>
+			</div>
+			
+			<table class="form-table">
+				<tr>
+					<th scope="row">Get a License</th>
+					<td>
+						<p>
+							<strong>$10/year</strong> - Personal License (1 site)<br>
+							<strong>$50/year</strong> - Agency License (unlimited sites)
+						</p>
+						<p>
+							<a href="https://agentic-plugin.com/pricing" target="_blank" class="button button-primary">
+								Purchase License
+							</a>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="agentic-license-key-input">Enter License Key</label>
+					</th>
+					<td>
+						<input 
+							type="text" 
+							id="agentic-license-key-input" 
+							placeholder="AGNT-XXXX-XXXX-XXXX-XXXX"
+							value="<?php echo esc_attr( $license_key ); ?>"
+							pattern="AGNT-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}"
+							style="width: 350px; font-family: monospace; font-size: 14px; text-transform: uppercase;"
+						/>
+						<button type="button" class="button button-primary" id="agentic-activate-license" style="margin-left: 8px;">
+							Activate License
+						</button>
+						<p class="description">
+							Enter the license key you received after purchase.
+						</p>
+						<div id="agentic-license-message" style="margin-top: 12px;"></div>
+					</td>
+				</tr>
+			</table>
+		<?php endif; ?>
+
 		<h2>Response Caching</h2>
 		<p>Cache identical queries to save tokens and reduce latency.</p>
 		

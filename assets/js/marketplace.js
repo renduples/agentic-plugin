@@ -90,7 +90,7 @@
                 }
             });
 
-            // Submit license
+                // Submit license
             $(document).on('click', '.agentic-submit-license', function(e) {
                 e.preventDefault();
                 const $btn = $(this);
@@ -99,6 +99,11 @@
                 const licenseKey = $input.find('input').val();
                 
                 if (!licenseKey) {
+                    // Show message with pricing link
+                    const message = agenticMarketplace.strings.enterLicense + 
+                        '\n\n<a href="' + agenticMarketplace.pricingUrl + '" target="_blank" style="text-decoration: underline;">' +
+                        'Get a license at agentic-plugin.com/pricing' +
+                        '</a>';
                     alert(agenticMarketplace.strings.enterLicense);
                     return;
                 }
