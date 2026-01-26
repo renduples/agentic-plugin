@@ -78,8 +78,10 @@ $model         = $llm->get_model();
 			<h2>Quick Actions</h2>
 			<?php if ( ! $is_configured ) : ?>
 				<p>
-					<span class="dashicons dashicons-no-alt" style="color: #b91c1c; vertical-align: -2px;"></span>
+					<span class="dashicons dashicons-no-alt" style="color: #b91c1c; vertical-align: -2px;" title="Set up an AI provider and API key to enable the chatbot."></span>
 					Chatbot offline
+					<span class="dashicons dashicons-editor-help" title="Go to Settings to configure your AI provider and API key." style="vertical-align: -2px; margin-left: 6px;"></span>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-settings' ) ); ?>" style="margin-left: 6px;">Configure now</a>
 				</p>
 			<?php endif; ?>
 			<p>
