@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: Agentic Core
- * Plugin URI: https://github.com/renduples/agentic-plugin
+ * Plugin URI: https://agentic-plugin.com
  * Description: Core AI agent capabilities for WordPress - enables autonomous agents for content management, administration, and user interaction.
  * Version: 0.1.0-alpha
  * Requires at least: 6.4
  * Requires PHP: 8.1
  * Author: Agentic Plugin Contributors
- * Author URI: https://agentic-plugin.com
+ * Author URI: https://github.com/renduples/agentic-plugin
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: agentic-core
