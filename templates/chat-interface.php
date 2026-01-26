@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $user = wp_get_current_user();
 
-// Get accessible agents
+// Get accessible agents.
 $registry = Agentic_Agent_Registry::get_instance();
 $agents   = $registry->get_accessible_instances();
 
-// Default to first available agent or passed agent_id
+// Default to first available agent or passed agent_id.
 $default_agent_id = isset( $_GET['agent'] ) ? sanitize_key( $_GET['agent'] ) : '';
 $current_agent    = null;
 $current_agent_id = '';

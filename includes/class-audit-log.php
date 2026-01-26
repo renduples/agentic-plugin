@@ -84,7 +84,7 @@ class Audit_Log {
 		$where_clause = ! empty( $where ) ? 'WHERE ' . implode( ' AND ', $where ) : '';
 		$params[]     = $limit;
 
-		$query = "SELECT * FROM {$wpdb->prefix}agentic_audit_log {$where_clause} ORDER BY created_at DESC LIMIT %d";
+		$query = 'SELECT * FROM ' . $wpdb->prefix . 'agentic_audit_log ' . $where_clause . ' ORDER BY created_at DESC LIMIT %d'; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return $wpdb->get_results( $wpdb->prepare( $query, $params ), ARRAY_A );
 	}
@@ -118,7 +118,7 @@ class Audit_Log {
 			ARRAY_A
 		);
 
-		return $stats ?: array(
+		return null !== $stats ? $stats : array(
 			'total_actions' => 0,
 			'total_tokens'  => 0,
 			'total_cost'    => 0,

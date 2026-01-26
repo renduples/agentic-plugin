@@ -19,7 +19,7 @@ class Approval_Queue {
 	 * Constructor
 	 */
 	public function __construct() {
-		// Add admin notices for pending approvals
+		// Add admin notices for pending approvals.
 		add_action( 'admin_notices', array( $this, 'pending_approval_notice' ) );
 	}
 
