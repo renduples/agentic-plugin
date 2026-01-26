@@ -6,7 +6,7 @@
  * Version: 0.1.0-alpha
  * Requires at least: 6.4
  * Requires PHP: 8.1
- * Author: Agentic Plugin Contributors
+ * Author: AgenticPlugin.com
  * Author URI: https://github.com/renduples/agentic-plugin
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -338,20 +338,19 @@ final class Agentic_Core {
         // Marketplace components
         require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/class-marketplace-client.php';
 
-        // Initialize components
+        // Initialize components.
         new REST_API();
         new Approval_Queue();
         new \Agentic\Shortcodes();
 
-        // Initialize Social Auth (for custom login/register with OAuth)
+        // Initialize Social Auth (for custom login/register with OAuth).
 
-        // Initialize marketplace (on marketplace site only - controlled by constant)
-        }
+        // Initialize marketplace (on marketplace site only - controlled by constant).
 
-        // Initialize marketplace client (for installing agents from marketplace)
+        // Initialize marketplace client (for installing agents from marketplace).
         new Marketplace_Client();
 
-        // Load active agents (like WordPress loads active plugins)
+        // Load active agents (like WordPress loads active plugins).
         \Agentic_Agent_Registry::get_instance()->load_active_agents();
     }
 
@@ -616,8 +615,13 @@ final class Agentic_Core {
             ] );
         }
 
-        // Create marketplace pages if this is the marketplace site
-            // Submit Agent page
+        // Create marketplace pages if this is the marketplace site.
+        if ( defined( 'AGENTIC_IS_MARKETPLACE' ) && AGENTIC_IS_MARKETPLACE ) {
+            $submit_page     = get_page_by_path( 'submit-agent' );
+            $dashboard_page  = get_page_by_path( 'developer-dashboard' );
+            $guidelines_page = get_page_by_path( 'developer-guidelines' );
+
+            // Submit Agent page.
             if ( ! $submit_page ) {
                 wp_insert_post( [
                     'post_type'    => 'page',
@@ -627,7 +631,7 @@ final class Agentic_Core {
                 ] );
             }
 
-            // Developer Dashboard page
+            // Developer Dashboard page.
             if ( ! $dashboard_page ) {
                 wp_insert_post( [
                     'post_type'    => 'page',
@@ -637,7 +641,7 @@ final class Agentic_Core {
                 ] );
             }
 
-            // Developer Guidelines page
+            // Developer Guidelines page.
             if ( ! $guidelines_page ) {
                 wp_insert_post( [
                     'post_type'    => 'page',
@@ -661,10 +665,11 @@ final class Agentic_Core {
     }
 
     /**
-     * Get developer guidelines page content
+     * Get developer guidelines page content.
      *
      * @return string
      */
+    public function get_developer_guidelines(): string {
         return '
 <h2>Agentic Plugin Developer Guidelines</h2>
 <p>Welcome to the Agentic Plugin developer community! Before submitting your agent, please review these guidelines to ensure a smooth review process.</p>
