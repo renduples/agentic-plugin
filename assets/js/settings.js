@@ -158,4 +158,26 @@ document.addEventListener('DOMContentLoaded', function() {
 	if (providerSelect) {
 		providerSelect.addEventListener('change', updateLLMFields);
 	}
+
+	// Update agent mode help text
+	const agentModeSelect = document.getElementById('agentic_agent_mode');
+	const agentModeHelp = document.getElementById('agentic-agent-mode-help');
+	
+	const modeDescriptions = {
+		disabled: 'Agent chat only, no file/database actions',
+		supervised: 'Documentation updates are autonomous, code changes require approval',
+		autonomous: 'All actions are executed immediately (use with caution)'
+	};
+
+	function updateAgentModeHelp() {
+		if (agentModeSelect && agentModeHelp) {
+			const mode = agentModeSelect.value;
+			agentModeHelp.textContent = modeDescriptions[mode] || '';
+		}
+	}
+
+	if (agentModeSelect) {
+		updateAgentModeHelp();
+		agentModeSelect.addEventListener('change', updateAgentModeHelp);
+	}
 });

@@ -166,10 +166,8 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 						<option value="supervised" <?php selected( $agent_mode, 'supervised' ); ?>>Supervised (Recommended)</option>
 						<option value="autonomous" <?php selected( $agent_mode, 'autonomous' ); ?>>Autonomous</option>
 					</select>
-					<p class="description">
-						<strong>Disabled:</strong> Agent chat only, no file/database actions<br>
-						<strong>Supervised:</strong> Documentation updates are autonomous, code changes require approval<br>
-						<strong>Autonomous:</strong> All actions are executed immediately (use with caution)
+					<p class="description" id="agentic-agent-mode-help">
+						<!-- Help text updated dynamically -->
 					</p>
 				</td>
 			</tr>
