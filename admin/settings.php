@@ -719,11 +719,13 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 	</form>
 
 	<script>
-	document.getElementById('agentic-test-api').addEventListener('click', async function() {
+	document.getElementById('agentic-test-api').addEventListener('click', async function(e) {
+		e.preventDefault();
 		const result = document.getElementById('agentic-test-result');
 		const btn = this;
 		const provider = document.getElementById('agentic_llm_provider').value;
 		const apiKey = document.getElementById('agentic_llm_api_key').value;
+		const model = document.getElementById('agentic_model').value;
 		
 		if (!apiKey) {
 			result.innerHTML = '<p style="color: #b91c1c; margin: 0;"><span class="dashicons dashicons-no-alt" style="vertical-align: -2px;"></span> ✗ Please enter an API key first</p>';
@@ -751,10 +753,37 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			if (data.success) {
 				result.innerHTML = '<p style="color: #22c55e; margin: 0;"><span class="dashicons dashicons-yes-alt" style="vertical-align: -2px;"></span> ✓ ' + data.message + ' Saving...</p>';
 				
-				// Auto-save the settings
-				setTimeout(() => {
-					document.querySelector('form').submit();
-				}, 500);
+				// Save via AJAX without page refresh
+				const saveResponse = await fetch(window.location.href, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: new URLSearchParams({
+						'agentic_save_settings': '1',
+						'agentic_llm_provider': provider,
+						'agentic_llm_api_key': apiKey,
+						'agentic_model': model,
+						'agentic_agent_mode': document.getElementById('agentic_agent_mode').value,
+						'_wpnonce': '<?php echo esc_js( wp_create_nonce( 'agentic_settings_nonce' ) ); ?>',
+						'_wp_http_referer': '<?php echo esc_js( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ); ?>'
+					})
+				});
+				
+				if (saveResponse.ok) {
+					result.innerHTML = '<p style="color: #22c55e; margin: 0;"><span class="dashicons dashicons-yes-alt" style="vertical-align: -2px;"></span> ✓ ' + data.message + ' Settings saved!</p>';
+					// Update the "API key is set" indicator
+					const setIndicator = btn.parentElement.querySelector('p:last-child');
+					if (!setIndicator || !setIndicator.querySelector('.dashicons-yes-alt')) {
+						const indicator = document.createElement('p');
+						indicator.innerHTML = '<span class="dashicons dashicons-yes-alt" style="color: #22c55e;"></span> API key is set';
+						btn.parentElement.appendChild(indicator);
+					}
+				} else {
+					result.innerHTML = '<p style="color: #b91c1c; margin: 0;"><span class="dashicons dashicons-warning" style="vertical-align: -2px;"></span> API key valid but save failed. Please use Save Settings button.</p>';
+				}
+				btn.disabled = false;
+				btn.innerHTML = originalText;
 			} else {
 				result.innerHTML = '<p style="color: #b91c1c; margin: 0;"><span class="dashicons dashicons-no-alt" style="vertical-align: -2px;"></span> ✗ ' + (data.message || 'API test failed') + '</p>';
 				btn.disabled = false;
