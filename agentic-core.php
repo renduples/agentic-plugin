@@ -3,7 +3,7 @@
  * Plugin Name: Agentic Core
  * Plugin URI: https://agentic-plugin.com
  * Description: Core AI agent capabilities for WordPress - enables autonomous agents for content management, administration, and user interaction.
- * Version: 0.1.0-alpha
+ * Version: 0.1.2-alpha
  * Requires at least: 6.4
  * Requires PHP: 8.1
  * Author: Agentic-Plugin.com
