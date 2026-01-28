@@ -6,19 +6,25 @@ Welcome to the Agentic Plugin documentation wiki.
 
 ### Getting Started
 - [Quick Start Guide](Quickstart)
+- [Roadmap](Roadmap) - Project timeline and milestones
+
+### Architecture & Design
+- [Architecture](Architecture) - Technical specifications and system design
+- [Use Cases](Use-Cases) - Real-world scenarios and examples
+- [Discussion Points](Discussion-Points) - Open questions and community input
 
 ### Development
 - [Contributing Guidelines](Contributing)
 - [Code of Conduct](Code-of-Conduct)
 - [Security Policy](Security)
+- [Agent Licensing for Developers](Agent-Licensing-for-Developers) - Build and monetize agents
 
-### Features
+### Features & Systems
 - [Async Jobs System](Async-Jobs)
 - [System Requirements Checker](System-Requirements-Checker)
 - [WordPress.org Submission Checklist](WordPress-Org-Checklist)
 
-### Project Management
-- [Roadmap](Roadmap)
+### Release Information
 - [Release Notes](Release-Notes)
 
 ### Technical Reports
