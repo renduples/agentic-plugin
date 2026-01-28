@@ -3,7 +3,7 @@
  * Plugin Name: Agentic Core
  * Plugin URI: https://agentic-plugin.com
  * Description: Core AI agent capabilities for WordPress - enables autonomous agents for content management, administration, and user interaction.
- * Version: 0.1.3-alpha
+ * Version: 0.1.0-alpha
  * Requires at least: 6.4
  * Requires PHP: 8.1
  * Author: Agentic-Plugin.com
@@ -806,8 +806,19 @@ final class Agentic_Core {
         dbDelta( $sql_audit );
         dbDelta( $sql_queue );
         dbDelta( $sql_memory );
+        
+        // Create jobs table
+        Job_Manager::create_table();
     }
 }
+
+// Initialize Job Manager
+require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/class-job-manager.php';
+require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/interface-job-processor.php';
+require_once AGENTIC_CORE_PLUGIN_DIR . 'includes/class-jobs-api.php';
+
+Job_Manager::init();
+Jobs_API::init();
 
 // Initialize plugin
 Agentic_Core::get_instance();
