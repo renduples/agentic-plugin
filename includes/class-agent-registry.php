@@ -90,7 +90,7 @@ class Agentic_Agent_Registry {
 	 */
 	private function __construct() {
 		$this->agents_dir  = WP_CONTENT_DIR . '/agents';
-		$this->library_dir = AGENTIC_PATH . 'library';
+		$this->library_dir = AGENTIC_PLUGIN_DIR . 'library';
 
 		// Ensure directories exist
 		$this->ensure_directories();
@@ -469,7 +469,7 @@ class Agentic_Agent_Registry {
 		}
 
 		// Include base class first
-		require_once AGENTIC_PATH . 'includes/class-agent-base.php';
+		require_once AGENTIC_PLUGIN_DIR . 'includes/class-agent-base.php';
 
 		$installed = $this->get_installed_agents();
 
@@ -893,7 +893,7 @@ class Agentic_Agent_Registry {
 	 */
 	public function init_agent_instances(): void {
 		// Include base class
-		require_once AGENTIC_PATH . 'includes/class-agent-base.php';
+		require_once AGENTIC_PLUGIN_DIR . 'includes/class-agent-base.php';
 
 		// Allow agents to register themselves
 		do_action( 'agentic_register_agents', $this );
