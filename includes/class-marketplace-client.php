@@ -53,6 +53,104 @@ class Marketplace_Client {
 		add_action( 'wp_ajax_agentic_deactivate_agent', array( $this, 'ajax_deactivate_agent' ) );
 		add_action( 'wp_ajax_agentic_update_agent', array( $this, 'ajax_update_agent' ) );
 		add_action( 'wp_ajax_agentic_rate_agent', array( $this, 'ajax_rate_agent' ) );
+
+		// Schedule update checks
+		add_action( 'init', array( $this, 'schedule_update_checks' ) );
+		add_action( 'agentic_check_agent_updates', array( $this, 'check_for_updates' ) );
+	}
+
+	/**
+	 * Schedule daily update checks
+	 */
+	public function schedule_update_checks(): void {
+		if ( ! wp_next_scheduled( 'agentic_check_agent_updates' ) ) {
+			wp_schedule_event( time(), 'daily', 'agentic_check_agent_updates' );
+		}
+	}
+
+	/**
+	 * Check for agent updates (runs daily via cron)
+	 */
+	public function check_for_updates(): void {
+		$registry  = \Agentic_Agent_Registry::get_instance();
+		$installed = $registry->get_installed_agents( true );
+		$updates   = array();
+
+		foreach ( $installed as $slug => $agent ) {
+			// Skip bundled agents - they update with the plugin
+			if ( ! empty( $agent['bundled'] ) ) {
+				continue;
+			}
+
+			// Get stored license for this agent (if premium)
+			$licenses    = get_option( 'agentic_licenses', array() );
+			$license_key = $licenses[ $slug ]['license_key'] ?? '';
+
+			// Check marketplace for latest version
+			$params = array(
+				'current_version' => $agent['version'] ?? '0.0.0',
+				'site_url'        => home_url(),
+			);
+
+			// Add license key if agent is premium
+			if ( ! empty( $license_key ) ) {
+				$params['license_key'] = $license_key;
+			}
+
+			$response = $this->api_request( "agents/{$slug}/version", $params, 'GET' );
+
+			if ( is_wp_error( $response ) ) {
+				continue;
+			}
+
+			// Check if update requires license renewal
+			if ( isset( $response['error']['code'] ) && 'license_required' === $response['error']['code'] ) {
+				$updates[ $slug ] = array(
+					'current'         => $agent['version'] ?? '0.0.0',
+					'latest'          => 'unknown',
+					'license_expired' => true,
+					'renew_url'       => $response['error']['renew_url'] ?? '',
+					'name'            => $agent['name'] ?? $slug,
+				);
+				continue;
+			}
+
+			if ( ! isset( $response['data']['latest_version'] ) ) {
+				continue;
+			}
+
+			$current_version = $agent['version'] ?? '0.0.0';
+			$latest_version  = $response['data']['latest_version'];
+
+			if ( version_compare( $latest_version, $current_version, '>' ) ) {
+				$updates[ $slug ] = array(
+					'current' => $current_version,
+					'latest'  => $latest_version,
+					'package' => $response['data']['download_url'] ?? '',
+					'name'    => $agent['name'] ?? $slug,
+				);
+			}
+		}
+
+		// Store updates in transient (12 hours)
+		set_transient( 'agentic_available_updates', $updates, 12 * HOUR_IN_SECONDS );
+
+		do_action( 'agentic_updates_checked', $updates );
+	}
+
+	/**
+	 * Get available updates
+	 *
+	 * @return array
+	 */
+	public function get_available_updates(): array {
+		$updates = get_transient( 'agentic_available_updates' );
+
+		if ( false === $updates ) {
+			return array();
+		}
+
+		return $updates;
 	}
 
 	/**
@@ -66,6 +164,15 @@ class Marketplace_Client {
 			'manage_options',
 			'agentic-marketplace',
 			array( $this, 'render_marketplace_page' )
+		);
+
+		add_submenu_page(
+			'agentic-plugin',
+			__( 'Agent Licenses', 'agentic-plugin' ),
+			__( 'Licenses', 'agentic-plugin' ),
+			'manage_options',
+			'agentic-licenses',
+			array( $this, 'render_licenses_page' )
 		);
 	}
 
@@ -282,6 +389,13 @@ class Marketplace_Client {
 	}
 
 	/**
+	 * Render licenses page
+	 */
+	public function render_licenses_page(): void {
+		require_once AGENTIC_PLUGIN_DIR . 'admin/licenses.php';
+	}
+
+	/**
 	 * AJAX: Browse agents
 	 */
 	public function ajax_browse_agents(): void {
@@ -377,11 +491,13 @@ class Marketplace_Client {
 			}
 
 			$verification = $this->api_request(
-				'verify-purchase',
+				'licenses/validate',
 				array(
 					'license_key' => $license_key,
-					'agent_id'    => $agent_id,
+					'agent_slug'  => $agent['slug'],
 					'site_url'    => home_url(),
+					'site_hash'   => hash_hmac( 'sha256', home_url(), AGENTIC_SALT ),
+					'action'      => 'install',
 				),
 				'POST'
 			);
@@ -390,17 +506,80 @@ class Marketplace_Client {
 				wp_send_json_error( $verification->get_error_message() );
 			}
 
-			if ( ! $verification['valid'] ) {
-				wp_send_json_error( __( 'Invalid license key', 'agentic-plugin' ) );
+			// Handle error responses
+			if ( isset( $verification['error'] ) ) {
+				$error       = $verification['error'];
+				$error_code  = $error['code'] ?? 'unknown_error';
+				$error_data  = array(
+					'message' => $error['message'] ?? __( 'License validation failed', 'agentic-plugin' ),
+					'code'    => $error_code,
+				);
+
+				switch ( $error_code ) {
+					case 'license_expired':
+						// Check if still in grace period
+						if ( ! empty( $error['allow_existing_usage'] ) ) {
+							// Allow install but show warning
+							$grace_warning = sprintf(
+								/* translators: 1: expiration date, 2: grace period days, 3: renewal URL */
+								__( 'License expired on %1$s. You have %2$d days to renew. <a href="%3$s" target="_blank">Renew now</a>', 'agentic-plugin' ),
+								esc_html( $error['expired_at'] ?? 'unknown' ),
+								absint( $error['grace_period_days'] ?? 7 ),
+								esc_url( $error['renewal_url'] ?? '' )
+							);
+							set_transient( "agentic_license_warning_{$agent['slug']}", $grace_warning, DAY_IN_SECONDS );
+							// Continue with download
+							$download_url = $verification['data']['download_url'] ?? '';
+							break;
+						} else {
+							$error_data['renewal_url'] = $error['renewal_url'] ?? '';
+							wp_send_json_error( $error_data );
+						}
+						break;
+
+					case 'activation_limit_reached':
+						$error_data['activations']  = $error['activations'] ?? array();
+						$error_data['upgrade_url']  = $error['upgrade_url'] ?? '';
+						$error_data['manage_url']   = $error['manage_url'] ?? '';
+						wp_send_json_error( $error_data );
+						break;
+
+					case 'agent_mismatch':
+						$error_data['licensed_agent']  = $error['licensed_agent'] ?? '';
+						$error_data['requested_agent'] = $error['requested_agent'] ?? '';
+						wp_send_json_error( $error_data );
+						break;
+
+					case 'license_invalid':
+						$error_data['purchase_url'] = $error['purchase_url'] ?? '';
+						$error_data['support_url']  = $error['support_url'] ?? '';
+						wp_send_json_error( $error_data );
+						break;
+
+					default:
+						wp_send_json_error( $error_data );
+						break;
+				}
 			}
 
-			$download_url = $verification['download_url'];
+			// Success - extract download URL from response data
+			if ( isset( $verification['data']['download_url'] ) ) {
+				$download_url = $verification['data']['download_url'];
+			} else {
+				wp_send_json_error( __( 'Invalid license validation response', 'agentic-plugin' ) );
+			}
 
-			// Store license
+			// Store license with complete metadata
 			$licenses                   = get_option( 'agentic_licenses', array() );
 			$licenses[ $agent['slug'] ] = array(
-				'key'        => $license_key,
-				'expires_at' => $verification['expires_at'],
+				'license_key'      => $license_key,
+				'status'           => $verification['data']['status'] ?? 'active',
+				'expires_at'       => $verification['data']['expires_at'] ?? null,
+				'activations_used' => $verification['data']['activations_used'] ?? 1,
+				'activation_limit' => $verification['data']['activation_limit'] ?? 1,
+				'customer_email'   => $verification['data']['customer_email'] ?? '',
+				'validated_at'     => current_time( 'mysql' ),
+				'site_hash'        => hash_hmac( 'sha256', home_url(), AGENTIC_SALT ),
 			);
 			update_option( 'agentic_licenses', $licenses );
 		} else {
@@ -579,6 +758,87 @@ class Marketplace_Client {
 		}
 
 		wp_send_json_success( $response );
+	}
+
+	/**
+	 * Deactivate license when agent is deleted
+	 *
+	 * @param string $slug Agent slug.
+	 */
+	private function deactivate_agent_license( string $slug ): void {
+		$licenses = get_option( 'agentic_licenses', array() );
+
+		if ( empty( $licenses[ $slug ] ) ) {
+			return; // No license to deactivate.
+		}
+
+		$license = $licenses[ $slug ];
+
+		// Call API to deactivate
+		$response = $this->api_request(
+			'licenses/deactivate',
+			array(
+				'license_key' => $license['license_key'],
+				'site_url'    => home_url(),
+				'site_hash'   => hash_hmac( 'sha256', home_url(), AGENTIC_SALT ),
+			),
+			'POST'
+		);
+
+		// Remove from local storage whether API call succeeds or fails
+		unset( $licenses[ $slug ] );
+		update_option( 'agentic_licenses', $licenses );
+
+		if ( is_wp_error( $response ) ) {
+			// Log error but don't block deletion.
+			error_log( 'Agentic: Failed to deactivate license for ' . $slug . ': ' . $response->get_error_message() );
+		}
+	}
+
+	/**
+	 * Check if agent license is valid (with grace period)
+	 *
+	 * @param string $slug Agent slug.
+	 * @return bool
+	 */
+	public function is_agent_license_valid( string $slug ): bool {
+		$licenses = get_option( 'agentic_licenses', array() );
+
+		if ( empty( $licenses[ $slug ] ) ) {
+			return false; // No license = not valid.
+		}
+
+		$license = $licenses[ $slug ];
+
+		// Check status
+		if ( 'active' !== $license['status'] ) {
+			// Check if expired and within grace period
+			if ( isset( $license['expires_at'] ) ) {
+				$expires    = strtotime( $license['expires_at'] );
+				$grace_days = 7; // From licensing strategy.
+				$grace_end  = $expires + ( $grace_days * DAY_IN_SECONDS );
+
+				if ( time() <= $grace_end ) {
+					// Still in grace period.
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get license info for an agent
+	 *
+	 * @param string $slug Agent slug.
+	 * @return array|null
+	 */
+	public function get_agent_license( string $slug ): ?array {
+		$licenses = get_option( 'agentic_licenses', array() );
+		return $licenses[ $slug ] ?? null;
 	}
 
 	/**

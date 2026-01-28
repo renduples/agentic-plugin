@@ -675,6 +675,165 @@
     justify-content: center;
 }
 
+/* License Modal */
+.agentic-license-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.agentic-license-modal[style*="display: flex"],
+.agentic-license-modal[style*="display:flex"] {
+    display: flex !important;
+}
+
+.agentic-license-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    cursor: pointer;
+}
+
+.agentic-license-content {
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.agentic-license-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #646970;
+    transition: color 0.2s ease;
+}
+
+.agentic-license-close:hover {
+    color: #1d2327;
+}
+
+.agentic-license-content h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.agentic-license-content > p {
+    color: #646970;
+    margin-bottom: 20px;
+}
+
+.agentic-license-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.agentic-license-form input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+}
+
+.agentic-license-form input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.agentic-license-form .description {
+    font-size: 13px;
+    color: #646970;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+.agentic-license-form .description a {
+    color: #2271b1;
+    text-decoration: underline;
+}
+
+.agentic-license-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.agentic-license-actions .agentic-btn {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Notice Messages */
+.agentic-notice {
+    position: relative;
+    margin: 0 0 20px 0;
+    padding: 12px 40px 12px 16px;
+    border-left: 4px solid #72aee6;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.agentic-notice-success {
+    border-left-color: #00a32a;
+}
+
+.agentic-notice-error {
+    border-left-color: #d63638;
+}
+
+.agentic-notice-warning {
+    border-left-color: #dba617;
+}
+
+.agentic-notice p {
+    margin: 0;
+    padding: 0;
+}
+
+.agentic-notice .notice-dismiss {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #646970;
+    padding: 4px;
+    line-height: 1;
+}
+
+.agentic-notice .notice-dismiss:hover {
+    color: #1d2327;
+}
+
 /* Responsive */
 @media (max-width: 782px) {
     .agentic-marketplace-header {

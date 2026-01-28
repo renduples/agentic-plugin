@@ -81,13 +81,40 @@
                 e.preventDefault();
                 const $btn = $(this);
                 const agentId = $btn.data('agent-id');
+                const agentSlug = $btn.data('slug') || 'agent-' + agentId;
                 const isPremium = $btn.data('premium') === true || $btn.data('premium') === 'true';
                 
                 if (isPremium) {
-                    self.showLicenseInput($btn);
+                    self.showLicensePrompt(agentId, agentSlug, $btn);
                 } else {
                     self.installAgent(agentId, null, $btn);
                 }
+            });
+
+            // Submit license from modal
+            $(document).on('click', '.agentic-license-submit', function(e) {
+                e.preventDefault();
+                const $btn = $(this);
+                const $modal = $('#agentic-license-modal');
+                const agentId = $modal.data('agent-id');
+                const licenseKey = $('#agentic-license-key').val().trim();
+                
+                if (!licenseKey || !/^AGT-[A-Z0-9]{8}-[A-Z0-9]{8}-[A-Z0-9]{8}$/.test(licenseKey)) {
+                    alert('Please enter a valid license key (format: AGT-XXXXXXXX-XXXXXXXX-XXXXXXXX)');
+                    return;
+                }
+                
+                // Store in session for this agent
+                sessionStorage.setItem('agentic_license_' + agentId, licenseKey);
+                
+                // Close modal and trigger install
+                self.closeLicenseModal();
+                $('.agentic-install-btn[data-agent-id="' + agentId + '"]').trigger('click');
+            });
+
+            // Close license modal
+            $(document).on('click', '.agentic-license-close, .agentic-license-overlay', function() {
+                self.closeLicenseModal();
             });
 
                 // Submit license
@@ -618,6 +645,11 @@
             const self = this;
             const originalText = $btn.text();
             
+            // Check for stored license if not provided
+            if (!licenseKey && $btn.data('premium')) {
+                licenseKey = sessionStorage.getItem('agentic_license_' + agentId) || '';
+            }
+            
             $btn.prop('disabled', true).html('<span class="spinner is-active"></span> ' + agenticMarketplace.strings.installing);
             
             $.ajax({
@@ -647,8 +679,12 @@
                         // Hide license input
                         $btn.closest('.agentic-agent-card, .agentic-agent-detail-info')
                             .find('.agentic-license-input').removeClass('show');
+                            
+                        // Show success message
+                        self.showNotice('success', response.data.message || 'Agent installed successfully');
                     } else {
-                        alert(response.data || agenticMarketplace.strings.error);
+                        // Handle error responses
+                        self.handleInstallError(response.data, agentId, $btn);
                         $btn.prop('disabled', false).text(originalText);
                     }
                 },
@@ -656,6 +692,139 @@
                     alert(agenticMarketplace.strings.error);
                     $btn.prop('disabled', false).text(originalText);
                 }
+            });
+        },
+
+        /**
+         * Handle installation error responses
+         */
+        handleInstallError: function(error, agentId, $btn) {
+            if (typeof error === 'string') {
+                alert(error);
+                return;
+            }
+
+            const code = error.code || 'unknown_error';
+            const message = error.message || agenticMarketplace.strings.error;
+
+            switch (code) {
+                case 'license_expired':
+                    if (error.renewal_url) {
+                        if (confirm(message + '\n\nWould you like to renew now?')) {
+                            window.open(error.renewal_url, '_blank');
+                        }
+                    } else {
+                        alert(message);
+                    }
+                    break;
+
+                case 'activation_limit_reached':
+                    let limitMsg = message;
+                    if (error.activations && error.activations.length) {
+                        limitMsg += '\n\nCurrently activated on:\n';
+                        error.activations.forEach(function(site) {
+                            limitMsg += '- ' + site.site_url + '\n';
+                        });
+                    }
+                    if (error.manage_url) {
+                        limitMsg += '\nManage activations at: ' + error.manage_url;
+                    }
+                    alert(limitMsg);
+                    if (error.manage_url && confirm('Open license management page?')) {
+                        window.open(error.manage_url, '_blank');
+                    }
+                    break;
+
+                case 'agent_mismatch':
+                    alert(message + '\n\nThis license is for: ' + error.licensed_agent + '\nYou tried to install: ' + error.requested_agent);
+                    break;
+
+                case 'license_invalid':
+                    alert(message);
+                    if (error.purchase_url && confirm('Would you like to purchase a license?')) {
+                        window.open(error.purchase_url, '_blank');
+                    }
+                    break;
+
+                default:
+                    alert(message);
+                    break;
+            }
+        },
+
+        /**
+         * Show license prompt modal
+         */
+        showLicensePrompt: function(agentId, agentSlug, $btn) {
+            const storedLicense = sessionStorage.getItem('agentic_license_' + agentId);
+            
+            if (storedLicense) {
+                // Use stored license
+                this.installAgent(agentId, storedLicense, $btn);
+                return;
+            }
+
+            // Create modal if it doesn't exist
+            if (!$('#agentic-license-modal').length) {
+                $('body').append(`
+                    <div id="agentic-license-modal" class="agentic-license-modal">
+                        <div class="agentic-license-overlay"></div>
+                        <div class="agentic-license-content">
+                            <button class="agentic-license-close">&times;</button>
+                            <h2>License Key Required</h2>
+                            <p>This is a premium agent that requires a valid license key.</p>
+                            <div class="agentic-license-form">
+                                <label for="agentic-license-key">Enter your license key:</label>
+                                <input type="text" id="agentic-license-key" placeholder="AGT-XXXXXXXX-XXXXXXXX-XXXXXXXX" maxlength="30" />
+                                <p class="description">
+                                    Format: AGT-XXXXXXXX-XXXXXXXX-XXXXXXXX<br/>
+                                    Don't have a license? <a href="${agenticMarketplace.pricingUrl}?agent=${agentSlug}" target="_blank">Purchase now</a>
+                                </p>
+                                <div class="agentic-license-actions">
+                                    <button class="agentic-btn agentic-btn-primary agentic-license-submit">Install with License</button>
+                                    <button class="agentic-btn agentic-license-cancel">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                
+                // Cancel button
+                $(document).on('click', '.agentic-license-cancel', function() {
+                    $('#agentic-license-modal').hide();
+                });
+            }
+
+            $('#agentic-license-modal').data('agent-id', agentId).show();
+            $('#agentic-license-key').val('').focus();
+        },
+
+        /**
+         * Close license modal
+         */
+        closeLicenseModal: function() {
+            $('#agentic-license-modal').hide();
+        },
+
+        /**
+         * Show notice message
+         */
+        showNotice: function(type, message) {
+            const $notice = $('<div>', {
+                class: 'agentic-notice agentic-notice-' + type,
+                html: '<p>' + message + '</p><button class="notice-dismiss">&times;</button>'
+            });
+            
+            $('.agentic-marketplace-wrap').prepend($notice);
+            
+            setTimeout(function() {
+                $notice.fadeOut(function() {
+                    $(this).remove();
+                });
+            }, 5000);
+            
+            $notice.on('click', '.notice-dismiss', function() {
+                $notice.remove();
             });
         },
 

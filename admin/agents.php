@@ -19,6 +19,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die( esc_html__( 'You do not have permission to access this page.', 'agentic-plugin' ) );
 }
 
+// Get available updates
+$marketplace_client = new \Agentic\Marketplace_Client();
+$available_updates  = $marketplace_client->get_available_updates();
+
 $action  = isset( $_GET['action'] ) ? sanitize_text_field( $_GET['action'] ) : '';
 $slug    = isset( $_GET['agent'] ) ? sanitize_text_field( $_GET['agent'] ) : '';
 $message = '';
@@ -58,7 +62,46 @@ if ( $action && $slug && wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'agentic_agen
 			if ( is_wp_error( $result ) ) {
 				$error = $result->get_error_message();
 			} else {
-				$message = __( 'Agent deleted.', 'agentic-plugin' );
+			// Deactivate license if agent had one
+			$marketplace = new \Agentic\Marketplace_Client();
+			$marketplace_reflection = new \ReflectionClass( $marketplace );
+			$deactivate_method = $marketplace_reflection->getMethod( 'deactivate_agent_license' );
+			$deactivate_method->setAccessible( true );
+			$deactivate_method->invoke( $marketplace, $slug );
+
+			// Download and install the update
+			if ( isset( $available_updates[ $slug ] ) ) {
+				$update_data = $available_updates[ $slug ];
+				$was_active  = $registry->is_agent_active( $slug );
+
+				// Deactivate if active
+				if ( $was_active ) {
+					$registry->deactivate_agent( $slug );
+				}
+
+				// Install the update (replaces files)
+				$result = $registry->install_agent( $slug );
+
+				if ( is_wp_error( $result ) ) {
+					$error = $result->get_error_message();
+				} else {
+					// Reactivate if was active
+					if ( $was_active ) {
+						$registry->activate_agent( $slug );
+					}
+
+					// Clear update cache to refresh
+					delete_transient( 'agentic_available_updates' );
+
+					$message = sprintf(
+						/* translators: 1: agent name, 2: new version */
+						__( '%1$s updated to version %2$s successfully.', 'agentic-plugin' ),
+						esc_html( $update_data['name'] ),
+						esc_html( $update_data['latest'] )
+					);
+				}
+			} else {
+				$error = __( 'No update available for this agent.', 'agentic-plugin' );
 			}
 			break;
 	}
@@ -184,16 +227,42 @@ if ( $search ) {
 			<?php else : ?>
 				<?php foreach ( $agents as $slug => $agent ) : ?>
 					<?php
-					$row_class = $agent['active'] ? 'active' : 'inactive';
-					$nonce     = wp_create_nonce( 'agentic_agent_action' );
+					$row_class    = $agent['active'] ? 'active' : 'inactive';
+					$nonce        = wp_create_nonce( 'agentic_agent_action' );
+					$has_update   = isset( $available_updates[ $slug ] );
+					$update_class = $has_update ? 'update-available' : '';
 					?>
-					<tr class="<?php echo esc_attr( $row_class ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
+					<tr class="<?php echo esc_attr( $row_class . ' ' . $update_class ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
 						<th scope="row" class="check-column">
 							<input type="checkbox" name="checked[]" value="<?php echo esc_attr( $slug ); ?>">
 						</th>
 						<td class="plugin-title column-primary">
 							<strong><?php echo esc_html( $agent['name'] ); ?></strong>
+
+							<?php if ( $has_update ) : ?>
+								<div class="notice notice-warning inline" style="margin: 5px 0; padding: 5px 10px;">
+									<p style="margin: 0;">
+										<?php
+										printf(
+											/* translators: 1: current version, 2: new version */
+											esc_html__( 'Update available: %1$s → %2$s', 'agentic-plugin' ),
+											'<strong>' . esc_html( $available_updates[ $slug ]['current'] ) . '</strong>',
+											'<strong>' . esc_html( $available_updates[ $slug ]['latest'] ) . '</strong>'
+										);
+										?>
+									</p>
+								</div>
+							<?php endif; ?>
+
 							<div class="row-actions visible">
+								<?php if ( $has_update && ! empty( $agent['bundled'] ) === false ) : ?>
+									<span class="update">
+										<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&action=update&agent=' . $slug . '&_wpnonce=' . $nonce ) ); ?>" style="color: #d63638; font-weight: 600;">
+											<?php esc_html_e( 'Update Now', 'agentic-plugin' ); ?>
+										</a> |
+									</span>
+								<?php endif; ?>
+
 								<?php if ( $agent['active'] ) : ?>
 									<span class="chat">
 										<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-chat&agent=' . $slug ) ); ?>" style="font-weight: 600;">

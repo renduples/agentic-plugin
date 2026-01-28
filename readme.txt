@@ -1,14 +1,14 @@
 === Agentic Plugin ===
 Contributors: agentic-plugin
-Tags: ai, agents, automation, marketplace, plugins
+Tags: openai, chatgpt, gpt, anthropic, claude, llm, ai, agents, chatbot, automation, marketplace, plugins
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 1.0.0-beta
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-AI-native ecosystem that allows you to install, activate, and deactivate any number of autonomous agents exactly like plugins.
+The marketplace for AI agents on WordPress. Imagine->Build->Sell
 
 == Description ==
 
@@ -26,10 +26,11 @@ Agentic Plugin brings an agent ecosystem to WordPress just like plugins and them
 * **E-commerce Agents**: Manage products, optimize pricing, handle inventory
 * **Frontend Agents**: Chat with visitors, moderate comments, handle support
 * **Developer Agents**: Generate code, debug issues, build themes and plugins
+* **Marketing Agents**: Create campaigns, generate platform-optimized content, and manage multi-channel presence.
 
 = Key Features =
 
-* Agent management interface (install, activate, deactivate, delete)
+* Plugin like Agent management interface (install, activate, deactivate, delete)
 * Multiple AI provider support (OpenAI, Anthropic, local models)
 * Comprehensive audit logging
 * Human-in-the-loop approval workflow
@@ -44,11 +45,12 @@ Agentic Plugin brings an agent ecosystem to WordPress just like plugins and them
 
 == Installation ==
 
-1. Upload the `agentic-plugin` folder to `/wp-content/plugins/`
-2. Activate the plugin through the 'Plugins' menu
-3. Go to 'Agentic → Agents' to browse and install agents
-4. Activate agents to enable their capabilities
-5. (Optional) Add AI provider API keys in wp-config.php
+1. Download the latest version from: https://github.com/renduples/agentic-plugin/releases/latest/download/agentic-plugin.zip
+2. Upload via Plugins → Add New → Upload Plugin
+3. Activate the plugin through the 'Plugins' menu
+4. Go to 'Agentic → Settings' to add your API key
+5. Go to 'Agentic → Agents' to browse and install agents
+6. Activate agents to enable their capabilities
 
 == Frequently Asked Questions ==
 
@@ -59,6 +61,10 @@ Agents are like plugins but specifically designed for AI-powered automation. The
 = Can I build my own agents? =
 
 Yes! Agents follow a simple structure similar to WordPress plugins. Create an agent.php file with headers, register your tools, and share with the community.
+
+= Where should I install my custom agents? =
+
+Install custom agents in `wp-content/agents/` directory (not inside the plugin folder). This ensures your agents survive plugin updates. The plugin comes with 10 bundled agents in `wp-content/plugins/agentic-plugin/library/` that update with the plugin, but your custom agents in `wp-content/agents/` will never be touched during updates.
 
 = Is this production ready? =
 
@@ -73,6 +79,20 @@ Currently supports OpenAI, Anthropic (Claude), and local models via Ollama.
 Only when using cloud AI providers. Local model support is available for privacy-sensitive deployments.
 
 == Changelog ==
+
+= 1.0.0 =
+* **Production Release** - First stable release with complete agent licensing system
+* Per-agent licensing for premium agents (separate from core plugin)
+* License management UI (Agentic → Licenses page)
+* Automatic update checking via daily WordPress cron
+* 7-day grace period for expired licenses
+* Comprehensive error handling (expired, activation limit, mismatch, invalid)
+* JavaScript license key prompts with validation
+* License deactivation on agent deletion
+* Enhanced license storage (8-field schema)
+* API integration: /licenses/validate, /licenses/deactivate, /agents/{slug}/version
+* Complete marketplace API documentation for developers
+* All components ready for premium agent marketplace
 
 = 1.0.0-beta =
 * **Beta Release** - Production-ready release candidate
@@ -104,6 +124,9 @@ Only when using cloud AI providers. Local model support is available for privacy
 * Admin interface scaffolding
 
 == Upgrade Notice ==
+
+= 1.0.0 =
+First stable release! Complete per-agent licensing system for premium agents. Smooth upgrade from beta - no database migrations required.
 
 = 1.0.0-beta =
 First beta release! Production-ready with WordPress.org compliance. Major improvements to code quality and security.

@@ -35,22 +35,22 @@ git clone https://github.com/renduples/agentic-plugin.git
 1. Go to WordPress Admin → Plugins
 2. Activate **Agentic Plugin**
 3. Go to **Agentic → Settings**
-4. Add your OpenAI/Anthropic API key
-5. Enable your first agent
+4. Add your xAI/OpenAI/Anthropic API key
+5. Enable your primary agent
 
-### 3. Start Using Agents
+### 3. Start using your primary Agent
 
-- **Admin Panel**: Chat with agents → Agentic → Agent Chat
+- **Admin Panel**: Chat with agents → **Agentic → Agent Chat**
 - **Frontend**: Use `[agentic_chat]` shortcode on any page
-- **REST API**: POST to `/wp-json/agent/v1/chat`
+- **REST API**: POST to `/wp-json/agentic/v1/chat`
 
-That's it. Your first AI agent is live.
+That's it. Your primary AI agent is live.
 
 ---
 
 ## 🎯 What You Can Build
 
-Agentic comes with **10 pre-built agents** to jumpstart development:
+The Agentic Plugin comes with **10 pre-built agents** to jumpstart development:
 
 | Agent | Use Case |
 |-------|----------|
@@ -70,7 +70,7 @@ Agentic comes with **10 pre-built agents** to jumpstart development:
 ## 💡 Core Features
 
 ### AI-Native Architecture
-- **Multi-model support**: OpenAI, Anthropic, XAI, local LLMs
+- **Multi-model support**: OpenAI, Anthropic, xAI, local LLMs
 - **Built-in security**: Sandboxed execution, approval workflows
 - **Reasoning engine**: Agents explain their logic, not just generate outputs
 - **Response caching**: Reduce API costs while maintaining freshness
@@ -224,9 +224,6 @@ We welcome contributions! See our [Contributing Guidelines](https://github.com/r
 - **API Key** (OpenAI, Anthropic, or XAI)
 - **cURL** for external API calls
 
-Optional (for full functionality):
-- **Git** (for agent version control)
-
 ---
 
 ## 🎓 Learn By Doing
@@ -261,8 +258,7 @@ Community agents in the marketplace:
 
 ## 💬 Community & Support
 
-- **GitHub Discussions** – Ask questions, share ideas
-- **Discord** – Real-time chat with developers ([invite](https://discord.gg/agentic))
+- **GitHub Discussions** – Ask questions, share ideas (https://github.com/renduples/agentic-plugin/discussions)
 - **Twitter/X** – [@agenticplugin](https://twitter.com/agenticplugin)
 - **Email** – support@agentic-plugin.com
 
@@ -289,6 +285,6 @@ This is an **independent community project** — not affiliated with or endorsed
 
 ---
 
-**Made with ❤️ by the Agentic community**
+**Made with ❤️ by the Agentic Plugin community**
 
-[🌍 Website](https://agentic-plugin.com) • [📖 Docs](https://agentic-plugin.com/roadmap/) • [💬 GitHub](https://github.com/renduples/agentic-plugin) • [🐦 Twitter](https://twitter.com/agenticplugin)
+[🌍 Website](https://agentic-plugin.com) • [📖 Docs](https://github.com/renduples/agentic-plugin/wiki) • [💬 GitHub](https://github.com/renduples/agentic-plugin) • [🐦 Twitter](https://twitter.com/agenticplugin)
