@@ -24,12 +24,12 @@ declare(strict_types=1);
 
 namespace Agentic;
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Plugin constants
+// Plugin constants.
 define( 'AGENTIC_PLUGIN_VERSION', '1.0.0' );
 define( 'AGENTIC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AGENTIC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -85,7 +85,7 @@ final class Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_filter( 'the_content', array( $this, 'render_chat_interface' ) );
 
-		// Activation/Deactivation hooks
+		// Activation/Deactivation hooks.
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 	}
@@ -109,10 +109,10 @@ final class Plugin {
 	 * @return void
 	 */
 	public function init(): void {
-		// Register custom post types for audit logs
+		// Register custom post types for audit logs.
 		$this->register_post_types();
 
-		// Load core components
+		// Load core components.
 		$this->load_components();
 	}
 
@@ -122,7 +122,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function admin_init(): void {
-		// Register settings
+		// Register settings.
 		register_setting(
 			'agentic_core_settings',
 			'agentic_agent_mode',
@@ -159,7 +159,7 @@ final class Plugin {
 			array( $this, 'render_admin_page' )
 		);
 
-		// Agent Chat
+		// Agent Chat.
 		add_submenu_page(
 			'agentic-plugin',
 			__( 'Agent Chat', 'agentic-plugin' ),
@@ -169,7 +169,7 @@ final class Plugin {
 			array( $this, 'render_chat_page' )
 		);
 
-		// Agents menu (like Plugins menu)
+		// Agents menu (like Plugins menu).
 		add_submenu_page(
 			'agentic-plugin',
 			__( 'Installed Agents', 'agentic-plugin' ),
@@ -227,7 +227,7 @@ final class Plugin {
 			return;
 		}
 
-		// Add parent menu
+		// Add parent menu.
 		$wp_admin_bar->add_node(
 			array(
 				'id'    => 'agentic',
@@ -239,7 +239,7 @@ final class Plugin {
 			)
 		);
 
-		// Add submenu items
+		// Add submenu items.
 		$wp_admin_bar->add_node(
 			array(
 				'id'     => 'agentic-agents',
@@ -313,7 +313,7 @@ final class Plugin {
 			)
 		);
 
-		// Register System Checker routes
+		// Register System Checker routes.
 		\Agentic\System_Checker::register_routes();
 	}
 
@@ -378,7 +378,7 @@ final class Plugin {
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-license-manager.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/license-ajax-handlers.php';
 
-		// Marketplace components
+		// Marketplace components.
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-marketplace-client.php';
 
 		// Initialize components.
@@ -407,7 +407,7 @@ final class Plugin {
 		$message    = $request->get_param( 'message' );
 		$session_id = $request->get_param( 'session_id' ) ?? wp_generate_uuid4();
 
-		// TODO: Implement actual agent chat logic
+		// TODO: Implement actual agent chat logic.
 		return new \WP_REST_Response(
 			array(
 				'response'    => __( 'Agent functionality coming soon. This is a placeholder response.', 'agentic-plugin' ),
@@ -517,7 +517,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public function render_chat_page(): void {
-		// Enqueue chat assets for admin
+		// Enqueue chat assets for admin.
 		wp_enqueue_style(
 			'agentic-chat',
 			AGENTIC_PLUGIN_URL . 'assets/css/chat.css',
@@ -547,7 +547,7 @@ final class Plugin {
 		echo '<div class="wrap">';
 		echo '<h1>' . esc_html__( 'Agent Chat', 'agentic-plugin' ) . '</h1>';
 
-		// Load agent registry to initialize agents
+		// Load agent registry to initialize agents.
 		$registry = \Agentic_Agent_Registry::get_instance();
 
 		include AGENTIC_PLUGIN_DIR . 'templates/chat-interface.php';
@@ -663,17 +663,17 @@ final class Plugin {
 	 * @return void
 	 */
 	public function activate(): void {
-		// Set default options
+		// Set default options.
 		add_option( 'agentic_agent_mode', 'supervised' );
 		add_option( 'agentic_audit_enabled', true );
 		add_option( 'agentic_llm_provider', 'openai' );
 		add_option( 'agentic_llm_api_key', '' );
 		add_option( 'agentic_model', 'gpt-4o' );
 
-		// Create database tables
+		// Create database tables.
 		$this->create_tables();
 
-		// Create chat page if it doesn't exist
+		// Create chat page if it doesn't exist.
 		$chat_page = get_page_by_path( 'agent-chat' );
 		if ( ! $chat_page ) {
 			wp_insert_post(
@@ -729,7 +729,7 @@ final class Plugin {
 			}
 		}
 
-		// Flush rewrite rules
+		// Flush rewrite rules.
 		flush_rewrite_rules();
 	}
 
@@ -819,7 +819,7 @@ final class Plugin {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		// Audit log table
+		// Audit log table.
 		$sql_audit = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}agentic_audit_log (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             agent_id varchar(64) NOT NULL,
@@ -838,7 +838,7 @@ final class Plugin {
             KEY created_at (created_at)
         ) $charset_collate;";
 
-		// Approval queue table
+		// Approval queue table.
 		$sql_queue = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}agentic_approval_queue (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             agent_id varchar(64) NOT NULL,
@@ -855,7 +855,7 @@ final class Plugin {
             KEY created_at (created_at)
         ) $charset_collate;";
 
-		// Memory table
+		// Memory table.
 		$sql_memory = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}agentic_memory (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             memory_type varchar(50) NOT NULL,
@@ -875,12 +875,12 @@ final class Plugin {
 		dbDelta( $sql_queue );
 		dbDelta( $sql_memory );
 
-		// Create jobs table
+		// Create jobs table.
 		Job_Manager::create_table();
 	}
 }
 
-// Initialize Job Manager
+// Initialize Job Manager.
 require_once AGENTIC_PLUGIN_DIR . 'includes/class-job-manager.php';
 require_once AGENTIC_PLUGIN_DIR . 'includes/interface-job-processor.php';
 require_once AGENTIC_PLUGIN_DIR . 'includes/class-jobs-api.php';
@@ -888,5 +888,5 @@ require_once AGENTIC_PLUGIN_DIR . 'includes/class-jobs-api.php';
 Job_Manager::init();
 Jobs_API::init();
 
-// Initialize plugin
+// Initialize plugin.
 Plugin::get_instance();
