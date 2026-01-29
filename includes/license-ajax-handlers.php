@@ -24,11 +24,7 @@ add_action(
 			wp_send_json_error( array( 'message' => 'Permission denied.' ) );
 		}
 
-		$license_key = sanitize_text_field( $_POST['license_key'] ?? '' );
-
-		if ( empty( $license_key ) ) {
-			wp_send_json_error( array( 'message' => 'Please enter a license key.' ) );
-		}
+		$license_key = sanitize_text_field( wp_unslash( $_POST['license_key'] ?? '' ) );
 
 		$result = \Agentic\License_Manager::activate( $license_key );
 

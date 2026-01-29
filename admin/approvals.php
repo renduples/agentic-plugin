@@ -28,9 +28,9 @@ $show_empty_note = empty( $pending );
 
 	<p class="description">
 		Review and approve actions requested by AI agents before they are executed.
-		<?php if ( $agent_mode === 'supervised' ) : ?>
+		<?php if ( 'supervised' === $agent_mode ) : ?>
 			<strong>Mode:</strong> Supervised - Code changes require approval, documentation updates are automatic.
-		<?php elseif ( $agent_mode === 'autonomous' ) : ?>
+		<?php elseif ( 'autonomous' === $agent_mode ) : ?>
 			<strong>Mode:</strong> Autonomous - All actions execute automatically (approval queue bypassed).
 		<?php else : ?>
 			<strong>Mode:</strong> Disabled - Agents cannot make file changes.
@@ -38,7 +38,7 @@ $show_empty_note = empty( $pending );
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-settings' ) ); ?>">Change mode</a>
 	</p>
 
-	<?php if ( $agent_mode === 'autonomous' ) : ?>
+	<?php if ( 'autonomous' === $agent_mode ) : ?>
 		<div class="notice notice-warning">
 			<p>
 				<strong>Warning:</strong> Autonomous mode is enabled. Actions are executed immediately without requiring approval.

@@ -19,11 +19,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 $audit = new Audit_Log();
 
-// Filter parameters
-$agent_filter  = sanitize_text_field( $_GET['agent'] ?? '' );
-$action_filter = sanitize_text_field( $_GET['action'] ?? '' );
+// Filter parameters.
+$agent_filter  = sanitize_text_field( wp_unslash( $_GET['agent'] ?? '' ) );
+$action_filter = sanitize_text_field( wp_unslash( $_GET['action'] ?? '' ) );
 
-$logs  = $audit->get_recent( 100, $agent_filter ?: null, $action_filter ?: null );
+$logs  = $audit->get_recent( 100, $agent_filter ? $agent_filter : null, $action_filter ? $action_filter : null );
 $stats = $audit->get_stats( 'month' );
 ?>
 <div class="wrap">

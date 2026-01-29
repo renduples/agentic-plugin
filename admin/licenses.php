@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Handle deactivation action
+// Handle deactivation action.
 if ( isset( $_GET['action'] ) && 'deactivate' === $_GET['action'] && isset( $_GET['slug'] ) && check_admin_referer( 'agentic_deactivate_license_' . sanitize_key( $_GET['slug'] ) ) ) {
 	$slug     = sanitize_key( $_GET['slug'] );
 	$licenses = get_option( 'agentic_licenses', array() );
@@ -22,7 +22,7 @@ if ( isset( $_GET['action'] ) && 'deactivate' === $_GET['action'] && isset( $_GE
 	if ( isset( $licenses[ $slug ] ) ) {
 		$marketplace = new \Agentic\Marketplace_Client();
 
-		// Call API to deactivate
+		// Call API to deactivate.
 		$marketplace_reflection = new \ReflectionClass( $marketplace );
 		$deactivate_method      = $marketplace_reflection->getMethod( 'deactivate_agent_license' );
 		$deactivate_method->setAccessible( true );
@@ -86,25 +86,26 @@ $agents   = $registry->get_installed_agents( true );
 			<tbody>
 				<?php foreach ( $licenses as $slug => $license ) : ?>
 					<?php
-					$agent_data = $agents[ $slug ] ?? array();
-					$agent_name = $agent_data['name'] ?? ucwords( str_replace( array( '-', '_' ), ' ', $slug ) );
-					$status     = $license['status'] ?? 'unknown';
-					$expires_at = $license['expires_at'] ?? null;
-					$is_expired = false;
-					$in_grace   = false;
+					$agent_data     = $agents[ $slug ] ?? array();
+					$agent_name     = $agent_data['name'] ?? ucwords( str_replace( array( '-', '_' ), ' ', $slug ) );
+					$license_status = $license['status'] ?? 'unknown';
+					$expires_at     = $license['expires_at'] ?? null;
+					$is_expired     = false;
+					$in_grace       = false;
 
 					if ( $expires_at ) {
 						$expires_timestamp = strtotime( $expires_at );
 						$is_expired        = $expires_timestamp < time();
 
+						// Check if in grace period.
 						if ( $is_expired ) {
 							$grace_end = $expires_timestamp + ( 7 * DAY_IN_SECONDS );
 							$in_grace  = time() <= $grace_end;
 						}
 					}
 
-					// Determine status display
-					if ( 'active' === $status && ! $is_expired ) {
+					// Determine status display.
+					if ( 'active' === $license_status && ! $is_expired ) {
 						$status_class = 'success';
 						$status_text  = __( 'Active', 'agentic-plugin' );
 					} elseif ( $in_grace ) {
@@ -117,7 +118,7 @@ $agents   = $registry->get_installed_agents( true );
 						$status_text  = __( 'Expired', 'agentic-plugin' );
 					} else {
 						$status_class = 'default';
-						$status_text  = ucfirst( $status );
+						$status_text  = ucfirst( $license_status );
 					}
 
 					$activations_used = $license['activations_used'] ?? 1;
@@ -188,7 +189,7 @@ $agents   = $registry->get_installed_agents( true );
 								<?php esc_html_e( 'Deactivate This Site', 'agentic-plugin' ); ?>
 							</a>
 							
-							<?php if ( $is_expired || 'active' !== $status ) : ?>
+							<?php if ( $is_expired || 'active' !== $license_status ) : ?>
 								<a href="https://agentic-plugin.com/renew?license=<?php echo esc_attr( $license['license_key'] ?? '' ); ?>" class="button button-primary button-small" target="_blank">
 									<?php esc_html_e( 'Renew License →', 'agentic-plugin' ); ?>
 								</a>
@@ -260,5 +261,5 @@ $agents   = $registry->get_installed_agents( true );
 				</li>
 			</ul>
 		</div>
-	<?php endif; ?>
+		<?php endif; ?>
 </div>
