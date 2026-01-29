@@ -59,7 +59,7 @@ class System_Checker {
 	public static function run_system_check(): \WP_REST_Response {
 		$checks = array();
 
-		// PHP Version
+		// PHP Version.
 		$php_version = phpversion();
 		$checks[]    = array(
 			'name'     => 'PHP Version',
@@ -69,7 +69,7 @@ class System_Checker {
 			'fix'      => 'Update PHP via your hosting control panel or contact your hosting provider.',
 		);
 
-		// Max Execution Time
+		// Max Execution Time.
 		$max_exec = ini_get( 'max_execution_time' );
 		$checks[] = array(
 			'name'     => 'Max Execution Time',
@@ -79,7 +79,7 @@ class System_Checker {
 			'fix'      => 'Add to wp-config.php: @ini_set(\'max_execution_time\', 120);',
 		);
 
-		// Memory Limit
+		// Memory Limit.
 		$memory       = ini_get( 'memory_limit' );
 		$memory_bytes = wp_convert_hr_to_bytes( $memory );
 		$checks[]     = array(
@@ -90,7 +90,7 @@ class System_Checker {
 			'fix'      => 'Add to wp-config.php: define(\'WP_MEMORY_LIMIT\', \'256M\');',
 		);
 
-		// WordPress Version
+		// WordPress Version.
 		$wp_version = get_bloginfo( 'version' );
 		$checks[]   = array(
 			'name'     => 'WordPress Version',
@@ -100,7 +100,7 @@ class System_Checker {
 			'fix'      => 'Update WordPress core from Dashboard → Updates.',
 		);
 
-		// Permalinks
+		// Permalinks.
 		$permalink_structure = get_option( 'permalink_structure' );
 		$checks[]            = array(
 			'name'     => 'Permalinks',
@@ -110,7 +110,7 @@ class System_Checker {
 			'fix'      => 'Go to Settings → Permalinks, choose any non-default option and save.',
 		);
 
-		// LLM API Key
+		// LLM API Key.
 		$api_key  = get_option( 'agentic_llm_api_key', '' );
 		$checks[] = array(
 			'name'     => 'LLM API Key',
@@ -120,7 +120,7 @@ class System_Checker {
 			'fix'      => 'Enter your API key in the settings section above.',
 		);
 
-		// REST API
+		// REST API.
 		$rest_enabled = rest_url() !== false;
 		$checks[]     = array(
 			'name'     => 'REST API',
@@ -130,10 +130,10 @@ class System_Checker {
 			'fix'      => 'Check if REST API is blocked by security plugin or hosting settings.',
 		);
 
-		// Overall status
+		// Overall status.
 		$overall = ! in_array( 'fail', array_column( $checks, 'status' ), true );
 
-		// Save results
+		// Save results.
 		update_option(
 			'agentic_last_system_check',
 			array(
@@ -162,7 +162,7 @@ class System_Checker {
 	public static function test_timeout(): \WP_REST_Response {
 		set_time_limit( 120 );
 		$start = time();
-		sleep( 90 ); // Sleep for 90 seconds
+		sleep( 90 ); // Sleep for 90 seconds.
 		$duration = time() - $start;
 
 		return new \WP_REST_Response(

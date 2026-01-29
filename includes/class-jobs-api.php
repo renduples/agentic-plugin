@@ -111,8 +111,8 @@ class Jobs_API {
 			);
 		}
 
-		// Check ownership
-		if ( $job->user_id !== get_current_user_id() && ! current_user_can( 'manage_options' ) ) {
+		// Check ownership.
+		if ( get_current_user_id() !== $job->user_id && ! current_user_can( 'manage_options' ) ) {
 			return new \WP_Error(
 				'forbidden',
 				'You do not have permission to access this job',
@@ -153,8 +153,8 @@ class Jobs_API {
 			);
 		}
 
-		// Check ownership
-		if ( $job->user_id !== get_current_user_id() && ! current_user_can( 'manage_options' ) ) {
+		// Check ownership.
+		if ( get_current_user_id() !== $job->user_id && ! current_user_can( 'manage_options' ) ) {
 			return new \WP_Error(
 				'forbidden',
 				'You do not have permission to cancel this job',
@@ -190,8 +190,8 @@ class Jobs_API {
 	public static function get_user_jobs( \WP_REST_Request $request ) {
 		$user_id = (int) $request->get_param( 'user_id' );
 
-		// Check permission - users can only see their own jobs unless admin
-		if ( $user_id !== get_current_user_id() && ! current_user_can( 'manage_options' ) ) {
+		// Check permission - users can only see their own jobs unless admin.
+		if ( get_current_user_id() !== $user_id && ! current_user_can( 'manage_options' ) ) {
 			return new \WP_Error(
 				'forbidden',
 				'You do not have permission to view these jobs',
@@ -204,7 +204,7 @@ class Jobs_API {
 
 		$jobs = Job_Manager::get_user_jobs( $user_id, $status, $limit );
 
-		// Sanitize output - remove sensitive request data
+		// Sanitize output - remove sensitive request data.
 		$jobs = array_map(
 			function ( $job ) {
 				return array(
