@@ -93,8 +93,29 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 <div class="wrap">
 	<h1>Agentic Settings</h1>
 
+	<?php
+	$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
+	?>
+
+	<h2 class="nav-tab-wrapper">
+		<a href="?page=agentic-settings&tab=general" class="nav-tab <?php echo 'general' === $active_tab ? 'nav-tab-active' : ''; ?>">General</a>
+		<a href="?page=agentic-settings&tab=license" class="nav-tab <?php echo 'license' === $active_tab ? 'nav-tab-active' : ''; ?>">License</a>
+		<a href="?page=agentic-settings&tab=cache" class="nav-tab <?php echo 'cache' === $active_tab ? 'nav-tab-active' : ''; ?>">Cache</a>
+		<a href="?page=agentic-settings&tab=security" class="nav-tab <?php echo 'security' === $active_tab ? 'nav-tab-active' : ''; ?>">Security</a>
+		<a href="?page=agentic-settings&tab=permissions" class="nav-tab <?php echo 'permissions' === $active_tab ? 'nav-tab-active' : ''; ?>">Permissions</a>
+		<?php if ( defined( 'AGENTIC_IS_MARKETPLACE' ) && AGENTIC_IS_MARKETPLACE ) : ?>
+			<a href="?page=agentic-settings&tab=social" class="nav-tab <?php echo 'social' === $active_tab ? 'nav-tab-active' : ''; ?>">Social Login</a>
+			<a href="?page=agentic-settings&tab=stripe" class="nav-tab <?php echo 'stripe' === $active_tab ? 'nav-tab-active' : ''; ?>">Stripe</a>
+		<?php endif; ?>
+	</h2>
+
 	<form method="post" action="">
 		<?php wp_nonce_field( 'agentic_settings_nonce' ); ?>
+		<input type="hidden" name="tab" value="<?php echo esc_attr( $active_tab ); ?>" />
+
+		<?php if ( 'general' === $active_tab ) : ?>
+		<h2>API Configuration</h2>
+		<p>Configure your AI provider and model settings.</p>
 
 		<table class="form-table">
 			<tr>
@@ -178,6 +199,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			</tr>
 		</table>
 
+		<?php elseif ( 'license' === $active_tab ) : ?>
 		<h2>License</h2>
 		<p>Enter your license key to unlock premium features including access to the Agent Marketplace.</p>
 		
@@ -275,20 +297,6 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			
 			<table class="form-table">
 				<tr>
-					<th scope="row">Get a License</th>
-					<td>
-						<p>
-							<strong>$10/year</strong> - Personal License (1 site)<br>
-							<strong>$50/year</strong> - Agency License (unlimited sites)
-						</p>
-						<p>
-							<a href="https://agentic-plugin.com/pricing" target="_blank" class="button button-primary">
-								Purchase License
-							</a>
-						</p>
-					</td>
-				</tr>
-				<tr>
 					<th scope="row">
 						<label for="agentic-license-key-input">Enter License Key</label>
 					</th>
@@ -313,47 +321,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			</table>
 		<?php endif; ?>
 
-		<h2>System Requirements</h2>
-		<p>Check if your server meets the minimum requirements for the Agent Builder.</p>
-
-		<table class="form-table">
-			<tr>
-				<th scope="row">System Check</th>
-				<td>
-					<button type="button" id="agentic-system-check" class="button">
-						<span class="dashicons dashicons-admin-tools" style="vertical-align: -2px; margin-right: 4px;"></span>
-						Run System Check
-					</button>
-					<span id="agentic-check-spinner" class="spinner" style="float: none; margin-left: 8px; display: none;"></span>
-					<p class="description">
-						Test your server configuration to ensure the Agent Builder will work properly.
-					</p>
-				</td>
-			</tr>
-		</table>
-
-		<div id="agentic-system-results" style="display: none; margin-top: 20px;">
-			<!-- Results populated via JavaScript -->
-		</div>
-
-		<?php
-		// Show last check results if available.
-		$last_check = \Agentic\System_Checker::get_last_check();
-		if ( $last_check ) :
-			$time_ago = human_time_diff( $last_check['timestamp'], time() );
-			?>
-			<div style="margin-top: 15px; padding: 10px; background: #f0f0f1; border-left: 4px solid <?php echo $last_check['overall'] ? '#22c55e' : '#f59e0b'; ?>;">
-				<p style="margin: 0;">
-					<strong>Last check:</strong> <?php echo esc_html( $time_ago ); ?> ago
-					<?php if ( $last_check['overall'] ) : ?>
-						<span style="color: #22c55e;">✓ All requirements met</span>
-					<?php else : ?>
-						<span style="color: #f59e0b;">⚠ Some requirements not met</span>
-					<?php endif; ?>
-				</p>
-			</div>
-		<?php endif; ?>
-
+		<?php elseif ( 'cache' === $active_tab ) : ?>
 		<h2>Response Caching</h2>
 		<p>Cache identical queries to save tokens and reduce latency.</p>
 		
@@ -413,6 +381,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			</tr>
 		</table>
 
+		<?php elseif ( 'security' === $active_tab ) : ?>
 		<h2>Security Settings</h2>
 		<p>Protect against prompt injection and abuse.</p>
 
@@ -500,6 +469,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			</tr>
 		</table>
 
+		<?php elseif ( 'permissions' === $active_tab ) : ?>
 		<h2>Permissions</h2>
 		<p>Configure what actions the agent can perform autonomously vs. with approval. The builder is sandboxed to <code>wp-content/plugins</code> and <code>wp-content/themes</code>.</p>
 		
@@ -538,8 +508,8 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			</tbody>
 		</table>
 
-		<?php if ( defined( 'AGENTIC_IS_MARKETPLACE' ) && AGENTIC_IS_MARKETPLACE ) : ?>
-		
+		<?php elseif ( 'social' === $active_tab && defined( 'AGENTIC_IS_MARKETPLACE' ) && AGENTIC_IS_MARKETPLACE ) : ?>
+
 		<h2>Social Login</h2>
 		<p>Configure OAuth credentials for social login providers. Users can sign in with these accounts.</p>
 		
@@ -626,9 +596,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			<strong>Register URL:</strong> <code><?php echo esc_html( home_url( '/register/' ) ); ?></code>
 		</p>
 		
-		<?php endif; ?>
-
-		<?php if ( defined( 'AGENTIC_IS_MARKETPLACE' ) && AGENTIC_IS_MARKETPLACE ) : ?>
+		<?php elseif ( 'stripe' === $active_tab && defined( 'AGENTIC_IS_MARKETPLACE' ) && AGENTIC_IS_MARKETPLACE ) : ?>
 			<?php
 			// Stripe settings.
 			$stripe_test_mode      = get_option( 'agentic_stripe_test_mode', true );
@@ -638,6 +606,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			$stripe_live_sk        = get_option( 'agentic_stripe_live_secret_key', '' );
 			$stripe_webhook_secret = get_option( 'agentic_stripe_webhook_secret', '' );
 			?>
+		
 		<h2>Stripe Payment Settings</h2>
 		<p>Configure Stripe for processing premium agent purchases.</p>
 
