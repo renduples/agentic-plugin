@@ -27,7 +27,7 @@ If you've built a plugin or theme before, you already know the process. Now harn
 ```bash
 cd wp-content/plugins
 git clone https://github.com/renduples/agentic-plugin.git
-# OR manually upload the ZIP to WordPress admin
+# OR manually upload the ZIP to your WordPress plugins
 ```
 
 ### 2. Activate & Configure
@@ -269,13 +269,13 @@ Community agents in the marketplace:
 
 GPL v2 or later. See [LICENSE](LICENSE) for details.
 
-This is an **independent community project** — not affiliated with or endorsed by the WordPress Foundation, Automattic, or OpenAI.
+This is an **independent community project** — not affiliated with or endorsed by the WordPress Foundation, Automattic or any of the AI Providers.
 
 ---
 
 ## 🚀 Get Started Now
 
-1. **Install**: `git clone https://github.com/renduples/agentic-plugin.git`
+1. **Install**: cd wp-content/plugins `git clone https://github.com/renduples/agentic-plugin.git`
 2. **Activate**: Go to WordPress admin → Plugins
 3. **Configure**: Add API key in Settings
 4. **Test**: Try the SEO Analyzer or Content Assistant
