@@ -148,7 +148,7 @@ if ( $search_term ) {
 <div class="wrap agentic-agents-page">
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Agents', 'agent-builder' ); ?></h1>
 	<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents-add' ) ); ?>" class="page-title-action">
-		<?php esc_html_e( 'Add New Agent', 'agent-builder' ); ?>
+		<?php esc_html_e( 'Browse Marketplace', 'agent-builder' ); ?>
 	</a>
 	<hr class="wp-header-end">
 
@@ -228,7 +228,7 @@ if ( $search_term ) {
 						<?php else : ?>
 							<?php esc_html_e( 'No agents installed yet.', 'agent-builder' ); ?>
 							<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents-add' ) ); ?>">
-								<?php esc_html_e( 'Add your first agent', 'agent-builder' ); ?>
+								<?php esc_html_e( 'Browse the Marketplace', 'agent-builder' ); ?>
 							</a>
 						<?php endif; ?>
 					</td>

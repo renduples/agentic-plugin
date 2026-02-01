@@ -59,7 +59,7 @@ $library = $registry->get_library_agents(
 ?>
 
 <div class="wrap agentic-add-agents-page">
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Agents', 'agent-builder' ); ?></h1>
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Marketplace', 'agent-builder' ); ?></h1>
 	<hr class="wp-header-end">
 
 	<?php if ( $message ) : ?>

@@ -178,8 +178,8 @@ final class Plugin {
 
 		add_submenu_page(
 			'agent-builder',
-			__( 'Add New Agent', 'agent-builder' ),
-			__( 'Add Agent', 'agent-builder' ),
+			__( 'Agent Marketplace', 'agent-builder' ),
+			__( 'Marketplace', 'agent-builder' ),
 			'read',
 			'agentic-agents-add',
 			array( $this, 'render_agents_add_page' )
