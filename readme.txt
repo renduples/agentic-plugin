@@ -7,6 +7,7 @@ Requires PHP: 8.1
 Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Donate link: https://agentic-plugin.com/donate
 
 Build and manage AI agents directly in WordPress — no coding required. Describe what you want, and let AI create powerful automations for content, admin, e-commerce, and more.
 
