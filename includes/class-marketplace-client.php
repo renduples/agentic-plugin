@@ -166,15 +166,6 @@ class Marketplace_Client {
 	public function add_menu_page(): void {
 		add_submenu_page(
 			'agent-builder',
-			__( 'Add New Agent', 'agent-builder' ),
-			__( 'Add New', 'agent-builder' ),
-			'manage_options',
-			'agentic-marketplace',
-			array( $this, 'render_marketplace_page' )
-		);
-
-		add_submenu_page(
-			'agent-builder',
 			__( 'Agent Licenses', 'agent-builder' ),
 			__( 'Licenses', 'agent-builder' ),
 			'manage_options',

@@ -60,7 +60,7 @@ $agents   = $registry->get_installed_agents( true );
 		<div class="notice notice-info">
 			<p>
 				<?php esc_html_e( 'You don\'t have any licensed agents yet.', 'agent-builder' ); ?>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-marketplace' ) ); ?>">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents-add' ) ); ?>">
 					<?php esc_html_e( 'Browse premium agents →', 'agent-builder' ); ?>
 				</a>
 			</p>
