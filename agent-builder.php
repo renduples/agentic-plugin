@@ -138,8 +138,8 @@ final class Plugin {
 	 */
 	public function admin_menu(): void {
 		add_menu_page(
-			__( 'Agentic', 'agent-builder' ),
-			__( 'Agentic', 'agent-builder' ),
+			__( 'Agent Builder', 'agent-builder' ),
+			__( 'Agent Builder', 'agent-builder' ),
 			'manage_options',
 			'agent-builder',
 			array( $this, 'render_admin_page' ),
