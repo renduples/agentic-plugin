@@ -10,9 +10,9 @@
 
 ### Required Files
 - ✅ `readme.txt` - Properly formatted with WordPress.org standards
-- ✅ Main plugin file (`agentic-plugin.php`) with complete headers
+- ✅ Main plugin file (`agent-builder.php`) with complete headers
 - ✅ `LICENSE` file or GPL v2+ declaration (in plugin header)
-- ✅ Text domain matches plugin slug (`agentic-plugin`)
+- ✅ Text domain matches plugin slug (`agent-builder`)
 
 ### Plugin Headers
 - ✅ Plugin Name: Agent Builder
@@ -21,7 +21,7 @@
 - ✅ Requires PHP: 8.1
 - ✅ Tested up to: 6.7
 - ✅ License: GPL v2 or later
-- ✅ Text Domain: agentic-plugin
+- ✅ Text Domain: agent-builder
 
 ### Code Quality
 - ✅ No syntax errors (all files pass `php -l`)

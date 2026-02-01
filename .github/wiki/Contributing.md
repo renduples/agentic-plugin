@@ -116,7 +116,7 @@ Community grows through word-of-mouth. Help us reach more developers!
 
    ```bash
    git clone https://github.com/renduples/agent-builder.git
-   cd agentic-plugin
+   cd agent-builder
    ```
 2. **Install in WordPress:**
 

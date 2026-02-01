@@ -11,7 +11,7 @@
 
 | File/Directory | Errors Fixed |
 |----------------|--------------|
-| Main plugin file (`agentic-plugin.php`) | 715 |
+| Main plugin file (`agent-builder.php`) | 715 |
 | Library agents (`library/*`) | 6,446 |
 | Core includes (`includes/*`) | 85 |
 | **TOTAL** | **7,246** |
@@ -30,7 +30,7 @@
 - ✅ Control structure spacing
 
 ### Files Cleaned
-- ✅ `agentic-plugin.php` - 715 fixes
+- ✅ `agent-builder.php` - 715 fixes
 - ✅ `includes/class-job-manager.php` - 32 fixes
 - ✅ `includes/class-jobs-api.php` - 26 fixes
 - ✅ `includes/class-agent-builder-job-processor.php` - 12 fixes
@@ -51,7 +51,7 @@ Most remaining errors are missing PHPDoc tags:
 
 ### Example Remaining Issues:
 ```
-/agentic-plugin.php                  26 errors, 2 warnings
+/agent-builder.php                  26 errors, 2 warnings
 /includes/class-agent-registry.php   68 errors, 5 warnings
 /library/theme-builder/agent.php     97 errors, 29 warnings
 /library/agent-builder/agent.php     83 errors, 15 warnings
