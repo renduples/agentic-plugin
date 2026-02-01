@@ -1,4 +1,4 @@
-# 🤖 Build AI Agents in WordPress without writing code
+# 🤖 Build AI Agents without writing code. Describe the AI agent you want and let WordPress build it for you.
 
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-6.4+-blue)](https://wordpress.org)
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-purple)](https://www.php.net)
@@ -9,9 +9,11 @@
 
 ## 🚀 What is the Agentic Plugin?
 
-The Agentic Plugin brings an agent ecosystem to WordPress just like plugins and themes, but for AI capabilities.
+The Agentic Plugin brings an ecosystem to WordPress just like plugins and themes, but for AI capabilities.
 
 If you've built a plugin or theme before, you already know the process. Now harness AI reasoning to solve WordPress problems at scale.
+
+With this plugin you will be able to build most of your AI Agents without writing code.
 
 ### Why the Agentic Plugin Matters
 
@@ -131,7 +133,7 @@ WordPress Installation
  * Description: Does something awesome
  * Version: 1.0.0
  * Author: You
- * License: GPL v2 or later
+ * License: GPL-2.0-or-later
  */
 
 namespace Agentic\Agents;
@@ -267,7 +269,7 @@ Community agents in the marketplace:
 
 ## 📄 License
 
-GPL v2 or later. See [LICENSE](LICENSE) for details.
+GPL-2.0-or-later. See [LICENSE](LICENSE) for details.
 
 This is an **independent community project** — not affiliated with or endorsed by the WordPress Foundation, Automattic or any of the AI Providers.
 

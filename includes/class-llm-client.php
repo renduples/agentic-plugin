@@ -2,7 +2,16 @@
 /**
  * LLM Client for multiple AI providers.
  *
- * @package Agentic_Plugin
+ * Supports OpenAI, Anthropic, OpenRouter, and other providers.
+ *
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 declare(strict_types=1);
@@ -131,10 +140,31 @@ class LLM_Client {
 		$data   = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( 200 !== $status ) {
+			$error_message = 'Unknown API error';
+
+			// Try to extract error message from various provider formats.
+			if ( isset( $data['error']['message'] ) ) {
+				$error_message = $data['error']['message'];
+			} elseif ( isset( $data['error'] ) && is_string( $data['error'] ) ) {
+				$error_message = $data['error'];
+			} elseif ( isset( $data['message'] ) ) {
+				$error_message = $data['message'];
+			}
+
+			// Add status code context.
+			if ( 401 === $status ) {
+				$error_message = 'Invalid API key. Please check your API key in Settings > Agentic.';
+			} elseif ( 429 === $status ) {
+				$error_message = 'Rate limit exceeded. Please try again later.';
+			}
+
 			return new \WP_Error(
 				'api_error',
-				$data['error']['message'] ?? 'Unknown API error',
-				array( 'status' => $status )
+				$error_message,
+				array(
+					'status' => $status,
+					'body'   => $data,
+				)
 			);
 		}
 

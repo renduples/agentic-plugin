@@ -4,7 +4,14 @@
  *
  * Handles conversations with any registered agent using their system prompt and tools.
  *
- * @package Agentic_Plugin
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 declare(strict_types=1);
@@ -257,7 +264,13 @@ class Agent_Controller {
 			}
 
 			$assistant_message = $choice['message'];
-			$messages[]        = $assistant_message;
+
+			// Ensure the message has content (required by some providers).
+			if ( ! isset( $assistant_message['content'] ) || null === $assistant_message['content'] ) {
+				$assistant_message['content'] = '';
+			}
+
+			$messages[] = $assistant_message;
 
 			// Check if we have tool calls.
 			if ( ! empty( $assistant_message['tool_calls'] ) ) {

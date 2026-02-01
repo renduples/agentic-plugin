@@ -5,8 +5,14 @@
  * All agents extend this class to provide their identity, system prompt,
  * and available tools. The Agent Controller uses this to run conversations.
  *
- * @package Agentic_Plugin
- * @since 0.1.0
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 namespace Agentic;
@@ -72,6 +78,24 @@ abstract class Agent_Base {
 	}
 
 	/**
+	 * Get the agent's version
+	 *
+	 * @return string Version number
+	 */
+	public function get_version(): string {
+		return '1.0.0';
+	}
+
+	/**
+	 * Get the agent's author
+	 *
+	 * @return string Author name
+	 */
+	public function get_author(): string {
+		return 'Unknown';
+	}
+
+	/**
 	 * Get the agent's tool definitions
 	 *
 	 * Override this to provide agent-specific tools.
@@ -87,11 +111,11 @@ abstract class Agent_Base {
 	 *
 	 * Override this to handle agent-specific tool execution.
 	 *
-	 * @param string $tool_name Tool name.
-	 * @param array  $arguments Tool arguments.
+	 * @param string $_tool_name Tool name (unused - base implementation returns null).
+	 * @param array  $_arguments Tool arguments (unused - base implementation returns null).
 	 * @return array|null Result or null if tool not handled
 	 */
-	public function execute_tool( string $tool_name, array $arguments ): ?array {
+	public function execute_tool( string $_tool_name, array $_arguments ): ?array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
 		return null;
 	}
 

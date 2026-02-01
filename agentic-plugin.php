@@ -1,23 +1,20 @@
 <?php
 /**
- * Plugin Name: Agentic Plugin
- * Plugin URI: https://github.com/renduples/agentic-plugin
- * Description: AI agent marketplace for WordPress - imagine it, build it, monetize it.
- * Version: 1.0.1
+ * Plugin Name:       Agentic Plugin
+ * Plugin URI:        https://agentic-plugin.com
+ * Description:       Build AI agents without writing code. Describe the AI agent you want and let WordPress build it for you.
+ * Version:           1.1.0
  * Requires at least: 6.4
- * Requires PHP: 8.1
- * Author: Agentic Plugin
- * Author URI: https://agentic-plugin.com
- * License: GPL v2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: agentic-plugin
- * Domain Path: /languages
+ * Requires PHP:      8.1
+ * Author:            Agentic Plugin Team
+ * Author URI:        https://profiles.wordpress.org/agenticplugin/
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       agentic-plugin
+ * Domain Path:       /languages
+ * Update URI:        https://github.com/renduples/agentic-plugin
  *
- * @package  Agentic_Plugin
- * @category Core
- * @author   Agentic Plugin
- * @license  GPL-2.0-or-later
- * @link     https://github.com/renduples/agentic-plugin
+ * @package Agentic_Plugin
  */
 
 declare(strict_types=1);
@@ -30,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'AGENTIC_PLUGIN_VERSION', '1.0.1' );
+define( 'AGENTIC_PLUGIN_VERSION', '1.1.0' );
 define( 'AGENTIC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AGENTIC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'AGENTIC_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -183,7 +180,7 @@ final class Plugin {
 			'agentic-plugin',
 			__( 'Add New Agent', 'agentic-plugin' ),
 			__( 'Add Agent', 'agentic-plugin' ),
-			'manage_options',
+			'read',
 			'agentic-agents-add',
 			array( $this, 'render_agents_add_page' )
 		);
@@ -283,36 +280,6 @@ final class Plugin {
 	 * @return void
 	 */
 	public function register_rest_routes(): void {
-		register_rest_route(
-			'agent/v1',
-			'/chat',
-			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'handle_chat' ),
-				'permission_callback' => '__return_true',
-			)
-		);
-
-		register_rest_route(
-			'agent/v1',
-			'/status',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_status' ),
-				'permission_callback' => array( $this, 'check_admin_permission' ),
-			)
-		);
-
-		register_rest_route(
-			'agent/v1',
-			'/capabilities',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_capabilities' ),
-				'permission_callback' => '__return_true',
-			)
-		);
-
 		// Register System Checker routes.
 		\Agentic\System_Checker::register_routes();
 	}
@@ -360,13 +327,13 @@ final class Plugin {
 	 * @return void
 	 */
 	private function load_components(): void {
-		include_once AGENTIC_PLUGIN_DIR . 'includes/class-openai-client.php';
+		include_once AGENTIC_PLUGIN_DIR . 'includes/class-llm-client.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-audit-log.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-agent-tools.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-agent-controller.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-rest-api.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-approval-queue.php';
-		include_once AGENTIC_PLUGIN_DIR . 'includes/class-agent-registry.php';
+		include_once AGENTIC_PLUGIN_DIR . 'includes/class-agentic-agent-registry.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-chat-security.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-response-cache.php';
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-shortcodes.php';
@@ -395,75 +362,6 @@ final class Plugin {
 
 		// Load active agents (like WordPress loads active plugins).
 		\Agentic_Agent_Registry::get_instance()->load_active_agents();
-	}
-
-	/**
-	 * Handle chat API request
-	 *
-	 * @param  \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Response
-	 */
-	public function handle_chat( \WP_REST_Request $request ): \WP_REST_Response {
-		$message    = $request->get_param( 'message' );
-		$session_id = $request->get_param( 'session_id' ) ?? wp_generate_uuid4();
-
-		// TODO: Implement actual agent chat logic.
-		return new \WP_REST_Response(
-			array(
-				'response'    => __( 'Agent functionality coming soon. This is a placeholder response.', 'agentic-plugin' ),
-				'session_id'  => $session_id,
-				'agent_id'    => 'frontend_assistant',
-				'tokens_used' => 0,
-			),
-			200
-		);
-	}
-
-	/**
-	 * Get agent system status
-	 *
-	 * @param  \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Response
-	 */
-	public function get_status( \WP_REST_Request $request ): \WP_REST_Response {
-		return new \WP_REST_Response(
-			array(
-				'version'     => AGENTIC_PLUGIN_VERSION,
-				'mode'        => get_option( 'agentic_agent_mode', 'supervised' ),
-				'status'      => 'active',
-				'ai_provider' => defined( 'AI_PROVIDER' ) ? AI_PROVIDER : 'none',
-			),
-			200
-		);
-	}
-
-	/**
-	 * Get available capabilities
-	 *
-	 * @param  \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Response
-	 */
-	public function get_capabilities( \WP_REST_Request $request ): \WP_REST_Response {
-		return new \WP_REST_Response(
-			array(
-				'capabilities' => array(
-					'search',
-					'navigate',
-					'explain',
-				),
-				'tools'        => array(),
-			),
-			200
-		);
-	}
-
-	/**
-	 * Check admin permission
-	 *
-	 * @return bool
-	 */
-	public function check_admin_permission(): bool {
-		return current_user_can( 'manage_options' );
 	}
 
 	/**
@@ -545,11 +443,7 @@ final class Plugin {
 		);
 
 		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'Agent Chat', 'agentic-plugin' ) . '</h1>';
-
-		// Load agent registry to initialize agents.
-		$registry = \Agentic_Agent_Registry::get_instance();
-
+		echo '<h1>' . esc_html__( 'Agent Chat', 'agentic-plugin' ) . ' <span class="agentic-status" style="font-size: 14px; font-weight: normal; vertical-align: middle;"><span class="agentic-status-dot"></span>Online</span></h1>';
 		include AGENTIC_PLUGIN_DIR . 'templates/chat-interface.php';
 		echo '</div>';
 	}
@@ -772,7 +666,7 @@ final class Plugin {
 
 <h3>3. Licensing</h3>
 <ul>
-<li>Agents must be licensed under GPL v2 or later, or a compatible open-source license</li>
+<li>Agents must be licensed under GPL-2.0-or-later, or a compatible open-source license</li>
 <li>Include license information in the agent.php file header</li>
 <li>Respect third-party licenses for any included libraries</li>
 <li>Premium agents can charge for support/features but code must be GPL</li>

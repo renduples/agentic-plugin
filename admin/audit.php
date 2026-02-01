@@ -2,8 +2,15 @@
 /**
  * Agentic Audit Log Page
  *
- * @package Agentic_Plugin
- * @since 0.1.0
+ * @package    Agentic_Plugin
+ * @subpackage Admin
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * @wordpress-plugin
+ * php version 8.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,8 +26,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 $audit = new Audit_Log();
 
-// Filter parameters.
-$agent_filter  = sanitize_text_field( wp_unslash( $_GET['agent'] ?? '' ) );
+// Filter parameters (read-only display, no nonce needed).
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only filter.
+$agent_filter = sanitize_text_field( wp_unslash( $_GET['agent'] ?? '' ) );
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only filter.
 $action_filter = sanitize_text_field( wp_unslash( $_GET['action'] ?? '' ) );
 
 $logs  = $audit->get_recent( 100, $agent_filter ? $agent_filter : null, $action_filter ? $action_filter : null );
@@ -55,6 +64,7 @@ $stats = $audit->get_stats( 'month' );
 			<option value="">All Actions</option>
 			<option value="chat_start" <?php selected( $action_filter, 'chat_start' ); ?>>Chat Start</option>
 			<option value="chat_complete" <?php selected( $action_filter, 'chat_complete' ); ?>>Chat Complete</option>
+			<option value="chat_error" <?php selected( $action_filter, 'chat_error' ); ?>>Chat Error</option>
 			<option value="tool_call" <?php selected( $action_filter, 'tool_call' ); ?>>Tool Call</option>
 			<option value="create_comment" <?php selected( $action_filter, 'create_comment' ); ?>>Create Comment</option>
 			<option value="update_documentation" <?php selected( $action_filter, 'update_documentation' ); ?>>Update Documentation</option>

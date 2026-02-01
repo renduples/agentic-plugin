@@ -6,7 +6,14 @@
  * - [agentic_chat] - Full chat interface
  * - [agentic_ask] - One-shot query (displays response inline)
  *
- * @package Agentic
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 namespace Agentic;

@@ -2,8 +2,14 @@
 /**
  * REST API endpoints
  *
- * @package Agentic_Plugin
- * @since 0.1.0
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 declare(strict_types=1);
@@ -146,6 +152,15 @@ class REST_API {
 		$history    = $request->get_param( 'history' ) ? $request->get_param( 'history' ) : array();
 		$user_id    = get_current_user_id();
 
+		// Validate and sanitize history messages.
+		foreach ( $history as &$msg ) {
+			// Ensure all messages have a content field (required by some LLM providers).
+			if ( ! isset( $msg['content'] ) || null === $msg['content'] ) {
+				$msg['content'] = '';
+			}
+		}
+		unset( $msg );
+
 		// Security check FIRST - fast, in-memory scan.
 		$security_result = \Agentic\Chat_Security::scan( $message, $user_id );
 
@@ -177,8 +192,33 @@ class REST_API {
 			}
 		}
 
+		// Process with potential tool calls.
+		$response     = null;
+		$total_tokens = 0;
+		$iterations   = 0;
+		$tool_results = array();
+		$usage        = array(
+			'prompt_tokens'     => 0,
+			'completion_tokens' => 0,
+		);
+
 		$controller = new Agent_Controller();
 		$response   = $controller->chat( $message, $history, $user_id, $session_id, $agent_id );
+
+		// Log errors to audit log.
+		if ( ! empty( $response['error'] ) ) {
+			$audit = new Audit_Log();
+			$audit->log(
+				$agent_id ? $agent_id : 'unknown',
+				'chat_error',
+				'error',
+				array(
+					'error_message' => $response['response'] ?? 'Unknown error',
+					'user_message'  => substr( $message, 0, 200 ),
+					'session_id'    => $session_id,
+				)
+			);
+		}
 
 		// Cache the response for future identical queries.
 		if ( \Agentic\Response_Cache::should_cache( $message, $history ) ) {
@@ -217,10 +257,10 @@ class REST_API {
 	/**
 	 * Get agent status
 	 *
-	 * @param \WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $_request Request object (unused - no parameters needed).
 	 * @return \WP_REST_Response
 	 */
-	public function get_status( \WP_REST_Request $request ): \WP_REST_Response {
+	public function get_status( \WP_REST_Request $_request ): \WP_REST_Response { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$llm = new LLM_Client();
 
 		return new \WP_REST_Response(
@@ -245,10 +285,10 @@ class REST_API {
 	/**
 	 * Get pending approvals
 	 *
-	 * @param \WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $_request Request object (unused - no parameters needed).
 	 * @return \WP_REST_Response
 	 */
-	public function get_approvals( \WP_REST_Request $request ): \WP_REST_Response {
+	public function get_approvals( \WP_REST_Request $_request ): \WP_REST_Response { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		global $wpdb;
 
 		$approvals = $wpdb->get_results(
@@ -284,11 +324,11 @@ class REST_API {
 			return new \WP_REST_Response( array( 'error' => 'Approval not found' ), 404 );
 		}
 
-		if ( $approval['status'] !== 'pending' ) {
-			return new \WP_REST_Response( array( 'error' => 'Approval already processed' ), 400 );
+		if ( 'pending' !== $approval['status'] ) {
+				return new \WP_REST_Response( array( 'error' => 'Approval already processed' ), 400 );
 		}
 
-		$new_status = $action === 'approve' ? 'approved' : 'rejected';
+		$new_status = 'approve' === $action ? 'approved' : 'rejected';
 
 		$wpdb->update(
 			$wpdb->prefix . 'agentic_approval_queue',
@@ -300,21 +340,21 @@ class REST_API {
 			array( 'id' => $id )
 		);
 
-		// If approved, execute the action.
+			// If approved, execute the action.
 		if ( 'approve' === $action ) {
 			$this->execute_approved_action( $approval );
 		}
 
-		$audit = new Audit_Log();
-		$audit->log( 'human', "approval_{$new_status}", 'approval', array( 'request_id' => $id ) );
+			$audit = new Audit_Log();
+			$audit->log( 'human', "approval_{$new_status}", 'approval', array( 'request_id' => $id ) );
 
-		return new \WP_REST_Response(
-			array(
-				'success' => true,
-				'status'  => $new_status,
-			),
-			200
-		);
+			return new \WP_REST_Response(
+				array(
+					'success' => true,
+					'status'  => $new_status,
+				),
+				200
+			);
 	}
 
 	/**
@@ -329,7 +369,7 @@ class REST_API {
 	private function execute_approved_action( array $approval ): void {
 		$params = json_decode( $approval['params'], true );
 
-		if ( $approval['action'] === 'code_change' && ! empty( $params['path'] ) ) {
+		if ( 'code_change' === $approval['action'] && ! empty( $params['path'] ) ) {
 			$repo_path      = Agent_Tools::get_allowed_repo_base();
 			$target_subpath = ltrim( str_replace( '..', '', $params['path'] ), '/\\' );
 

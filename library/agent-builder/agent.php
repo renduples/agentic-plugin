@@ -122,6 +122,13 @@ PROMPT;
 	}
 
 	/**
+	 * Get agent author
+	 */
+	public function get_author(): string {
+		return 'Agentic Community';
+	}
+
+	/**
 	 * Get required capabilities
 	 */
 	public function get_required_capabilities(): array {
@@ -132,13 +139,12 @@ PROMPT;
 	 * Get welcome message
 	 */
 	public function get_welcome_message(): string {
-		return "🏗️ **Agent Builder**\n\n" .
-				"I create new Agentic Plugin agents from your descriptions!\n\n" .
+		return "I build new AI agents for Wordpress!\n\n" .
 				"Tell me what kind of agent you need and I'll:\n" .
-				"- Design the tools and capabilities\n" .
-				"- Generate compliant PHP code\n" .
-				"- Create the system prompt\n" .
-				"- Write documentation\n\n" .
+				"- Generate compliant code\n" .
+				"- Design its tools and capabilities\n" .
+				"- Help test and write documentation\n" .
+				'- Help sell your agent on the <a href="https://agentic-plugin.com/marketplace/" target="_blank" rel="noopener">marketplace</a>' . "\n\n" .
 				'What agent would you like to build?';
 	}
 
@@ -467,7 +473,7 @@ PROMPT;
 	 * Get library path
 	 */
 	private function get_library_path(): string {
-		return AGENTIC_CORE_PLUGIN_DIR . 'library/';
+		return AGENTIC_PLUGIN_DIR . 'library/';
 	}
 
 	/**

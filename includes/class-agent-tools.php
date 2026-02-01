@@ -2,8 +2,14 @@
 /**
  * Agent Tools - Git and WordPress operations
  *
- * @package Agentic_Plugin
- * @since 0.1.0
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 declare(strict_types=1);
@@ -795,10 +801,10 @@ class Agent_Tools {
 	 * Git commands are disabled to prevent remote code execution.
 	 * Changes are written to disk but require manual git commits via terminal.
 	 *
-	 * @param string $command Git command to execute.
+	 * @param string $_command Git command to execute (unused - git execution disabled).
 	 * @return false Always returns false; git execution is disabled.
 	 */
-	private function git_exec( string $command ): string|false {
+	private function git_exec( string $_command ): string|false { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		// Git command execution is intentionally disabled for security.
 		// Future implementation should use a safe git library or background job.
 		return false;

@@ -14,6 +14,10 @@
 /wp-content/upgrade/
 /wp-content/uploads/
 
+# Translations – commit only .pot; ignore generated/user files
+*.po
+*.mo
+
 # Logs
 *.log
 /wp-content/debug.log
@@ -90,8 +94,6 @@ vendor/
 .ruby-version
 
 # Private project plans (should not be in releases)
-/private/
 /CLAUDE.md
-/image/
 composer.lock
 .github/

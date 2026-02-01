@@ -2,10 +2,16 @@
 /**
  * Job Manager
  *
- * Handles async job queue for long-running agent tasks
+ * Handles async job queue for long-running agent tasks.
  *
- * @package Agentic_Plugin
- * @since 0.2.0
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.2.0
+ *
+ * php version 8.1
  */
 
 declare(strict_types=1);
@@ -146,7 +152,7 @@ class Job_Manager {
 
 		$table = self::get_table_name();
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$job = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %s", $job_id ) );
 
 		if ( ! $job ) {
@@ -195,6 +201,7 @@ class Job_Manager {
 	 *
 	 * @param string $job_id Job ID.
 	 * @return void
+	 * @throws \Exception If job processor is invalid or missing.
 	 */
 	public static function process_job( string $job_id ): void {
 		$job = self::get_job( $job_id );
@@ -269,7 +276,7 @@ class Job_Manager {
 	public static function cancel_job( string $job_id ): bool {
 		$job = self::get_job( $job_id );
 
-		if ( ! $job || $job->status !== self::STATUS_PENDING ) {
+		if ( ! $job || self::STATUS_PENDING !== $job->status ) {
 			return false;
 		}
 
@@ -296,20 +303,18 @@ class Job_Manager {
 		$table = self::get_table_name();
 
 		if ( $status ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared.
 			$jobs = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT * FROM {$table} WHERE user_id = %d AND status = %s ORDER BY created_at DESC LIMIT %d",
+					"SELECT * FROM {$table} WHERE user_id = %d AND status = %s ORDER BY created_at DESC LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$user_id,
 					$status,
 					$limit
 				)
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared.
 			$jobs = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT * FROM {$table} WHERE user_id = %d ORDER BY created_at DESC LIMIT %d",
+					"SELECT * FROM {$table} WHERE user_id = %d ORDER BY created_at DESC LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$user_id,
 					$limit
 				)
@@ -338,13 +343,13 @@ class Job_Manager {
 		$table = self::get_table_name();
 
 		// Delete completed/failed jobs older than 24 hours.
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$deleted = $wpdb->query(
-			"DELETE FROM {$table} 
-			WHERE status IN ('completed', 'failed', 'cancelled') 
-			AND updated_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)"
+			"DELETE FROM {$table}
+            WHERE status IN ('completed', 'failed', 'cancelled') 
+            AND updated_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)"
 		);
-
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return (int) $deleted;
 	}
 
@@ -361,19 +366,18 @@ class Job_Manager {
 
 		$where = $user_id ? $wpdb->prepare( 'WHERE user_id = %d', $user_id ) : '';
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared.
-		$stats = $wpdb->get_row(
-			"SELECT 
-				COUNT(*) as total,
-				SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-				SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
-				SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-				SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed
-			FROM {$table} {$where}",
-			ARRAY_A
-		);
+		$sql  = 'SELECT ';
+		$sql .= 'COUNT(*) as total, ';
+		$sql .= "SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending, ";
+		$sql .= "SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing, ";
+		$sql .= "SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed, ";
+		$sql .= "SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed ";
+		$sql .= 'FROM ' . $table . ' ' . $where;
 
-		return $stats ?: array(
+	// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$stats = $wpdb->get_row( $sql, ARRAY_A );
+
+		return $stats ? $stats : array(
 			'total'      => 0,
 			'pending'    => 0,
 			'processing' => 0,

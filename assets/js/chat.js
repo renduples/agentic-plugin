@@ -45,6 +45,18 @@
             agentSelect.addEventListener('change', handleAgentSwitch);
         }
 
+        // Handle suggested prompt clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('agentic-prompt-btn')) {
+                const prompt = e.target.getAttribute('data-prompt');
+                if (prompt && input) {
+                    input.value = prompt;
+                    input.focus();
+                    autoResize();
+                }
+            }
+        });
+
         // Load saved conversation for current agent
         loadConversation();
     }
@@ -52,6 +64,15 @@
     // Handle agent switch from dropdown
     function handleAgentSwitch(e) {
         const newAgentId = e.target.value;
+        
+        // Check if "Load more..." was selected
+        if (newAgentId === 'load-more') {
+            window.location.href = agenticChat.restUrl.replace('/wp-json/agentic/v1/', '/wp-admin/admin.php?page=agentic-agents');
+            return;
+        }
+        
+        // Save selected agent to localStorage
+        localStorage.setItem('agentic_last_selected_agent', newAgentId);
         
         // Reload page with new agent (simplest approach for full state reset)
         const url = new URL(window.location.href);
@@ -200,6 +221,12 @@
     // Update stats display
     function updateStats() {
         stats.innerHTML = `Tokens: ${totalTokens.toLocaleString()} | Cost: $${totalCost.toFixed(4)}`;
+        
+        // Save stats to localStorage
+        localStorage.setItem(`agentic_stats_${currentAgentId}`, JSON.stringify({
+            tokens: totalTokens,
+            cost: totalCost
+        }));
     }
 
     // Save conversation to localStorage (per-agent)
@@ -221,6 +248,20 @@
                 conversationHistory = [];
             }
         }
+        
+        // Load saved stats
+        const savedStats = localStorage.getItem(`agentic_stats_${currentAgentId}`);
+        if (savedStats) {
+            try {
+                const stats = JSON.parse(savedStats);
+                totalTokens = stats.tokens || 0;
+                totalCost = stats.cost || 0;
+                updateStats();
+            } catch (e) {
+                totalTokens = 0;
+                totalCost = 0;
+            }
+        }
     }
 
     // Clear conversation (for current agent only)
@@ -229,6 +270,7 @@
         
         conversationHistory = [];
         localStorage.removeItem(`agentic_history_${currentAgentId}`);
+        localStorage.removeItem(`agentic_stats_${currentAgentId}`);
         sessionId = generateUUID();
         localStorage.setItem(`agentic_session_${currentAgentId}`, sessionId);
         totalTokens = 0;

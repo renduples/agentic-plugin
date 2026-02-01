@@ -5,9 +5,14 @@
  * Handles communication with the marketplace API from client WordPress installations.
  * Provides one-click install functionality for agents.
  *
- * @package Agentic_Plugin
- * @since 0.1.0
- * @since 0.2.0
+ * @package    Agentic_Plugin
+ * @subpackage Includes
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.2.0
+ *
+ * php version 8.1
  */
 
 declare(strict_types=1);
@@ -180,6 +185,8 @@ class Marketplace_Client {
 
 	/**
 	 * Enqueue admin assets
+	 *
+	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_assets( string $hook ): void {
 		if ( 'agentic_page_agentic-marketplace' !== $hook ) {
@@ -283,6 +290,8 @@ class Marketplace_Client {
 
 	/**
 	 * Get agent file header data
+	 *
+	 * @param string $file Path to agent file.
 	 */
 	private function get_agent_file_data( string $file ): array {
 		$headers = array(
@@ -300,6 +309,8 @@ class Marketplace_Client {
 
 	/**
 	 * Check if an agent is active
+	 *
+	 * @param string $slug Agent slug to check.
 	 */
 	private function is_agent_active( string $slug ): bool {
 		$active_agents = get_option( 'agentic_active_agents', array() );
@@ -422,7 +433,7 @@ class Marketplace_Client {
 			'category'  => isset( $_POST['category'] ) ? sanitize_text_field( wp_unslash( $_POST['category'] ) ) : '',
 			'orderby'   => isset( $_POST['orderby'] ) ? sanitize_text_field( wp_unslash( $_POST['orderby'] ) ) : 'date',
 			'order'     => isset( $_POST['order'] ) ? sanitize_text_field( wp_unslash( $_POST['order'] ) ) : 'DESC',
-			'free_only' => isset( $_POST['free_only'] ) && $_POST['free_only'] === 'true',
+			'free_only' => isset( $_POST['free_only'] ) && true === $_POST['free_only'],
 		);
 
 		$response = $this->api_request( 'agents', $params );
@@ -610,6 +621,9 @@ class Marketplace_Client {
 
 	/**
 	 * Download and install agent
+	 *
+	 * @param string $download_url URL to download the agent from.
+	 * @param string $slug         Agent slug for directory naming.
 	 */
 	private function download_and_install_agent( string $download_url, string $slug ): bool|\WP_Error {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -655,6 +669,9 @@ class Marketplace_Client {
 
 	/**
 	 * Move directory contents
+	 *
+	 * @param string $source Source directory path.
+	 * @param string $dest   Destination directory path.
 	 */
 	private function move_directory_contents( string $source, string $dest ): void {
 		$files = scandir( $source );
@@ -845,6 +862,10 @@ class Marketplace_Client {
 
 	/**
 	 * Make API request to marketplace
+	 *
+	 * @param string $endpoint API endpoint to call.
+	 * @param array  $params   Request parameters.
+	 * @param string $method   HTTP method (GET or POST).
 	 */
 	private function api_request( string $endpoint, array $params = array(), string $method = 'GET' ): array|\WP_Error {
 		$url = trailingslashit( $this->api_base ) . 'wp-json/agentic-marketplace/v1/' . $endpoint;

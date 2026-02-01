@@ -80,13 +80,20 @@ PROMPT;
 		return 'developer';
 	}
 
+	public function get_version(): string {
+		return '1.0.0';
+	}
+
+	public function get_author(): string {
+		return 'Agentic Community';
+	}
+
 	public function get_required_capabilities(): array {
 		return array( 'manage_options' );
 	}
 
 	public function get_welcome_message(): string {
-		return "⚡ **Code Generator**\n\n" .
-				"I generate WordPress code snippets for your needs!\n\n" .
+		return "I generate WordPress code snippets for your needs!\n\n" .
 				"- **Custom functions** - hooks, filters, actions\n" .
 				"- **Post types** - custom content types\n" .
 				"- **Shortcodes** - reusable content blocks\n" .

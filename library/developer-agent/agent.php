@@ -56,7 +56,7 @@ When evaluating feature requests:
 1. Check if it aligns with Agentic's vision (AI-native WordPress agents)
 2. Assess technical feasibility
 3. Consider security implications
-4. Identify which agent type would own the feature
+4. Identify which agent category would own the feature
 5. Suggest implementation approach
 
 Your personality:
@@ -116,6 +116,20 @@ PROMPT;
 	}
 
 	/**
+	 * Get agent version
+	 */
+	public function get_version(): string {
+		return '1.0.0';
+	}
+
+	/**
+	 * Get agent author
+	 */
+	public function get_author(): string {
+		return 'Agentic Community';
+	}
+
+	/**
 	 * Get required capabilities - accessible to all logged-in users
 	 */
 	public function get_required_capabilities(): array {
@@ -126,8 +140,7 @@ PROMPT;
 	 * Get welcome message
 	 */
 	public function get_welcome_message(): string {
-		return "💻 **Developer Agent**\n\n" .
-				"Welcome to Agentic Plugin! I'm here to help you:\n\n" .
+		return "Welcome to Agentic Plugin! I'm here to help you:\n\n" .
 				"- **Understand the codebase** - Ask about any file, class, or function\n" .
 				"- **Get started** - Learn the architecture and how to build agents\n" .
 				"- **Evaluate features** - Submit ideas and I'll assess feasibility\n" .

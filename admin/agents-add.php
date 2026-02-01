@@ -5,8 +5,14 @@
  * Similar to WordPress Add New Plugin page - browse and install agents
  * from the library.
  *
- * @package Agentic_Plugin
- * @since 0.2.0
+ * @package    Agentic_Plugin
+ * @subpackage Admin
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.2.0
+ *
+ * php version 8.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Handle install action.
 
-if ( ! current_user_can( 'manage_options' ) ) {
+if ( ! current_user_can( 'read' ) ) {
 	wp_die( esc_html__( 'You do not have permission to access this page.', 'agentic-plugin' ) );
 }
 
@@ -89,7 +95,7 @@ $library = $registry->get_library_agents(
 		</li>
 		<?php foreach ( $categories as $cat_name => $count ) : ?>
 			<li>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents-add&category=' . urlencode( $cat_name ) ) ); ?>"
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents-add&category=' . rawurlencode( $cat_name ) ) ); ?>"
 					class="<?php echo $category === $cat_name ? 'current' : ''; ?>">
 					<?php echo esc_html( $cat_name ); ?>
 					<span class="count">(<?php echo esc_html( $count ); ?>)</span>
@@ -124,11 +130,6 @@ $library = $registry->get_library_agents(
 				<div class="agentic-empty-library">
 					<h2><?php esc_html_e( 'Agent Library is Empty', 'agentic-plugin' ); ?></h2>
 					<p><?php esc_html_e( 'No agents are available in the library yet. Check back soon or contribute your own agents!', 'agentic-plugin' ); ?></p>
-					<p>
-						<a href="https://github.com/renduples/agentic-plugin" target="_blank" class="button button-primary">
-							<?php esc_html_e( 'Learn How to Create Agents', 'agentic-plugin' ); ?>
-						</a>
-					</p>
 				</div>
 			<?php endif; ?>
 		</div>

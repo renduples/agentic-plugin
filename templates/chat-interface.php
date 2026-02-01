@@ -4,8 +4,14 @@
  *
  * Supports dynamic agent selection - users can chat with any active agent.
  *
- * @package Agentic_Plugin
- * @since 0.1.0
+ * @package    Agentic_Plugin
+ * @subpackage Templates
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,6 +25,7 @@ $registry = Agentic_Agent_Registry::get_instance();
 $agents   = $registry->get_accessible_instances();
 
 // Default to first available agent or passed agent_id.
+// Check URL parameter first, then fall back to first agent.
 $default_agent_id = isset( $_GET['agent'] ) ? sanitize_key( $_GET['agent'] ) : '';
 $current_agent    = null;
 $current_agent_id = '';
@@ -31,13 +38,58 @@ if ( $default_agent_id && isset( $agents[ $default_agent_id ] ) ) {
 	$current_agent_id = $current_agent->get_id();
 }
 ?>
+<script>
+// Check localStorage for last selected agent on page load
+(function() {
+	const savedAgent = localStorage.getItem('agentic_last_selected_agent');
+	const urlParams = new URLSearchParams(window.location.search);
+	const urlAgent = urlParams.get('agent');
+	
+	// If no agent in URL and we have a saved preference, redirect to it
+	if (!urlAgent && savedAgent) {
+		// Wait for DOM to be ready
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', function() {
+				const select = document.getElementById('agentic-agent-select');
+				if (select) {
+					const option = select.querySelector(`option[value="${savedAgent}"]`);
+					if (option) {
+						urlParams.set('agent', savedAgent);
+						window.location.search = urlParams.toString();
+					}
+				}
+			});
+		} else {
+			// DOM already loaded
+			const select = document.getElementById('agentic-agent-select');
+			if (select) {
+				const option = select.querySelector(`option[value="${savedAgent}"]`);
+				if (option) {
+					urlParams.set('agent', savedAgent);
+					window.location.search = urlParams.toString();
+				}
+			}
+		}
+	}
+})();
+</script>
 <div id="agentic-chat" class="agentic-chat-container" data-agent-id="<?php echo esc_attr( $current_agent_id ); ?>">
 	<div class="agentic-chat-header">
 		<div class="agentic-agent-info">
 			<?php if ( count( $agents ) > 1 ) : ?>
 			<div class="agentic-agent-selector">
 				<select id="agentic-agent-select" class="agentic-agent-dropdown">
-					<?php foreach ( $agents as $agent ) : ?>
+				<?php
+				// Sort agents by name (case-insensitive).
+				$sorted_agents = $agents;
+				uasort(
+					$sorted_agents,
+					function ( $a, $b ) {
+						return strcasecmp( $a->get_name(), $b->get_name() );
+					}
+				);
+				?>
+				<?php foreach ( $sorted_agents as $agent ) : ?>
 						<option value="<?php echo esc_attr( $agent->get_id() ); ?>" 
 								data-icon="<?php echo esc_attr( $agent->get_icon() ); ?>"
 								data-welcome="<?php echo esc_attr( $agent->get_welcome_message() ); ?>"
@@ -45,6 +97,7 @@ if ( $default_agent_id && isset( $agents[ $default_agent_id ] ) ) {
 							<?php echo esc_html( $agent->get_icon() . ' ' . $agent->get_name() ); ?>
 						</option>
 					<?php endforeach; ?>
+					<option value="load-more" data-action="load-more">➕ Load more . . .</option>
 				</select>
 			</div>
 			<?php else : ?>
@@ -53,11 +106,17 @@ if ( $default_agent_id && isset( $agents[ $default_agent_id ] ) ) {
 			</div>
 			<?php endif; ?>
 			<div class="agentic-agent-details">
-				<h3 id="agentic-agent-name"><?php echo esc_html( $current_agent ? $current_agent->get_name() : 'No Agent Available' ); ?></h3>
-				<span class="agentic-status">
-					<span class="agentic-status-dot"></span>
-					Online
-				</span>
+				<?php if ( $current_agent ) : ?>
+					<div class="agentic-agent-meta">
+						Version <?php echo esc_html( $current_agent->get_version() ?? '1.0.0' ); ?>
+						<span class="agent-meta-separator">|</span>
+						By <?php echo esc_html( $current_agent->get_author() ?? 'Unknown' ); ?>
+						<span class="agent-meta-separator">|</span>
+						<?php echo esc_html( ucfirst( $current_agent->get_category() ) ); ?>
+						<span class="agent-meta-separator">|</span>
+						Capabilities: <?php echo esc_html( implode( ', ', $current_agent->get_required_capabilities() ) ); ?>
+					</div>
+				<?php endif; ?>
 			</div>
 		</div>
 		<div class="agentic-chat-actions">

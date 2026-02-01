@@ -5,8 +5,14 @@
  * Similar to WordPress Plugins page - lists all installed agents
  * with activate/deactivate functionality.
  *
- * @package Agentic_Plugin
- * @since 0.2.0
+ * @package    Agentic_Plugin
+ * @subpackage Admin
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.2.0
+ *
+ * php version 8.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -31,82 +37,82 @@ $agent_error  = '';
 if ( $agent_action && $slug && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'agentic_agent_action' ) ) {
 	$registry = Agentic_Agent_Registry::get_instance();
 
-switch ( $agent_action ) {
-	case 'activate':
-		$result = $registry->activate_agent( $slug );
-		if ( is_wp_error( $result ) ) {
-			$error = $result->get_error_message();
-		} else {
-			$agents_data = $registry->get_installed_agents( true );
-			$agent_name  = $agents_data[ $slug ]['name'] ?? $slug;
-			$chat_url    = admin_url( 'admin.php?page=agentic-chat&agent=' . $slug );
-			/* translators: 1: Agent name, 2: Chat URL */
-
-			$message = sprintf(
-			__( '%1$s activated. <a href="%2$s">Chat with this agent now →</a>', 'agentic-plugin' ),
-				esc_html( $agent_name ),
-				esc_url( $chat_url )
-			);
-		}
-		break;
-
-	case 'deactivate':
-		$result = $registry->deactivate_agent( $slug );
-		if ( is_wp_error( $result ) ) {
-			$error = $result->get_error_message();
-		} else {
-			$message = __( 'Agent deactivated.', 'agentic-plugin' );
-		}
-		break;
-
-	case 'delete':
-		$result = $registry->delete_agent( $slug );
-		if ( is_wp_error( $result ) ) {
-			$agent_error = $result->get_error_message();
-		} else {
-			// Deactivate license if agent had one.
-			$marketplace            = new \Agentic\Marketplace_Client();
-			$marketplace_reflection = new \ReflectionClass( $marketplace );
-			$deactivate_method      = $marketplace_reflection->getMethod( 'deactivate_agent_license' );
-			$deactivate_method->setAccessible( true );
-			$deactivate_method->invoke( $marketplace, $slug );
-
-			// Download and install the update.
-			if ( isset( $available_updates[ $slug ] ) ) {
-				$update_data = $available_updates[ $slug ];
-				$was_active  = $registry->is_agent_active( $slug );
-
-				// Deactivate if active.
-				if ( $was_active ) {
-					$registry->deactivate_agent( $slug );
-				}
-
-				// Install the update (replaces files).
-				$result = $registry->install_agent( $slug );
-
-				if ( is_wp_error( $result ) ) {
+	switch ( $agent_action ) {
+		case 'activate':
+			$result = $registry->activate_agent( $slug );
+			if ( is_wp_error( $result ) ) {
 					$agent_error = $result->get_error_message();
-				} else {
-					// Reactivate if was active.
-					if ( $was_active ) {
-						$registry->activate_agent( $slug );
-					}
-
-					// Clear update cache to refresh.
-					delete_transient( 'agentic_available_updates' );
-
-					$message = sprintf(
-						/* translators: 1: agent name, 2: new version */
-						__( '%1$s updated to version %2$s successfully.', 'agentic-plugin' ),
-						esc_html( $update_data['name'] ),
-						esc_html( $update_data['latest'] )
-					);
-				}
 			} else {
-				$agent_error = __( 'No update available for this agent.', 'agentic-plugin' );
+				$agents_data = $registry->get_installed_agents( true );
+				$agent_name  = $agents_data[ $slug ]['name'] ?? $slug;
+				$page_slug   = 'agent-builder' === $slug ? 'agent-builder' : 'agentic-chat';
+				$chat_url    = admin_url( 'admin.php?page=' . $page_slug . '&agent=' . $slug );
+				$message     = sprintf(
+				/* translators: 1: agent name, 2: chat URL */
+					__( '%1$s activated. <a href="%2$s">Chat with this agent now →</a>', 'agentic-plugin' ),
+					esc_html( $agent_name ),
+					esc_url( $chat_url )
+				);
 			}
 			break;
-		}
+
+		case 'deactivate':
+			$result = $registry->deactivate_agent( $slug );
+			if ( is_wp_error( $result ) ) {
+				$agent_error = $result->get_error_message();
+			} else {
+				$message = __( 'Agent deactivated.', 'agentic-plugin' );
+			}
+			break;
+
+		case 'delete':
+			$result = $registry->delete_agent( $slug );
+			if ( is_wp_error( $result ) ) {
+				$agent_error = $result->get_error_message();
+			} else {
+				// Deactivate license if agent had one.
+				$marketplace            = new \Agentic\Marketplace_Client();
+				$marketplace_reflection = new \ReflectionClass( $marketplace );
+				$deactivate_method      = $marketplace_reflection->getMethod( 'deactivate_agent_license' );
+				$deactivate_method->setAccessible( true );
+				$deactivate_method->invoke( $marketplace, $slug );
+
+				// Download and install the update.
+				if ( isset( $available_updates[ $slug ] ) ) {
+					$update_data = $available_updates[ $slug ];
+					$was_active  = $registry->is_agent_active( $slug );
+
+					// Deactivate if active.
+					if ( $was_active ) {
+						$registry->deactivate_agent( $slug );
+					}
+
+					// Install the update (replaces files).
+					$result = $registry->install_agent( $slug );
+
+					if ( is_wp_error( $result ) ) {
+						$agent_error = $result->get_error_message();
+					} else {
+						// Reactivate if was active.
+						if ( $was_active ) {
+							$registry->activate_agent( $slug );
+						}
+
+						// Clear update cache to refresh.
+						delete_transient( 'agentic_available_updates' );
+
+						$message = sprintf(
+						/* translators: 1: agent name, 2: new version */
+							__( '%1$s updated to version %2$s successfully.', 'agentic-plugin' ),
+							esc_html( $update_data['name'] ),
+							esc_html( $update_data['latest'] )
+						);
+					}
+				} else {
+					$agent_error = __( 'No update available for this agent.', 'agentic-plugin' );
+				}
+				break;
+			}
 	}
 }
 
@@ -127,13 +133,13 @@ if ( 'active' === $filter ) {
 }
 
 // Search.
-$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
-if ( $search ) {
+$search_term = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+if ( $search_term ) {
 	$agents = array_filter(
 		$agents,
-		function ( $a ) use ( $search ) {
-			return stripos( $a['name'], $search ) !== false
-			|| stripos( $a['description'], $search ) !== false;
+		function ( $a ) use ( $search_term ) {
+			return false !== stripos( $a['name'], $search_term )
+			|| false !== stripos( $a['description'], $search_term );
 		}
 	);
 }
@@ -162,21 +168,21 @@ if ( $search ) {
 	<ul class="subsubsub">
 		<li class="all">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents' ) ); ?>"
-				class="<?php echo $filter === 'all' ? 'current' : ''; ?>">
+		class="<?php echo 'all' === $filter ? 'current' : ''; ?>">
 				<?php esc_html_e( 'All', 'agentic-plugin' ); ?>
 				<span class="count">(<?php echo esc_html( $all_count ); ?>)</span>
 			</a> |
 		</li>
 		<li class="active">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&agent_status=active' ) ); ?>"
-				class="<?php echo $filter === 'active' ? 'current' : ''; ?>">
+				class="<?php echo 'active' === $filter ? 'current' : ''; ?>">
 				<?php esc_html_e( 'Active', 'agentic-plugin' ); ?>
 				<span class="count">(<?php echo esc_html( $active_count ); ?>)</span>
 			</a> |
 		</li>
 		<li class="inactive">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&agent_status=inactive' ) ); ?>"
-				class="<?php echo $filter === 'inactive' ? 'current' : ''; ?>">
+				class="<?php echo 'inactive' === $filter ? 'current' : ''; ?>">
 				<?php esc_html_e( 'Inactive', 'agentic-plugin' ); ?>
 				<span class="count">(<?php echo esc_html( $inactive_count ); ?>)</span>
 			</a>
@@ -267,8 +273,11 @@ if ( $search ) {
 								<?php endif; ?>
 
 								<?php if ( $agent['active'] ) : ?>
-									<span class="chat">
-										<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-chat&agent=' . $slug ) ); ?>" style="font-weight: 600;">
+									<?php
+									$page_slug = 'agent-builder' === $slug ? 'agent-builder' : 'agentic-chat';
+									?>
+							<span class="chat">
+								<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . $page_slug . '&agent=' . $slug ) ); ?>" style="font-weight: 600;">
 											<?php esc_html_e( 'Chat', 'agentic-plugin' ); ?>
 										</a> |
 									</span>
@@ -300,7 +309,10 @@ if ( $search ) {
 							<div class="plugin-meta">
 								<?php if ( ! empty( $agent['version'] ) ) : ?>
 									<span class="agent-version">
-										<?php printf( esc_html__( 'Version %s', 'agentic-plugin' ), esc_html( $agent['version'] ) ); ?>
+									<?php
+									/* translators: %s: agent version number */
+									printf( esc_html__( 'Version %s', 'agentic-plugin' ), esc_html( $agent['version'] ) );
+									?>
 									</span>
 									<span class="separator">|</span>
 								<?php endif; ?>
@@ -329,7 +341,7 @@ if ( $search ) {
 								<?php if ( ! empty( $agent['capabilities'] ) ) : ?>
 									<span class="agent-capabilities">
 										<?php
-										printf(
+										/* translators: %s: comma-separated list of agent capabilities */                                       printf(
 											esc_html__( 'Capabilities: %s', 'agentic-plugin' ),
 											esc_html( implode( ', ', $agent['capabilities'] ) )
 										);

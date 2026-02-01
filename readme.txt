@@ -1,18 +1,22 @@
 === Agentic Plugin ===
 Contributors: @agenticplugin
-Tags: openai, chatgpt, gpt, anthropic, claude, llm, ai, agents, chatbot, automation, marketplace, plugins
+Tags: xai, openai, chatgpt, gpt, anthropic, claude, llm, ai, agents, chatbot, automation, plugins
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Build AI Agents in WordPress without writing code
+Build AI Agents without writing code. Describe the AI agent you want and let WordPress build it for you.
 
 == Description ==
 
-The Agentic Plugin brings an agent ecosystem to WordPress just like plugins and themes, but for AI capabilities:
+The Agentic Plugin brings an ecosystem to WordPress just like plugins and themes, but for AI capabilities.
+
+If you've built a plugin or theme before, you already know the process. Now harness AI reasoning to solve WordPress problems at scale.
+
+With this plugin you will be able to build most of your AI Agents without writing code.
 
 * **Marketplace** — Browse and install community-built agents with one click
 * **Activate and deactivate** — Control which agents run on your site, just like plugins
@@ -80,55 +84,18 @@ Only when using cloud AI providers. Local model support is available for privacy
 
 == Changelog ==
 
+For the full changelog, see [changelog.txt](changelog.txt).
+
+= 1.1.0 =
+* Code quality and WordPress.org compliance release
+* Added complete uninstall handler for GDPR compliance
+* All PHP files now have complete header blocks
+* Fixed SQL query formatting and unused parameter warnings
+
 = 1.0.0 =
 * **Production Release** - First stable release
-* Automatic update checking via daily WordPress cron
-* Comprehensive error handling (expired, activation limit, mismatch, invalid)
-* Complete marketplace API documentation for developers
-* All components ready for agent marketplace
-
-= 1.0.0-beta =
-* **Beta Release** - Production-ready release candidate
-* WordPress Coding Standards compliance (7,246 auto-fixes applied)
-* Removed shell execution (exec) - now uses safe tokenizer-based validation
-* Translation files added for Spanish, French, and German (95% coverage)
-* Ready for WordPress.org submission
-* All security and compliance issues resolved
-
-= 0.1.3-alpha =
-* Plugin renamed to "Agentic Plugin" for clarity
-* System Requirements Checker with REST API endpoints
-* Namespace simplified from Agentic\Core to Agentic
-* All constants renamed (AGENTIC_CORE_* → AGENTIC_*)
-* Text domain standardized to 'agentic-plugin'
-
-= 0.1.2-alpha =
-* Async Job Queue System for long-running tasks
-* Background job processing via WordPress Cron
-* Real-time progress tracking (0-100%)
-* REST API endpoints for job management
-* Agent Builder Job Processor example implementation
-
-= 0.1.0-alpha =
-* Initial development release
-* Agent management system (install, activate, deactivate)
-* Agent library with sample agents
-* REST API endpoints
-* Admin interface scaffolding
 
 == Upgrade Notice ==
 
-= 1.0.0 =
-First stable release! Smooth upgrade from beta - no database migrations required.
-
-= 1.0.0-beta =
-First beta release! Production-ready. Major improvements to code quality and security.
-
-= 0.1.3-alpha =
-Major naming changes: Namespace simplified. System Requirements Checker added.
-
-= 0.1.2-alpha =
-Async job queue system added for long-running tasks. No breaking changes.
-
-= 0.1.0-alpha =
-Initial alpha release. Not recommended for production use.
+= 1.1.0 =
+Code quality release. GDPR-compliant uninstall handler added. No breaking changes.

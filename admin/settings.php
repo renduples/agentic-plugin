@@ -2,8 +2,14 @@
 /**
  * Agentic Settings Page
  *
- * @package Agentic_Plugin
- * @since 0.1.0
+ * @package    Agentic_Plugin
+ * @subpackage Admin
+ * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
+ * @link       https://agentic-plugin.com
+ * @since      0.1.0
+ *
+ * php version 8.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -175,13 +181,13 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 		<h2>License</h2>
 		<p>Enter your license key to unlock premium features including access to the Agent Marketplace.</p>
 		
-		<?php
-		$license_info = \Agentic\License_Manager::get_license_info();
-		$license_key  = \Agentic\License_Manager::get_license_key();
-		$is_valid     = \Agentic\License_Manager::is_valid();
-		?>
+			<?php
+			$license_info = \Agentic\License_Manager::get_license_info();
+			$license_key  = \Agentic\License_Manager::get_license_key();
+			$is_valid     = \Agentic\License_Manager::is_valid();
+			?>
 		
-		<?php if ( $is_valid && $license_info && 'active' === $license_info['status'] ) : ?>
+			<?php if ( $is_valid && $license_info && 'active' === $license_info['status'] ) : ?>
 			<div class="notice notice-success inline" style="padding: 12px; margin: 15px 0;">
 				<p style="margin: 0; display: flex; align-items: center; gap: 8px;">
 					<span class="dashicons dashicons-yes-alt" style="color: #22c55e;"></span>
