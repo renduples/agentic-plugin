@@ -66,7 +66,7 @@ All premium agents use standardized license keys:
 
 **Format**: `AGT-XXXXXXXX-XXXXXXXX-XXXXXXXX`
 
-- Prefix: `AGT-` (identifies Agentic license)
+- Prefix: `AGT-` (identifies Agent Builder license)
 - 3 segments of 8 alphanumeric characters
 - Total: 28 characters including hyphens
 - Example: `AGT-A1B2C3D4-E5F6G7H8-I9J0K1L2`
@@ -560,7 +560,7 @@ Always specify minimum plugin version:
 
 ```php
 /**
- * Requires Agentic: 1.0.0
+ * Requires Agent Builder: 1.0.0
  */
 ```
 
@@ -585,7 +585,7 @@ if ( version_compare( $old_version, '2.0.0', '<' ) ) {
 
 ## 📝 License Management UI
 
-Users see their licenses at **Agentic → Licenses**:
+Users see their licenses at **Agent Builder → Revenue**:
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -645,7 +645,7 @@ Before submitting your premium agent:
  * Price: 29.00
  * Billing Period: year
  * Activation Limit: 5
- * Requires Agentic: 1.0.0
+ * Requires Agent Builder: 1.0.0
  */
 
 class Invoice_Generator_Agent extends Agentic_Agent_Base {
