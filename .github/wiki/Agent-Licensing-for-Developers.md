@@ -400,32 +400,119 @@ if ( false === $cached_status ) {
 
 ---
 
-## 📈 Analytics You'll Receive
+## � Revenue Dashboard
 
-The marketplace provides these metrics:
+Track your earnings directly from your WordPress admin at **Agent Builder → Revenue**.
+
+### Getting Started
+
+1. **Register as a Developer** at [agentic-plugin.com/developer/register](https://agentic-plugin.com/developer/register)
+2. **Get your API Key** from your developer dashboard
+3. **Connect your account** in Agent Builder → Revenue → "I Have an API Key"
+4. **View your stats** - installs, revenue, and payouts all in one place
+
+### Dashboard Features
+
+#### Stats Cards
+At a glance view of your key metrics:
+- **Agents Submitted** - Total agents with approved/pending breakdown
+- **Total Installs** - All-time installs and active installs
+- **Revenue This Month** - Current month earnings with trend indicator
+- **Pending Payout** - Amount waiting to be paid out
+
+#### Revenue Chart
+Interactive line chart showing your earnings over time:
+- 30 days / 90 days / 12 months views
+- Daily revenue breakdown
+- Visual trend analysis
+
+#### Installs Chart  
+Bar chart tracking agent installations:
+- New installs over time
+- Net growth (installs minus uninstalls)
+- Period comparison
+
+#### Agents Table
+Detailed breakdown of each agent you've submitted:
+- Agent name and version
+- Approval status (approved/pending/rejected)
+- Price and billing type
+- Install count
+- Total revenue earned
+- User rating
+
+#### Payouts Table
+Your payout history:
+- Payout date and amount
+- Payment method (Stripe)
+- Status (completed/processing/pending)
+
+### Revenue Share Model
+
+| Volume | Developer | Marketplace |
+|--------|-----------|-------------|
+| Standard | **70%** | 30% |
+| High Volume (>$10k/mo) | **80%** | 20% |
+| Featured Agents | Negotiable | Negotiable |
+
+**Example Earnings:**
+- You sell an agent for $29/year
+- You keep $20.30 (70%)
+- Marketplace keeps $8.70 (30%)
+
+### Payout Schedule
+
+- **Minimum Threshold**: $50 (we hold until you reach this)
+- **Payout Frequency**: Monthly, on the 15th
+- **Payment Methods**: Stripe (direct deposit)
+- **Processing Time**: 2-3 business days
+
+### Revenue Dashboard API
+
+Your Revenue Dashboard pulls data from these marketplace endpoints:
+
+| Endpoint | Data |
+|----------|------|
+| `/developer/stats` | Summary cards data |
+| `/developer/agents` | Agents table |
+| `/developer/revenue/history` | Revenue chart |
+| `/developer/installs/history` | Installs chart |
+| `/developer/payouts` | Payout history |
+
+See [REVENUE_API_BRIEF.md](../REVENUE_API_BRIEF.md) for complete API specification.
+
+---
+
+## 📈 Analytics Deep Dive
+
+Beyond the dashboard, the marketplace provides detailed analytics:
 
 ### Sales Data
-- Total revenue
-- Active subscriptions
-- Churn rate
-- MRR/ARR
+- Total revenue (lifetime and periodic)
+- Active subscriptions count
+- Churn rate (monthly/annual)
+- MRR/ARR calculations
+- Revenue by agent breakdown
 
 ### Usage Data
 - Total installations
 - Active installations
 - Activation counts by tier
 - Geographic distribution
+- WordPress version breakdown
 
 ### License Data
-- Expired licenses
+- Expired licenses count
 - Licenses in grace period
 - Deactivation requests
 - Upgrade conversions
+- Renewal rates
 
 ### Support Data
 - License validation failures
 - Common error codes
 - User friction points
+- Refund rates by agent
 
 ---
 

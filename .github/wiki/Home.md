@@ -21,7 +21,7 @@ Welcome to the Agent Builder documentation. For assistance please email support@
 - [Contributing Guidelines](Contributing)
 - [Code of Conduct](Code-of-Conduct)
 - [Security Policy](Security)
-- [Agent Licensing for Developers](Agent-Licensing-for-Developers) - Build and monetize agents
+- [Agent Licensing for Developers](Agent-Licensing-for-Developers) - Build, monetize, and track revenue
 
 ### Features & Systems
 
