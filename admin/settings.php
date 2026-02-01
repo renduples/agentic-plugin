@@ -2,9 +2,9 @@
 /**
  * Agentic Settings Page
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Admin
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      0.1.0
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Handle form submission.
 
 if ( ! current_user_can( 'manage_options' ) ) {
-	wp_die( esc_html__( 'You do not have permission to access this page.', 'agentic-plugin' ) );
+	wp_die( esc_html__( 'You do not have permission to access this page.', 'agent-builder' ) );
 }
 
 if ( isset( $_POST['agentic_save_settings'] ) && check_admin_referer( 'agentic_settings_nonce' ) ) {

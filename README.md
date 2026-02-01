@@ -3,19 +3,19 @@
 [![WordPress Plugin](https://img.shields.io/badge/WordPress-6.4+-blue)](https://wordpress.org)
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-purple)](https://www.php.net)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-green)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![GitHub Stars](https://img.shields.io/github/stars/renduples/agentic-plugin?style=social)](https://github.com/renduples/agentic-plugin)
+[![GitHub Stars](https://img.shields.io/github/stars/renduples/agentic-plugin?style=social)](https://github.com/renduples/agent-builder)
 
 ---
 
-## 🚀 What is the Agentic Plugin?
+## 🚀 What is the Agent Builder?
 
-The Agentic Plugin brings an ecosystem to WordPress just like plugins and themes, but for AI capabilities.
+The Agent Builder brings an ecosystem to WordPress just like plugins and themes, but for AI capabilities.
 
 If you've built a plugin or theme before, you already know the process. Now harness AI reasoning to solve WordPress problems at scale.
 
 With this plugin you will be able to build most of your AI Agents without writing code.
 
-### Why the Agentic Plugin Matters
+### Why the Agent Builder Matters
 
 - **500K+ WordPress sites** waiting for AI-powered agents to enhance Wordpress
 - **Open-source community** – Transparent, collaborative, GPL v2 licensed
@@ -28,14 +28,14 @@ With this plugin you will be able to build most of your AI Agents without writin
 
 ```bash
 cd wp-content/plugins
-git clone https://github.com/renduples/agentic-plugin.git
+git clone https://github.com/renduples/agent-builder.git
 # OR manually upload the ZIP to your WordPress plugins
 ```
 
 ### 2. Activate & Configure
 
 1. Go to WordPress Admin → Plugins
-2. Activate **Agentic Plugin**
+2. Activate **Agent Builder**
 3. Go to **Agentic → Settings**
 4. Add your xAI/OpenAI/Anthropic API key
 5. Enable your primary agent
@@ -52,7 +52,7 @@ That's it. Your primary AI agent is live.
 
 ## 🎯 What You Can Build
 
-The Agentic Plugin comes with **10 pre-built agents** to jumpstart development:
+The Agent Builder comes with **10 pre-built agents** to jumpstart development:
 
 | Agent | Use Case |
 |-------|----------|
@@ -93,8 +93,8 @@ The Agentic Plugin comes with **10 pre-built agents** to jumpstart development:
 WordPress Installation
 ├── wp-content/
 │   ├── plugins/
-│   │   └── agentic-plugin/
-│   │       ├── agentic-plugin.php (Plugin entry point)
+│   │   └── agent-builder/
+│   │       ├── agent-builder.php (Plugin entry point)
 │   │       ├── includes/
 │   │       │   ├── class-agent-base.php (Extend this)
 │   │       │   ├── class-agent-controller.php (Orchestration)
@@ -124,7 +124,7 @@ WordPress Installation
 
 ### Create `wp-content/agents/my-custom-agent/agent.php`
 
-**Note:** User agents are stored in `wp-content/agents/` to survive plugin updates. Bundled agents are in `wp-content/plugins/agentic-plugin/library/`.
+**Note:** User agents are stored in `wp-content/agents/` to survive plugin updates. Bundled agents are in `wp-content/plugins/agent-builder/library/`.
 
 ```php
 <?php
@@ -183,13 +183,13 @@ class My_Custom_Agent extends \Agentic\Agent_Base {
 
 ## 📚 Documentation
 
-All documentation is now available on our [GitHub Wiki](https://github.com/renduples/agentic-plugin/wiki):
+All documentation is now available on our [GitHub Wiki](https://github.com/renduples/agent-builder/wiki):
 
-- **[Quick Start Guide](https://github.com/renduples/agentic-plugin/wiki/Quickstart)** – Get up and running in 5 minutes
-- **[Contributing Guidelines](https://github.com/renduples/agentic-plugin/wiki/Contributing)** – Help build the future
-- **[Security Policy](https://github.com/renduples/agentic-plugin/wiki/Security)** – Report vulnerabilities
-- **[Technical Roadmap](https://github.com/renduples/agentic-plugin/wiki/Roadmap)** – What's next
-- **[Release Notes](https://github.com/renduples/agentic-plugin/wiki/Release-Notes)** – Version history
+- **[Quick Start Guide](https://github.com/renduples/agent-builder/wiki/Quickstart)** – Get up and running in 5 minutes
+- **[Contributing Guidelines](https://github.com/renduples/agent-builder/wiki/Contributing)** – Help build the future
+- **[Security Policy](https://github.com/renduples/agent-builder/wiki/Security)** – Report vulnerabilities
+- **[Technical Roadmap](https://github.com/renduples/agent-builder/wiki/Roadmap)** – What's next
+- **[Release Notes](https://github.com/renduples/agent-builder/wiki/Release-Notes)** – Version history
 
 ### Additional Resources
 
@@ -202,20 +202,20 @@ All documentation is now available on our [GitHub Wiki](https://github.com/rendu
 
 ## 🤝 Contributing
 
-We welcome contributions! See our [Contributing Guidelines](https://github.com/renduples/agentic-plugin/wiki/Contributing) for details.
+We welcome contributions! See our [Contributing Guidelines](https://github.com/renduples/agent-builder/wiki/Contributing) for details.
 
 **Quick ways to contribute:**
 1. **Build an agent** and test it thoroughly
-2. **Improve core** – Submit PRs to [issues](https://github.com/renduples/agentic-plugin/issues)
+2. **Improve core** – Submit PRs to [issues](https://github.com/renduples/agent-builder/issues)
 3. **Report bugs** – Open an issue with reproduction steps
 4. **Suggest features** – Use GitHub Discussions
 5. **Improve docs** – Help other developers succeed
 
 ## 🆘 Support & Help
 
-- **Issues**: https://github.com/renduples/agentic-plugin/issues
-- **Discussions**: https://github.com/renduples/agentic-plugin/discussions
-- **Security**: See our [Security Policy](https://github.com/renduples/agentic-plugin/wiki/Security)
+- **Issues**: https://github.com/renduples/agent-builder/issues
+- **Discussions**: https://github.com/renduples/agent-builder/discussions
+- **Security**: See our [Security Policy](https://github.com/renduples/agent-builder/wiki/Security)
 
 ---
 
@@ -238,10 +238,10 @@ Start with these quick wins:
 4. **Publish your agent** (10 min) – Submit to marketplace
 
 Reference guides:
-- [Roadmap Overview](https://github.com/renduples/agentic-plugin/wiki/Roadmap)
-- [Use Cases](https://github.com/renduples/agentic-plugin/wiki/Use-Cases)
-- [Architecture](https://github.com/renduples/agentic-plugin/wiki/Architecture)
-- [WordPress Core AI](https://github.com/renduples/agentic-plugin/wiki/WordPress-Core-AI)
+- [Roadmap Overview](https://github.com/renduples/agent-builder/wiki/Roadmap)
+- [Use Cases](https://github.com/renduples/agent-builder/wiki/Use-Cases)
+- [Architecture](https://github.com/renduples/agent-builder/wiki/Architecture)
+- [WordPress Core AI](https://github.com/renduples/agent-builder/wiki/WordPress-Core-AI)
 
 ---
 
@@ -261,7 +261,7 @@ Community agents in the marketplace:
 
 ## 💬 Community & Support
 
-- **GitHub Discussions** – Ask questions, share ideas (https://github.com/renduples/agentic-plugin/discussions)
+- **GitHub Discussions** – Ask questions, share ideas (https://github.com/renduples/agent-builder/discussions)
 - **Twitter/X** – [@agenticplugin](https://twitter.com/agenticplugin)
 - **Email** – support@agentic-plugin.com
 
@@ -277,7 +277,7 @@ This is an **independent community project** — not affiliated with or endorsed
 
 ## 🚀 Get Started Now
 
-1. **Install**: cd wp-content/plugins `git clone https://github.com/renduples/agentic-plugin.git`
+1. **Install**: cd wp-content/plugins `git clone https://github.com/renduples/agent-builder.git`
 2. **Activate**: Go to WordPress admin → Plugins
 3. **Configure**: Add API key in Settings
 4. **Test**: Try the SEO Analyzer or Content Assistant
@@ -288,6 +288,6 @@ This is an **independent community project** — not affiliated with or endorsed
 
 ---
 
-**Made with ❤️ by the Agentic Plugin community**
+**Made with ❤️ by the Agent Builder community**
 
-[🌍 Website](https://agentic-plugin.com) • [📖 Docs](https://github.com/renduples/agentic-plugin/wiki) • [💬 GitHub](https://github.com/renduples/agentic-plugin) • [🐦 Twitter](https://twitter.com/agenticplugin)
+[🌍 Website](https://agentic-plugin.com) • [📖 Docs](https://github.com/renduples/agent-builder/wiki) • [💬 GitHub](https://github.com/renduples/agent-builder) • [🐦 Twitter](https://twitter.com/agenticplugin)

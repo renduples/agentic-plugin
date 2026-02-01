@@ -1,14 +1,14 @@
-# Agentic Plugin & WordPress Core AI
+# Agent Builder & WordPress Core AI
 
-> Understanding how Agentic Plugin complements the official WordPress AI initiatives
+> Understanding how Agent Builder complements the official WordPress AI initiatives
 
 ---
 
 ## Overview
 
-The WordPress community has an active AI Team building foundational infrastructure for AI in WordPress. Agentic Plugin is designed to complement—not compete with—these efforts by focusing on the agent marketplace and ecosystem layer.
+The WordPress community has an active AI Team building foundational infrastructure for AI in WordPress. Agent Builder is designed to complement—not compete with—these efforts by focusing on the agent marketplace and ecosystem layer.
 
-**Key Insight:** WordPress Core AI builds the plumbing. Agentic Plugin builds the marketplace of agents that use that plumbing.
+**Key Insight:** WordPress Core AI builds the plumbing. Agent Builder builds the marketplace of agents that use that plumbing.
 
 ---
 
@@ -52,7 +52,7 @@ Reference plugin demonstrating all building blocks. Includes title generation, e
 
 ## Key Differences
 
-| Aspect | WordPress Core AI | Agentic Plugin |
+| Aspect | WordPress Core AI | Agent Builder |
 |--------|------------------|----------------|
 | **Focus** | Infrastructure & APIs | Agent marketplace & ecosystem |
 | **Primary Output** | SDK libraries, APIs, protocols | Installable agent packages |
@@ -68,7 +68,7 @@ The WordPress AI Team explicitly acknowledges this gap:
 
 > "We hope to make it easy for developers to create AI Agents, chatbots, workflow automations and more, using the AI Building Blocks."
 
-**They're building the blocks; Agentic Plugin builds the marketplace for assembled agents.**
+**They're building the blocks; Agent Builder builds the marketplace for assembled agents.**
 
 ---
 
@@ -102,7 +102,7 @@ wp_register_ability( 'agentic_content_optimizer', [
 
 Agent capabilities can be exposed via MCP Adapter, allowing external AI assistants to interact with installed agents.
 
-**Use Case:** Claude Desktop can say "Use the SEO agent to optimize this post" and invoke installed Agentic Plugin agents.
+**Use Case:** Claude Desktop can say "Use the SEO agent to optimize this post" and invoke installed Agent Builder agents.
 
 ### 🔐 Shared Credentials
 
@@ -118,7 +118,7 @@ Leverage the WP AI Client's credential management for API keys instead of requir
 
 **Status:** Complete
 
-Agentic Plugin operates independently with its own LLM integration. Validates the agent-as-plugin model with the community.
+Agent Builder operates independently with its own LLM integration. Validates the agent-as-plugin model with the community.
 
 **Rationale:** Prove the concept before deep integration.
 
@@ -179,7 +179,7 @@ Expose agents via MCP Adapter, allowing external AI to orchestrate and interact 
 
 ### Governance
 
-- Agentic Plugin remains independent community project
+- Agent Builder remains independent community project
 - Respects WordPress trademark guidelines
 - Collaborates with Core AI team
 - No affiliation with Automattic/WordPress Foundation
@@ -188,13 +188,13 @@ Expose agents via MCP Adapter, allowing external AI to orchestrate and interact 
 
 ## Summary
 
-Agentic Plugin and WordPress Core AI are **complementary efforts** addressing different layers of the AI stack:
+Agent Builder and WordPress Core AI are **complementary efforts** addressing different layers of the AI stack:
 
 | Layer | Responsibility | Project |
 |-------|---------------|---------|
 | **Infrastructure** | SDKs, APIs, protocols | WordPress Core AI |
-| **Marketplace** | Agent discovery, installation, licensing | Agentic Plugin |
-| **Agents** | Pre-built, ready-to-use AI assistants | Agentic Plugin + Community |
+| **Marketplace** | Agent discovery, installation, licensing | Agent Builder |
+| **Agents** | Pre-built, ready-to-use AI assistants | Agent Builder + Community |
 
 **Together, they can deliver a complete AI-native WordPress experience**—from the low-level APIs to the user-facing agent marketplace.
 
@@ -208,7 +208,7 @@ Agentic Plugin and WordPress Core AI are **complementary efforts** addressing di
 - [WP AI Client SDK](https://github.com/WordPress/wp-ai-client)
 - [WordPress AI Documentation](https://make.wordpress.org/ai/handbook/)
 
-### Agentic Plugin
+### Agent Builder
 - [Architecture](Architecture.md) - Technical design
 - [Roadmap](Roadmap.md) - Development timeline
 - [Agent Licensing for Developers](Agent-Licensing-for-Developers.md) - Build agents

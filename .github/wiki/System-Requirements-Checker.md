@@ -1,8 +1,8 @@
-# System Requirements Checker for Agentic Plugin
+# System Requirements Checker for Agent Builder
 
 ## Problem Statement
 
-When customers install the Agentic plugin on their WordPress sites, the Agent Builder may fail with timeout errors if their server configuration doesn't meet minimum requirements. Currently, users only discover these issues **after** the plugin fails, leading to:
+When customers install the Agent Builder on their WordPress sites, the Agent Builder may fail with timeout errors if their server configuration doesn't meet minimum requirements. Currently, users only discover these issues **after** the plugin fails, leading to:
 
 - Poor user experience
 - Support tickets
@@ -383,7 +383,7 @@ Consider running the system check automatically when the plugin is first activat
 add_action('admin_notices', function() {
     if (!get_option('agentic_system_check_done')) {
         echo '<div class="notice notice-warning is-dismissible">
-            <p><strong>Agentic Plugin:</strong> Please run the system check to ensure your server meets requirements.</p>
+            <p><strong>Agent Builder:</strong> Please run the system check to ensure your server meets requirements.</p>
             <p><a href="' . admin_url('admin.php?page=agentic-settings') . '" class="button">Go to Settings</a></p>
         </div>';
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Agentic Plugin">
-    <description>WordPress Coding Standards for Agentic Plugin</description>
+<ruleset name="Agent Builder">
+    <description>WordPress Coding Standards for Agent Builder</description>
 
     <!-- What to scan -->
     <file>.</file>
@@ -24,7 +24,7 @@
     </rule>
 
     <!-- Text domain for i18n -->
-    <config name="text_domain" value="agentic-plugin"/>
+    <config name="text_domain" value="agent-builder"/>
 
     <!-- Minimum PHP version -->
     <config name="testVersion" value="8.1-"/>

@@ -8,9 +8,9 @@
  * - Loading active agents
  * - Managing the agent library
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Includes
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      0.2.0
@@ -125,7 +125,7 @@ class Agentic_Agent_Registry {
 	 * Get all installed agents
 	 *
 	 * Includes both user-installed agents (wp-content/agents) and
-	 * bundled library agents (agentic-plugin/library).
+	 * bundled library agents (agent-builder/library).
 	 *
 	 * @param bool $force_refresh Force refresh the cache.
 	 * @return array
@@ -327,11 +327,11 @@ class Agentic_Agent_Registry {
 		$agents = $this->get_installed_agents();
 
 		if ( ! isset( $agents[ $slug ] ) ) {
-			return new WP_Error( 'agent_not_found', __( 'Agent not found.', 'agentic-plugin' ) );
+			return new WP_Error( 'agent_not_found', __( 'Agent not found.', 'agent-builder' ) );
 		}
 
 		if ( $this->is_agent_active( $slug ) ) {
-			return new WP_Error( 'already_active', __( 'Agent is already active.', 'agentic-plugin' ) );
+			return new WP_Error( 'already_active', __( 'Agent is already active.', 'agent-builder' ) );
 		}
 
 		$agent = $agents[ $slug ];
@@ -398,7 +398,7 @@ class Agentic_Agent_Registry {
 	 */
 	public function deactivate_agent( string $slug ) {
 		if ( ! $this->is_agent_active( $slug ) ) {
-			return new WP_Error( 'not_active', __( 'Agent is not active.', 'agentic-plugin' ) );
+			return new WP_Error( 'not_active', __( 'Agent is not active.', 'agent-builder' ) );
 		}
 
 		$agents = $this->get_installed_agents( true );
@@ -440,7 +440,7 @@ class Agentic_Agent_Registry {
 	 */
 	public function load_agent( array $agent ) {
 		if ( empty( $agent['path'] ) || ! file_exists( $agent['path'] ) ) {
-			return new WP_Error( 'file_not_found', __( 'Agent file not found.', 'agentic-plugin' ) );
+			return new WP_Error( 'file_not_found', __( 'Agent file not found.', 'agent-builder' ) );
 		}
 
 		try {
@@ -449,7 +449,7 @@ class Agentic_Agent_Registry {
 		} catch ( \Throwable $e ) {
 			return new WP_Error(
 				'load_error', /* translators: %s: Error message */
-				sprintf( __( 'Error loading agent: %s', 'agentic-plugin' ), $e->getMessage() )
+				sprintf( __( 'Error loading agent: %s', 'agent-builder' ), $e->getMessage() )
 			);
 		}
 	}
@@ -618,11 +618,11 @@ class Agentic_Agent_Registry {
 		}
 
 		if ( ! $agent ) {
-			return new WP_Error( 'not_in_library', __( 'Agent not found in library.', 'agentic-plugin' ) );
+			return new WP_Error( 'not_in_library', __( 'Agent not found in library.', 'agent-builder' ) );
 		}
 
 		if ( $this->is_agent_installed( $slug ) ) {
-			return new WP_Error( 'already_installed', __( 'Agent is already installed.', 'agentic-plugin' ) );
+			return new WP_Error( 'already_installed', __( 'Agent is already installed.', 'agent-builder' ) );
 		}
 
 		$source = $agent['library_path'];
@@ -632,7 +632,7 @@ class Agentic_Agent_Registry {
 		$result = $this->copy_directory( $source, $dest );
 
 		if ( ! $result ) {
-			return new WP_Error( 'copy_failed', __( 'Failed to copy agent files.', 'agentic-plugin' ) );
+			return new WP_Error( 'copy_failed', __( 'Failed to copy agent files.', 'agent-builder' ) );
 		}
 
 		// Clear cache.
@@ -663,7 +663,7 @@ class Agentic_Agent_Registry {
 	 */
 	public function delete_agent( string $slug ) {
 		if ( ! $this->is_agent_installed( $slug ) ) {
-			return new WP_Error( 'not_installed', __( 'Agent is not installed.', 'agentic-plugin' ) );
+			return new WP_Error( 'not_installed', __( 'Agent is not installed.', 'agent-builder' ) );
 		}
 
 		// Deactivate first if active.
@@ -685,7 +685,7 @@ class Agentic_Agent_Registry {
 		$result = $this->delete_directory( $agent_path );
 
 		if ( ! $result ) {
-			return new WP_Error( 'delete_failed', __( 'Failed to delete agent files.', 'agentic-plugin' ) );
+			return new WP_Error( 'delete_failed', __( 'Failed to delete agent files.', 'agent-builder' ) );
 		}
 
 		// Clear cache.

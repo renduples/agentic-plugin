@@ -6,9 +6,9 @@
  * - [agentic_chat] - Full chat interface
  * - [agentic_ask] - One-shot query (displays response inline)
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Includes
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      0.1.0
@@ -386,9 +386,9 @@ class Shortcodes {
 
 		return sprintf(
 			'<div class="agentic-login-prompt"><p>%s</p><a href="%s" class="button">%s</a></div>',
-			esc_html__( 'Please log in to chat with our AI assistant.', 'agentic-plugin' ),
+			esc_html__( 'Please log in to chat with our AI assistant.', 'agent-builder' ),
 			esc_url( $login_url ),
-			esc_html__( 'Log In', 'agentic-plugin' )
+			esc_html__( 'Log In', 'agent-builder' )
 		);
 	}
 }

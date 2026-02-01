@@ -68,4 +68,4 @@ Any other information that would help us understand and implement this feature?
 
 **Have questions?** Comment below and we'll discuss! 💬
 
-See [ROADMAP.md](https://github.com/renduples/agentic-plugin/blob/main/ROADMAP.md) for planned features.
+See [ROADMAP.md](https://github.com/renduples/agent-builder/blob/main/ROADMAP.md) for planned features.

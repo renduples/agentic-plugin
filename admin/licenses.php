@@ -4,9 +4,9 @@
  *
  * Display and manage per-agent licenses.
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Admin
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      1.0.0
@@ -34,7 +34,7 @@ if ( isset( $_GET['action'] ) && 'deactivate' === $_GET['action'] && isset( $_GE
 		$deactivate_method->setAccessible( true );
 		$deactivate_method->invoke( $marketplace, $slug );
 
-		$message = __( 'License deactivated for this site.', 'agentic-plugin' );
+		$message = __( 'License deactivated for this site.', 'agent-builder' );
 	}
 }
 
@@ -44,7 +44,7 @@ $agents   = $registry->get_installed_agents( true );
 
 ?>
 <div class="wrap">
-	<h1><?php esc_html_e( 'Agent Licenses', 'agentic-plugin' ); ?></h1>
+	<h1><?php esc_html_e( 'Agent Licenses', 'agent-builder' ); ?></h1>
 	
 	<?php if ( isset( $message ) ) : ?>
 		<div class="notice notice-success is-dismissible">
@@ -53,15 +53,15 @@ $agents   = $registry->get_installed_agents( true );
 	<?php endif; ?>
 	
 	<p class="description">
-		<?php esc_html_e( 'Manage licenses for your premium agents. Each premium agent requires its own license key.', 'agentic-plugin' ); ?>
+		<?php esc_html_e( 'Manage licenses for your premium agents. Each premium agent requires its own license key.', 'agent-builder' ); ?>
 	</p>
 	
 	<?php if ( empty( $licenses ) ) : ?>
 		<div class="notice notice-info">
 			<p>
-				<?php esc_html_e( 'You don\'t have any licensed agents yet.', 'agentic-plugin' ); ?>
+				<?php esc_html_e( 'You don\'t have any licensed agents yet.', 'agent-builder' ); ?>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-marketplace' ) ); ?>">
-					<?php esc_html_e( 'Browse premium agents →', 'agentic-plugin' ); ?>
+					<?php esc_html_e( 'Browse premium agents →', 'agent-builder' ); ?>
 				</a>
 			</p>
 		</div>
@@ -70,22 +70,22 @@ $agents   = $registry->get_installed_agents( true );
 			<thead>
 				<tr>
 					<th scope="col" class="manage-column column-name column-primary">
-						<?php esc_html_e( 'Agent', 'agentic-plugin' ); ?>
+						<?php esc_html_e( 'Agent', 'agent-builder' ); ?>
 					</th>
 					<th scope="col" class="manage-column">
-						<?php esc_html_e( 'License Key', 'agentic-plugin' ); ?>
+						<?php esc_html_e( 'License Key', 'agent-builder' ); ?>
 					</th>
 					<th scope="col" class="manage-column">
-						<?php esc_html_e( 'Status', 'agentic-plugin' ); ?>
+						<?php esc_html_e( 'Status', 'agent-builder' ); ?>
 					</th>
 					<th scope="col" class="manage-column">
-						<?php esc_html_e( 'Expires', 'agentic-plugin' ); ?>
+						<?php esc_html_e( 'Expires', 'agent-builder' ); ?>
 					</th>
 					<th scope="col" class="manage-column">
-						<?php esc_html_e( 'Activations', 'agentic-plugin' ); ?>
+						<?php esc_html_e( 'Activations', 'agent-builder' ); ?>
 					</th>
 					<th scope="col" class="manage-column">
-						<?php esc_html_e( 'Actions', 'agentic-plugin' ); ?>
+						<?php esc_html_e( 'Actions', 'agent-builder' ); ?>
 					</th>
 				</tr>
 			</thead>
@@ -113,15 +113,15 @@ $agents   = $registry->get_installed_agents( true );
 					// Determine status display.
 					if ( 'active' === $license_status && ! $is_expired ) {
 						$status_class = 'success';
-						$status_text  = __( 'Active', 'agentic-plugin' );
+						$status_text  = __( 'Active', 'agent-builder' );
 					} elseif ( $in_grace ) {
 						$status_class = 'warning';
 						$grace_days   = ceil( ( $grace_end - time() ) / DAY_IN_SECONDS );
 						/* translators: %d: number of days remaining */
-						$status_text = sprintf( __( 'Grace Period (%d days)', 'agentic-plugin' ), $grace_days );
+						$status_text = sprintf( __( 'Grace Period (%d days)', 'agent-builder' ), $grace_days );
 					} elseif ( $is_expired ) {
 						$status_class = 'error';
-						$status_text  = __( 'Expired', 'agentic-plugin' );
+						$status_text  = __( 'Expired', 'agent-builder' );
 					} else {
 						$status_class = 'default';
 						$status_text  = ucfirst( $license_status );
@@ -140,25 +140,25 @@ $agents   = $registry->get_installed_agents( true );
 					}
 					?>
 					<tr>
-						<td class="column-name column-primary" data-colname="<?php esc_attr_e( 'Agent', 'agentic-plugin' ); ?>">
+						<td class="column-name column-primary" data-colname="<?php esc_attr_e( 'Agent', 'agent-builder' ); ?>">
 							<strong><?php echo esc_html( $agent_name ); ?></strong>
 							<div class="row-actions">
 								<?php if ( isset( $agent_data['active'] ) && $agent_data['active'] ) : ?>
-									<span class="active"><?php esc_html_e( 'Active', 'agentic-plugin' ); ?></span>
+									<span class="active"><?php esc_html_e( 'Active', 'agent-builder' ); ?></span>
 								<?php else : ?>
-									<span class="inactive"><?php esc_html_e( 'Inactive', 'agentic-plugin' ); ?></span>
+									<span class="inactive"><?php esc_html_e( 'Inactive', 'agent-builder' ); ?></span>
 								<?php endif; ?>
 							</div>
 						</td>
-						<td data-colname="<?php esc_attr_e( 'License Key', 'agentic-plugin' ); ?>">
+						<td data-colname="<?php esc_attr_e( 'License Key', 'agent-builder' ); ?>">
 							<code style="font-size: 11px;"><?php echo esc_html( $license['license_key'] ?? 'N/A' ); ?></code>
 						</td>
-						<td data-colname="<?php esc_attr_e( 'Status', 'agentic-plugin' ); ?>">
+						<td data-colname="<?php esc_attr_e( 'Status', 'agent-builder' ); ?>">
 							<span class="agentic-license-status agentic-status-<?php echo esc_attr( $status_class ); ?>">
 								<?php echo esc_html( $status_text ); ?>
 							</span>
 						</td>
-						<td data-colname="<?php esc_attr_e( 'Expires', 'agentic-plugin' ); ?>">
+						<td data-colname="<?php esc_attr_e( 'Expires', 'agent-builder' ); ?>">
 							<?php
 							if ( $expires_at ) {
 								$expires_date = date_i18n( get_option( 'date_format' ), strtotime( $expires_at ) );
@@ -172,12 +172,12 @@ $agents   = $registry->get_installed_agents( true );
 							}
 							?>
 						</td>
-						<td data-colname="<?php esc_attr_e( 'Activations', 'agentic-plugin' ); ?>">
+						<td data-colname="<?php esc_attr_e( 'Activations', 'agent-builder' ); ?>">
 							<span class="agentic-activations agentic-status-<?php echo esc_attr( $activations_class ); ?>">
 								<?php echo esc_html( $activations_text ); ?>
 							</span>
 						</td>
-						<td data-colname="<?php esc_attr_e( 'Actions', 'agentic-plugin' ); ?>">
+						<td data-colname="<?php esc_attr_e( 'Actions', 'agent-builder' ); ?>">
 							<?php
 							$deactivate_url = wp_nonce_url(
 								add_query_arg(
@@ -191,13 +191,13 @@ $agents   = $registry->get_installed_agents( true );
 								'agentic_deactivate_license_' . $slug
 							);
 							?>
-							<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button button-small" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to deactivate this license for this site? The license will remain valid for use on other sites.', 'agentic-plugin' ); ?>');">
-								<?php esc_html_e( 'Deactivate This Site', 'agentic-plugin' ); ?>
+							<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button button-small" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to deactivate this license for this site? The license will remain valid for use on other sites.', 'agent-builder' ); ?>');">
+								<?php esc_html_e( 'Deactivate This Site', 'agent-builder' ); ?>
 							</a>
 							
 							<?php if ( $is_expired || 'active' !== $license_status ) : ?>
 								<a href="https://agentic-plugin.com/renew?license=<?php echo esc_attr( $license['license_key'] ?? '' ); ?>" class="button button-primary button-small" target="_blank">
-									<?php esc_html_e( 'Renew License →', 'agentic-plugin' ); ?>
+									<?php esc_html_e( 'Renew License →', 'agent-builder' ); ?>
 								</a>
 							<?php endif; ?>
 						</td>
@@ -250,17 +250,17 @@ $agents   = $registry->get_installed_agents( true );
 		</style>
 		
 		<div style="margin-top: 20px; padding: 15px; background: #f0f0f1; border-left: 4px solid #2271b1;">
-			<h3 style="margin-top: 0;"><?php esc_html_e( 'License Information', 'agentic-plugin' ); ?></h3>
+			<h3 style="margin-top: 0;"><?php esc_html_e( 'License Information', 'agent-builder' ); ?></h3>
 			<ul style="margin-bottom: 0;">
-				<li><?php esc_html_e( 'Each premium agent requires its own license key.', 'agentic-plugin' ); ?></li>
-				<li><?php esc_html_e( 'Licenses can be used on multiple sites up to your activation limit.', 'agentic-plugin' ); ?></li>
-				<li><?php esc_html_e( 'Deactivating a license from this site frees up an activation slot.', 'agentic-plugin' ); ?></li>
-				<li><?php esc_html_e( 'Expired licenses have a 7-day grace period before agents stop working.', 'agentic-plugin' ); ?></li>
+				<li><?php esc_html_e( 'Each premium agent requires its own license key.', 'agent-builder' ); ?></li>
+				<li><?php esc_html_e( 'Licenses can be used on multiple sites up to your activation limit.', 'agent-builder' ); ?></li>
+				<li><?php esc_html_e( 'Deactivating a license from this site frees up an activation slot.', 'agent-builder' ); ?></li>
+				<li><?php esc_html_e( 'Expired licenses have a 7-day grace period before agents stop working.', 'agent-builder' ); ?></li>
 				<li>
 					<?php
 					printf(
 						/* translators: %s: marketplace URL */
-						esc_html__( 'Manage all your licenses at %s', 'agentic-plugin' ),
+						esc_html__( 'Manage all your licenses at %s', 'agent-builder' ),
 						'<a href="https://agentic-plugin.com/account/licenses/" target="_blank">agentic-plugin.com/account/licenses/</a>'
 					);
 					?>

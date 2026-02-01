@@ -2,9 +2,9 @@
 /**
  * Agentic Admin Dashboard
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Admin
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      0.1.0
@@ -20,7 +20,7 @@ use Agentic\Audit_Log;
 use Agentic\LLM_Client;
 
 if ( ! current_user_can( 'manage_options' ) ) {
-	wp_die( esc_html__( 'You do not have permission to access this page.', 'agentic-plugin' ) );
+	wp_die( esc_html__( 'You do not have permission to access this page.', 'agent-builder' ) );
 }
 
 $audit         = new Audit_Log();
@@ -33,7 +33,7 @@ $model         = $llm->get_model();
 <div class="wrap agentic-admin">
 	<h1>
 		<span class="dashicons dashicons-superhero" style="font-size: 30px; margin-right: 10px;"></span>
-		Agentic Plugin
+		Agent Builder
 	</h1>
 
 	<div class="agentic-dashboard-grid">

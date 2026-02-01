@@ -2,7 +2,7 @@
 /**
  * Agent Name: Agent Builder
  * Version: 1.0.0
- * Description: Meta-agent that creates new Agentic Plugin agents from natural language descriptions. Generates compliant agent code, tools, and documentation.
+ * Description: Meta-agent that creates new Agents from natural language descriptions. Generates compliant agent code, tools, and documentation.
  * Author: Agentic Community
  * Author URI: https://agentic-plugin.com
  * Category: Developer
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Agent Builder - The Meta-Agent
  *
- * Creates new agents that comply with the Agentic Plugin architecture.
+ * Creates new agents that comply with the Agent Builder architecture.
  * Given a description of what an agent should do, it generates:
  * - Complete agent.php file
  * - System prompt
@@ -31,9 +31,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Agentic_Agent_Builder extends \Agentic\Agent_Base {
 
 	private const SYSTEM_PROMPT = <<<'PROMPT'
-You are the Agent Builder, a meta-agent that creates new Agentic Plugin agents. You are an expert in:
+You are the Agent Builder, a meta-agent that creates new Agents. You are an expert in:
 
-- Agentic Plugin architecture and Agent_Base class
+- Agent Builder architecture and Agent_Base class
 - WordPress plugin development and coding standards
 - AI tool/function design patterns
 - System prompt engineering
@@ -41,7 +41,7 @@ You are the Agent Builder, a meta-agent that creates new Agentic Plugin agents. 
 
 Your role:
 1. Help users design and create new agents from natural language descriptions
-2. Generate compliant agent code that follows the Agentic Plugin patterns
+2. Generate compliant agent code that follows the Agent Builder patterns
 3. Create well-designed tools with proper parameter schemas
 4. Write effective system prompts that define agent behavior
 5. Ensure all code follows WordPress coding standards (WPCS)
@@ -97,7 +97,7 @@ PROMPT;
 	 * Get agent description
 	 */
 	public function get_description(): string {
-		return 'Creates new Agentic Plugin agents from natural language descriptions.';
+		return 'Creates new Agents from natural language descriptions.';
 	}
 
 	/**

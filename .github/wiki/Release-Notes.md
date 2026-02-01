@@ -1,6 +1,6 @@
 # Release Notes
 
-This page contains all release notes for Agentic Plugin versions.
+This page contains all release notes for Agent Builder versions.
 
 ## Table of Contents
 
@@ -13,7 +13,7 @@ This page contains all release notes for Agentic Plugin versions.
 
 ## v1.0.0-beta
 
-[Full Release Notes](https://github.com/renduples/agentic-plugin/blob/main/RELEASE_NOTES_v1.0.0-beta.md)
+[Full Release Notes](https://github.com/renduples/agent-builder/blob/main/RELEASE_NOTES_v1.0.0-beta.md)
 
 **Release Date:** January 28, 2026
 
@@ -28,12 +28,12 @@ This page contains all release notes for Agentic Plugin versions.
 
 ## v0.1.3-alpha
 
-[Full Release Notes](https://github.com/renduples/agentic-plugin/blob/main/RELEASE_NOTES_v0.1.3-alpha.md)
+[Full Release Notes](https://github.com/renduples/agent-builder/blob/main/RELEASE_NOTES_v0.1.3-alpha.md)
 
 **Release Date:** January 28, 2026
 
 ### Highlights
-- Plugin renamed to "Agentic Plugin"
+- Plugin renamed to "Agent Builder"
 - System Requirements Checker
 - Namespace simplified to Agentic
 - Version synchronization
@@ -42,7 +42,7 @@ This page contains all release notes for Agentic Plugin versions.
 
 ## v0.1.2-alpha
 
-[Full Release Notes](https://github.com/renduples/agentic-plugin/blob/main/RELEASE_NOTES_v0.1.2-alpha.md)
+[Full Release Notes](https://github.com/renduples/agent-builder/blob/main/RELEASE_NOTES_v0.1.2-alpha.md)
 
 **Release Date:** January 2026
 
@@ -56,7 +56,7 @@ This page contains all release notes for Agentic Plugin versions.
 
 ## v0.1.0-alpha
 
-[Full Release Notes](https://github.com/renduples/agentic-plugin/blob/main/RELEASE_NOTES_v0.1.0-alpha.md)
+[Full Release Notes](https://github.com/renduples/agent-builder/blob/main/RELEASE_NOTES_v0.1.0-alpha.md)
 
 **Release Date:** January 2026
 

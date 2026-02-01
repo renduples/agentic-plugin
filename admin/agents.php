@@ -5,9 +5,9 @@
  * Similar to WordPress Plugins page - lists all installed agents
  * with activate/deactivate functionality.
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Admin
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      0.2.0
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Handle actions.
 
 if ( ! current_user_can( 'manage_options' ) ) {
-	wp_die( esc_html__( 'You do not have permission to access this page.', 'agentic-plugin' ) );
+	wp_die( esc_html__( 'You do not have permission to access this page.', 'agent-builder' ) );
 }
 
 // Get available updates.
@@ -49,7 +49,7 @@ if ( $agent_action && $slug && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sa
 				$chat_url    = admin_url( 'admin.php?page=' . $page_slug . '&agent=' . $slug );
 				$message     = sprintf(
 				/* translators: 1: agent name, 2: chat URL */
-					__( '%1$s activated. <a href="%2$s">Chat with this agent now →</a>', 'agentic-plugin' ),
+					__( '%1$s activated. <a href="%2$s">Chat with this agent now →</a>', 'agent-builder' ),
 					esc_html( $agent_name ),
 					esc_url( $chat_url )
 				);
@@ -61,7 +61,7 @@ if ( $agent_action && $slug && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sa
 			if ( is_wp_error( $result ) ) {
 				$agent_error = $result->get_error_message();
 			} else {
-				$message = __( 'Agent deactivated.', 'agentic-plugin' );
+				$message = __( 'Agent deactivated.', 'agent-builder' );
 			}
 			break;
 
@@ -103,13 +103,13 @@ if ( $agent_action && $slug && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sa
 
 						$message = sprintf(
 						/* translators: 1: agent name, 2: new version */
-							__( '%1$s updated to version %2$s successfully.', 'agentic-plugin' ),
+							__( '%1$s updated to version %2$s successfully.', 'agent-builder' ),
 							esc_html( $update_data['name'] ),
 							esc_html( $update_data['latest'] )
 						);
 					}
 				} else {
-					$agent_error = __( 'No update available for this agent.', 'agentic-plugin' );
+					$agent_error = __( 'No update available for this agent.', 'agent-builder' );
 				}
 				break;
 			}
@@ -146,9 +146,9 @@ if ( $search_term ) {
 ?>
 
 <div class="wrap agentic-agents-page">
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'Agents', 'agentic-plugin' ); ?></h1>
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Agents', 'agent-builder' ); ?></h1>
 	<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents-add' ) ); ?>" class="page-title-action">
-		<?php esc_html_e( 'Add New Agent', 'agentic-plugin' ); ?>
+		<?php esc_html_e( 'Add New Agent', 'agent-builder' ); ?>
 	</a>
 	<hr class="wp-header-end">
 
@@ -169,21 +169,21 @@ if ( $search_term ) {
 		<li class="all">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents' ) ); ?>"
 		class="<?php echo 'all' === $filter ? 'current' : ''; ?>">
-				<?php esc_html_e( 'All', 'agentic-plugin' ); ?>
+				<?php esc_html_e( 'All', 'agent-builder' ); ?>
 				<span class="count">(<?php echo esc_html( $all_count ); ?>)</span>
 			</a> |
 		</li>
 		<li class="active">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&agent_status=active' ) ); ?>"
 				class="<?php echo 'active' === $filter ? 'current' : ''; ?>">
-				<?php esc_html_e( 'Active', 'agentic-plugin' ); ?>
+				<?php esc_html_e( 'Active', 'agent-builder' ); ?>
 				<span class="count">(<?php echo esc_html( $active_count ); ?>)</span>
 			</a> |
 		</li>
 		<li class="inactive">
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&agent_status=inactive' ) ); ?>"
 				class="<?php echo 'inactive' === $filter ? 'current' : ''; ?>">
-				<?php esc_html_e( 'Inactive', 'agentic-plugin' ); ?>
+				<?php esc_html_e( 'Inactive', 'agent-builder' ); ?>
 				<span class="count">(<?php echo esc_html( $inactive_count ); ?>)</span>
 			</a>
 		</li>
@@ -194,13 +194,13 @@ if ( $search_term ) {
 		<input type="hidden" name="page" value="agentic-agents">
 		<p class="search-box">
 			<label class="screen-reader-text" for="agent-search-input">
-				<?php esc_html_e( 'Search Agents', 'agentic-plugin' ); ?>
+				<?php esc_html_e( 'Search Agents', 'agent-builder' ); ?>
 			</label>
 			<input type="search" id="agent-search-input" name="s"
 					value="<?php echo esc_attr( $search ); ?>"
-					placeholder="<?php esc_attr_e( 'Search installed agents...', 'agentic-plugin' ); ?>">
+					placeholder="<?php esc_attr_e( 'Search installed agents...', 'agent-builder' ); ?>">
 			<input type="submit" id="search-submit" class="button"
-					value="<?php esc_attr_e( 'Search Agents', 'agentic-plugin' ); ?>">
+					value="<?php esc_attr_e( 'Search Agents', 'agent-builder' ); ?>">
 		</p>
 	</form>
 
@@ -212,10 +212,10 @@ if ( $search_term ) {
 					<input type="checkbox" id="cb-select-all-1">
 				</td>
 				<th scope="col" class="manage-column column-name column-primary">
-					<?php esc_html_e( 'Agent', 'agentic-plugin' ); ?>
+					<?php esc_html_e( 'Agent', 'agent-builder' ); ?>
 				</th>
 				<th scope="col" class="manage-column column-description">
-					<?php esc_html_e( 'Description', 'agentic-plugin' ); ?>
+					<?php esc_html_e( 'Description', 'agent-builder' ); ?>
 				</th>
 			</tr>
 		</thead>
@@ -224,11 +224,11 @@ if ( $search_term ) {
 				<tr class="no-items">
 					<td class="colspanchange" colspan="3">
 						<?php if ( $search ) : ?>
-							<?php esc_html_e( 'No agents found matching your search.', 'agentic-plugin' ); ?>
+							<?php esc_html_e( 'No agents found matching your search.', 'agent-builder' ); ?>
 						<?php else : ?>
-							<?php esc_html_e( 'No agents installed yet.', 'agentic-plugin' ); ?>
+							<?php esc_html_e( 'No agents installed yet.', 'agent-builder' ); ?>
 							<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents-add' ) ); ?>">
-								<?php esc_html_e( 'Add your first agent', 'agentic-plugin' ); ?>
+								<?php esc_html_e( 'Add your first agent', 'agent-builder' ); ?>
 							</a>
 						<?php endif; ?>
 					</td>
@@ -254,7 +254,7 @@ if ( $search_term ) {
 										<?php
 										printf(
 											/* translators: 1: current version, 2: new version */
-											esc_html__( 'Update available: %1$s → %2$s', 'agentic-plugin' ),
+											esc_html__( 'Update available: %1$s → %2$s', 'agent-builder' ),
 											'<strong>' . esc_html( $available_updates[ $slug ]['current'] ) . '</strong>',
 											'<strong>' . esc_html( $available_updates[ $slug ]['latest'] ) . '</strong>'
 										);
@@ -267,7 +267,7 @@ if ( $search_term ) {
 								<?php if ( $has_update && ! empty( $agent['bundled'] ) === false ) : ?>
 									<span class="update">
 										<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&action=update&agent=' . $slug . '&_wpnonce=' . $nonce ) ); ?>" style="color: #d63638; font-weight: 600;">
-											<?php esc_html_e( 'Update Now', 'agentic-plugin' ); ?>
+											<?php esc_html_e( 'Update Now', 'agent-builder' ); ?>
 										</a> |
 									</span>
 								<?php endif; ?>
@@ -278,25 +278,25 @@ if ( $search_term ) {
 									?>
 							<span class="chat">
 								<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . $page_slug . '&agent=' . $slug ) ); ?>" style="font-weight: 600;">
-											<?php esc_html_e( 'Chat', 'agentic-plugin' ); ?>
+											<?php esc_html_e( 'Chat', 'agent-builder' ); ?>
 										</a> |
 									</span>
 									<span class="deactivate">
 										<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&action=deactivate&agent=' . $slug . '&_wpnonce=' . $nonce ) ); ?>">
-											<?php esc_html_e( 'Deactivate', 'agentic-plugin' ); ?>
+											<?php esc_html_e( 'Deactivate', 'agent-builder' ); ?>
 										</a>
 									</span>
 								<?php else : ?>
 									<span class="activate">
 										<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&action=activate&agent=' . $slug . '&_wpnonce=' . $nonce ) ); ?>">
-											<?php esc_html_e( 'Activate', 'agentic-plugin' ); ?>
+											<?php esc_html_e( 'Activate', 'agent-builder' ); ?>
 										</a> |
 									</span>
 									<span class="delete">
 										<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-agents&action=delete&agent=' . $slug . '&_wpnonce=' . $nonce ) ); ?>"
 											class="delete"
-											onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this agent?', 'agentic-plugin' ); ?>');">
-											<?php esc_html_e( 'Delete', 'agentic-plugin' ); ?>
+											onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this agent?', 'agent-builder' ); ?>');">
+											<?php esc_html_e( 'Delete', 'agent-builder' ); ?>
 										</a>
 									</span>
 								<?php endif; ?>
@@ -311,7 +311,7 @@ if ( $search_term ) {
 									<span class="agent-version">
 									<?php
 									/* translators: %s: agent version number */
-									printf( esc_html__( 'Version %s', 'agentic-plugin' ), esc_html( $agent['version'] ) );
+									printf( esc_html__( 'Version %s', 'agent-builder' ), esc_html( $agent['version'] ) );
 									?>
 									</span>
 									<span class="separator">|</span>
@@ -319,7 +319,7 @@ if ( $search_term ) {
 
 								<?php if ( ! empty( $agent['author'] ) ) : ?>
 									<span class="agent-author">
-										<?php esc_html_e( 'By', 'agentic-plugin' ); ?>
+										<?php esc_html_e( 'By', 'agent-builder' ); ?>
 										<?php if ( ! empty( $agent['author_uri'] ) ) : ?>
 											<a href="<?php echo esc_url( $agent['author_uri'] ); ?>" target="_blank">
 												<?php echo esc_html( $agent['author'] ); ?>
@@ -342,7 +342,7 @@ if ( $search_term ) {
 									<span class="agent-capabilities">
 										<?php
 										/* translators: %s: comma-separated list of agent capabilities */                                       printf(
-											esc_html__( 'Capabilities: %s', 'agentic-plugin' ),
+											esc_html__( 'Capabilities: %s', 'agent-builder' ),
 											esc_html( implode( ', ', $agent['capabilities'] ) )
 										);
 										?>
@@ -360,10 +360,10 @@ if ( $search_term ) {
 					<input type="checkbox" id="cb-select-all-2">
 				</td>
 				<th scope="col" class="manage-column column-name column-primary">
-					<?php esc_html_e( 'Agent', 'agentic-plugin' ); ?>
+					<?php esc_html_e( 'Agent', 'agent-builder' ); ?>
 				</th>
 				<th scope="col" class="manage-column column-description">
-					<?php esc_html_e( 'Description', 'agentic-plugin' ); ?>
+					<?php esc_html_e( 'Description', 'agent-builder' ); ?>
 				</th>
 			</tr>
 		</tfoot>

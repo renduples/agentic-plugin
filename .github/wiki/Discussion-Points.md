@@ -2,7 +2,7 @@
 
 > Open questions and considerations that require community input and collaborative decision-making.
 
-This page outlines key challenges, tradeoffs, and design decisions that the Agentic Plugin project faces. **Your input is valuable** - please contribute to these discussions!
+This page outlines key challenges, tradeoffs, and design decisions that the Agent Builder project faces. **Your input is valuable** - please contribute to these discussions!
 
 ---
 
@@ -372,10 +372,10 @@ We welcome community input on these discussion points!
 ### Ways to Participate
 
 1. **GitHub Discussions**  
-   Join ongoing conversations: [github.com/renduples/agentic-plugin/discussions](https://github.com/renduples/agentic-plugin/discussions)
+   Join ongoing conversations: [github.com/renduples/agent-builder/discussions](https://github.com/renduples/agent-builder/discussions)
 
 2. **GitHub Issues**  
-   Open specific technical proposals: [github.com/renduples/agentic-plugin/issues](https://github.com/renduples/agentic-plugin/issues)
+   Open specific technical proposals: [github.com/renduples/agent-builder/issues](https://github.com/renduples/agent-builder/issues)
 
 3. **Community Forum**  
    Broader discussions and use cases: [agentic-plugin.com/forum](#)

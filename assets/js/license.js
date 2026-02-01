@@ -3,7 +3,7 @@
  *
  * Handles license activation, deactivation, and refresh via AJAX.
  *
- * @package Agentic_Plugin
+ * @package Agent_Builder
  * @since 1.0.0
  */
 

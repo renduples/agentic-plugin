@@ -1,4 +1,4 @@
-# Agentic Plugin Roadmap 🗺️
+# Agent Builder Roadmap 🗺️
 
 > **Vision**: Make WordPress the most powerful platform for building AI agents.
 
@@ -236,7 +236,7 @@ Our approach maintains **100% backwards compatibility** while introducing agenti
    - [ ] RTL language support
    - [ ] Unicode and emoji handling improvements
 ### 2. **Request Features**
-Open an [issue](https://github.com/renduples/agentic-plugin/issues) with:
+Open an [issue](https://github.com/renduples/agent-builder/issues) with:
 - Clear use case
 - Why it matters
 - Proposed solution

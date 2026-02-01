@@ -57,9 +57,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Agentic Plugin v${{ steps.version.outputs.VERSION }}
+          name: Agent Builder v${{ steps.version.outputs.VERSION }}
           body: |
-            ## Agentic Plugin v${{ steps.version.outputs.VERSION }}
+            ## Agent Builder v${{ steps.version.outputs.VERSION }}
             
             ### Installation
             1. Download `agentic-plugin.zip`
@@ -68,7 +68,7 @@ jobs:
             
             ### WP-CLI Installation
             ```bash
-            wp plugin install https://github.com/renduples/agentic-plugin/releases/latest/download/agentic-plugin.zip --activate
+            wp plugin install https://github.com/renduples/agent-builder/releases/latest/download/agentic-plugin.zip --activate
             ```
             
             See [documentation](https://agentic-plugin.com/) for setup instructions.

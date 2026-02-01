@@ -1,7 +1,7 @@
 # WordPress Coding Standards - Auto-Fix Summary
 
 **Date**: January 28, 2026  
-**Plugin**: Agentic Plugin v0.1.3-alpha
+**Plugin**: Agent Builder v0.1.3-alpha
 
 ---
 
@@ -140,10 +140,10 @@ vendor/bin/phpcs --standard=WordPress includes/class-agent-registry.php
  * Class description
  *
  * @category Agentic
- * @package  Agentic_Plugin
+ * @package  Agent_Builder
  * @author   Your Name <email@example.com>
  * @license  GPL-2.0-or-later
- * @link     https://github.com/renduples/agentic-plugin
+ * @link     https://github.com/renduples/agent-builder
  */
 ```
 

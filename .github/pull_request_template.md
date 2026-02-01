@@ -16,7 +16,7 @@ Fixes #(issue number) ← Link to related issue if applicable
 
 ## 📋 Checklist
 
-- [ ] I've read [CONTRIBUTING.md](https://github.com/renduples/agentic-plugin/blob/main/CONTRIBUTING.md)
+- [ ] I've read [CONTRIBUTING.md](https://github.com/renduples/agent-builder/blob/main/CONTRIBUTING.md)
 - [ ] I've followed [WordPress Coding Standards](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/php/)
 - [ ] My code has appropriate comments/documentation
 - [ ] I've tested this locally in WordPress

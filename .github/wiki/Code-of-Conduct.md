@@ -2,7 +2,7 @@
 
 ## Our Commitment
 
-Agentic Plugin is committed to providing a welcoming and inclusive environment for all community members, regardless of background, experience level, or identity.
+Agent Builder is committed to providing a welcoming and inclusive environment for all community members, regardless of background, experience level, or identity.
 
 ## Our Standards
 

@@ -1,4 +1,4 @@
-# ⚡ Agentic Plugin – Quick Start (5 minutes)
+# ⚡ Agent Builder – Quick Start (5 minutes)
 
 Welcome! Let's get you up and running with AI agents in WordPress **right now**.
 
@@ -21,11 +21,11 @@ By the end of this, you'll have:
 ### Option A: Git Clone (Recommended)
 ```bash
 cd wp-content/plugins
-git clone https://github.com/renduples/agentic-plugin.git
+git clone https://github.com/renduples/agent-builder.git
 ```
 
 ### Option B: ZIP Download
-1. Go to [GitHub releases](https://github.com/renduples/agentic-plugin/releases)
+1. Go to [GitHub releases](https://github.com/renduples/agent-builder/releases)
 2. Download the latest `.zip` file
 3. Upload via WordPress Admin → Plugins → Upload Plugin
 
@@ -42,7 +42,7 @@ git clone https://github.com/renduples/agentic-plugin.git
 
 1. Go to **WordPress Admin**
 2. Click **Plugins** in the left menu
-3. Find **Agentic Plugin**
+3. Find **Agent Builder**
 4. Click **Activate**
 
 You should now see **Agentic** in the left menu! 🎉
@@ -175,7 +175,7 @@ When you're happy with your agent:
 1. **Check error logs** – WordPress admin shows errors
 2. **Review Audit Log** – Agentic → Audit Log
 3. **Google the error** – Likely covered on StackOverflow
-4. **Ask in GitHub Issues** – [github.com/renduples/agentic-plugin/issues](https://github.com/renduples/agentic-plugin/issues)
+4. **Ask in GitHub Issues** – [github.com/renduples/agent-builder/issues](https://github.com/renduples/agent-builder/issues)
 
 ### Common Issues
 
@@ -211,7 +211,7 @@ Once you're comfortable, explore:
 1. **[Customize an agent](./AGENT_DEVELOPMENT.md)** – Modify a pre-built agent
 2. **[Build from scratch](./README.md#building-your-first-agent)** – Create a unique agent
 3. **[Earn money](https://agentic-plugin.com/submit-agent)** – Submit to marketplace
-4. **[Join the community](https://github.com/renduples/agentic-plugin/discussions)** – Share your work
+4. **[Join the community](https://github.com/renduples/agent-builder/discussions)** – Share your work
 
 ---
 
@@ -230,7 +230,7 @@ Every agent action is logged. Check **Agentic → Audit Log** to understand what
 Go to **Agentic → Agents** and click on each agent. The description shows what it can do.
 
 ### Tip 5: Join the Community
-The best way to learn is from other developers. Join [GitHub Discussions](https://github.com/renduples/agentic-plugin/discussions) and ask questions!
+The best way to learn is from other developers. Join [GitHub Discussions](https://github.com/renduples/agent-builder/discussions) and ask questions!
 
 ---
 

@@ -4,9 +4,9 @@
  *
  * Supports dynamic agent selection - users can chat with any active agent.
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Templates
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      0.1.0
@@ -221,7 +221,7 @@ if ( $default_agent_id && isset( $agents[ $default_agent_id ] ) ) {
 
 	<div class="agentic-chat-footer">
 		<span class="agentic-footer-info">
-			Powered by Agentic Plugin v<?php echo esc_html( AGENTIC_PLUGIN_VERSION ); ?>
+			Powered by Agent Builder v<?php echo esc_html( AGENTIC_PLUGIN_VERSION ); ?>
 		</span>
 		<span class="agentic-footer-stats" id="agentic-stats"></span>
 	</div>

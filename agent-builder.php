@@ -1,20 +1,20 @@
 <?php
 /**
- * Plugin Name:       Agentic Plugin
+ * Plugin Name:       Agent Builder
  * Plugin URI:        https://agentic-plugin.com
  * Description:       Build AI agents without writing code. Describe the AI agent you want and let WordPress build it for you.
  * Version:           1.1.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
- * Author:            Agentic Plugin Team
+ * Author:            Agent Builder Team
  * Author URI:        https://profiles.wordpress.org/agenticplugin/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       agentic-plugin
+ * Text Domain:       agent-builder
  * Domain Path:       /languages
- * Update URI:        https://github.com/renduples/agentic-plugin
+ * Update URI:        https://github.com/renduples/agent-builder
  *
- * @package Agentic_Plugin
+ * @package Agent_Builder
  */
 
 declare(strict_types=1);
@@ -94,7 +94,7 @@ final class Plugin {
 	 */
 	public function load_textdomain(): void {
 		load_plugin_textdomain(
-			'agentic-plugin',
+			'agent-builder',
 			false,
 			dirname( AGENTIC_PLUGIN_BASENAME ) . '/languages'
 		);
@@ -138,29 +138,29 @@ final class Plugin {
 	 */
 	public function admin_menu(): void {
 		add_menu_page(
-			__( 'Agentic', 'agentic-plugin' ),
-			__( 'Agentic', 'agentic-plugin' ),
+			__( 'Agentic', 'agent-builder' ),
+			__( 'Agentic', 'agent-builder' ),
 			'manage_options',
-			'agentic-plugin',
+			'agent-builder',
 			array( $this, 'render_admin_page' ),
 			'dashicons-superhero',
 			30
 		);
 
 		add_submenu_page(
-			'agentic-plugin',
-			__( 'Dashboard', 'agentic-plugin' ),
-			__( 'Dashboard', 'agentic-plugin' ),
+			'agent-builder',
+			__( 'Dashboard', 'agent-builder' ),
+			__( 'Dashboard', 'agent-builder' ),
 			'manage_options',
-			'agentic-plugin',
+			'agent-builder',
 			array( $this, 'render_admin_page' )
 		);
 
 		// Agent Chat.
 		add_submenu_page(
-			'agentic-plugin',
-			__( 'Agent Chat', 'agentic-plugin' ),
-			__( 'Agent Chat', 'agentic-plugin' ),
+			'agent-builder',
+			__( 'Agent Chat', 'agent-builder' ),
+			__( 'Agent Chat', 'agent-builder' ),
 			'read',
 			'agentic-chat',
 			array( $this, 'render_chat_page' )
@@ -168,45 +168,45 @@ final class Plugin {
 
 		// Agents menu (like Plugins menu).
 		add_submenu_page(
-			'agentic-plugin',
-			__( 'Installed Agents', 'agentic-plugin' ),
-			__( 'Installed Agents', 'agentic-plugin' ),
+			'agent-builder',
+			__( 'Installed Agents', 'agent-builder' ),
+			__( 'Installed Agents', 'agent-builder' ),
 			'manage_options',
 			'agentic-agents',
 			array( $this, 'render_agents_page' )
 		);
 
 		add_submenu_page(
-			'agentic-plugin',
-			__( 'Add New Agent', 'agentic-plugin' ),
-			__( 'Add Agent', 'agentic-plugin' ),
+			'agent-builder',
+			__( 'Add New Agent', 'agent-builder' ),
+			__( 'Add Agent', 'agent-builder' ),
 			'read',
 			'agentic-agents-add',
 			array( $this, 'render_agents_add_page' )
 		);
 
 		add_submenu_page(
-			'agentic-plugin',
-			__( 'Audit Log', 'agentic-plugin' ),
-			__( 'Audit Log', 'agentic-plugin' ),
+			'agent-builder',
+			__( 'Audit Log', 'agent-builder' ),
+			__( 'Audit Log', 'agent-builder' ),
 			'manage_options',
 			'agentic-audit',
 			array( $this, 'render_audit_log_page' )
 		);
 
 		add_submenu_page(
-			'agentic-plugin',
-			__( 'Code Proposals', 'agentic-plugin' ),
-			__( 'Code Proposals', 'agentic-plugin' ),
+			'agent-builder',
+			__( 'Code Proposals', 'agent-builder' ),
+			__( 'Code Proposals', 'agent-builder' ),
 			'manage_options',
 			'agentic-approvals',
 			array( $this, 'render_approvals_page' )
 		);
 
 		add_submenu_page(
-			'agentic-plugin',
-			__( 'Settings', 'agentic-plugin' ),
-			__( 'Settings', 'agentic-plugin' ),
+			'agent-builder',
+			__( 'Settings', 'agent-builder' ),
+			__( 'Settings', 'agent-builder' ),
 			'manage_options',
 			'agentic-settings',
 			array( $this, 'render_settings_page' )
@@ -228,10 +228,10 @@ final class Plugin {
 		$wp_admin_bar->add_node(
 			array(
 				'id'    => 'agentic',
-				'title' => '<span class="ab-icon dashicons dashicons-superhero" style="font-size: 18px; line-height: 1.3;"></span>' . __( 'Agents', 'agentic-plugin' ),
+				'title' => '<span class="ab-icon dashicons dashicons-superhero" style="font-size: 18px; line-height: 1.3;"></span>' . __( 'Agents', 'agent-builder' ),
 				'href'  => admin_url( 'admin.php?page=agentic-agents' ),
 				'meta'  => array(
-					'title' => __( 'Agentic Plugin Agents', 'agentic-plugin' ),
+					'title' => __( 'Agent Builder', 'agent-builder' ),
 				),
 			)
 		);
@@ -241,7 +241,7 @@ final class Plugin {
 			array(
 				'id'     => 'agentic-agents',
 				'parent' => 'agentic',
-				'title'  => __( 'Installed Agents', 'agentic-plugin' ),
+				'title'  => __( 'Installed Agents', 'agent-builder' ),
 				'href'   => admin_url( 'admin.php?page=agentic-agents' ),
 			)
 		);
@@ -250,7 +250,7 @@ final class Plugin {
 			array(
 				'id'     => 'agentic-add-new',
 				'parent' => 'agentic',
-				'title'  => __( 'Add Agent', 'agentic-plugin' ),
+				'title'  => __( 'Add Agent', 'agent-builder' ),
 				'href'   => admin_url( 'admin.php?page=agentic-agents-add' ),
 			)
 		);
@@ -259,7 +259,7 @@ final class Plugin {
 			array(
 				'id'     => 'agentic-audit',
 				'parent' => 'agentic',
-				'title'  => __( 'Audit Log', 'agentic-plugin' ),
+				'title'  => __( 'Audit Log', 'agent-builder' ),
 				'href'   => admin_url( 'admin.php?page=agentic-audit' ),
 			)
 		);
@@ -268,7 +268,7 @@ final class Plugin {
 			array(
 				'id'     => 'agentic-settings',
 				'parent' => 'agentic',
-				'title'  => __( 'Settings', 'agentic-plugin' ),
+				'title'  => __( 'Settings', 'agent-builder' ),
 				'href'   => admin_url( 'admin.php?page=agentic-settings' ),
 			)
 		);
@@ -294,8 +294,8 @@ final class Plugin {
 			'agent_audit_log',
 			array(
 				'labels'       => array(
-					'name'          => __( 'Agent Audit Logs', 'agentic-plugin' ),
-					'singular_name' => __( 'Audit Log', 'agentic-plugin' ),
+					'name'          => __( 'Agent Audit Logs', 'agent-builder' ),
+					'singular_name' => __( 'Audit Log', 'agent-builder' ),
 				),
 				'public'       => false,
 				'show_ui'      => false,
@@ -311,8 +311,8 @@ final class Plugin {
 			'agent_approval',
 			array(
 				'labels'   => array(
-					'name'          => __( 'Agent Approvals', 'agentic-plugin' ),
-					'singular_name' => __( 'Approval', 'agentic-plugin' ),
+					'name'          => __( 'Agent Approvals', 'agent-builder' ),
+					'singular_name' => __( 'Approval', 'agent-builder' ),
 				),
 				'public'   => false,
 				'show_ui'  => false,
@@ -443,7 +443,7 @@ final class Plugin {
 		);
 
 		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'Agent Chat', 'agentic-plugin' ) . ' <span class="agentic-status" style="font-size: 14px; font-weight: normal; vertical-align: middle;"><span class="agentic-status-dot"></span>Online</span></h1>';
+		echo '<h1>' . esc_html__( 'Agent Chat', 'agent-builder' ) . ' <span class="agentic-status" style="font-size: 14px; font-weight: normal; vertical-align: middle;"><span class="agentic-status-dot"></span>Online</span></h1>';
 		include AGENTIC_PLUGIN_DIR . 'templates/chat-interface.php';
 		echo '</div>';
 	}
@@ -576,7 +576,7 @@ final class Plugin {
 					'post_title'   => 'Developer Agent',
 					'post_name'    => 'agent-chat',
 					'post_status'  => 'publish',
-					'post_content' => '<!-- Chat interface rendered by Agentic Plugin -->',
+					'post_content' => '<!-- Chat interface rendered by Agent Builder -->',
 				)
 			);
 		}
@@ -643,8 +643,8 @@ final class Plugin {
 	 */
 	public function get_developer_guidelines(): string {
 		return '
-<h2>Agentic Plugin Developer Guidelines</h2>
-<p>Welcome to the Agentic Plugin developer community! Before submitting your agent, please review these guidelines to ensure a smooth review process.</p>
+<h2>Agent Builder Developer Guidelines</h2>
+<p>Welcome to the Agent Builder developer community! Before submitting your agent, please review these guidelines to ensure a smooth review process.</p>
 
 <h3>1. Code Quality Standards</h3>
 <ul>
@@ -677,7 +677,7 @@ final class Plugin {
 <li>Do not use trademarks you do not own (WordPress, OpenAI, etc.)</li>
 <li>Agent slugs cannot be changed after approval</li>
 <li>Choose a unique, descriptive name that reflects your agent&apos;s purpose</li>
-<li>Avoid names that could be confused with official Agentic Plugin agents</li>
+<li>Avoid names that could be confused with official Agent Builder agents</li>
 </ul>
 
 <h3>5. Required Files</h3>

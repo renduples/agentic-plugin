@@ -1,6 +1,6 @@
-# Contributing to Agentic Plugin
+# Contributing to Agent Builder
 
-Welcome to the Agentic Plugin community! We're excited to have you here. Whether you're fixing bugs, building agents, improving docs, or spreading the word – your contribution matters.
+Welcome to the Agent Builder community! We're excited to have you here. Whether you're fixing bugs, building agents, improving docs, or spreading the word – your contribution matters.
 
 ## Ways to Contribute
 
@@ -9,6 +9,7 @@ Welcome to the Agentic Plugin community! We're excited to have you here. Whether
 The best way to contribute is to build amazing agents and share them with the community.
 
 **Steps:**
+
 1. Create a new folder in `library/your-agent-name/`
 2. Build your agent using `Agent_Base` class
 3. Test thoroughly in WordPress
@@ -16,6 +17,7 @@ The best way to contribute is to build amazing agents and share them with the co
 5. Share on Twitter/GitHub Discussions when approved
 
 **Agent Ideas:**
+
 - WooCommerce automation
 - Multi-language content translation
 - Email marketing automation
@@ -28,7 +30,8 @@ The best way to contribute is to build amazing agents and share them with the co
 Found a bug? We'd love to hear about it!
 
 **Reporting:**
-1. Check [existing issues](https://github.com/renduples/agentic-plugin/issues)
+
+1. Check [existing issues](https://github.com/renduples/agent-builder/issues)
 2. Open a new issue with:
    - Clear title and description
    - Steps to reproduce
@@ -37,6 +40,7 @@ Found a bug? We'd love to hear about it!
    - Any error messages
 
 **Fixing:**
+
 1. Fork the repo
 2. Create a feature branch: `git checkout -b fix/issue-123`
 3. Write tests if applicable
@@ -48,6 +52,7 @@ Found a bug? We'd love to hear about it!
 Great docs = more developers using Agentic = more agents = more awesome.
 
 **Areas to improve:**
+
 - API reference examples
 - Tutorial videos or GIFs
 - Security model documentation
@@ -56,6 +61,7 @@ Great docs = more developers using Agentic = more agents = more awesome.
 - Agent submission walkthrough
 
 **How to contribute:**
+
 1. Edit docs in [library/README.md](library/README.md) or create new guides
 2. Submit PR with improvements
 3. We'll add your name to contributors
@@ -65,6 +71,7 @@ Great docs = more developers using Agentic = more agents = more awesome.
 Help us build the fundamental platform better.
 
 **High-impact areas:**
+
 - Agent registry improvements
 - REST API enhancements
 - UI/UX improvements
@@ -73,6 +80,7 @@ Help us build the fundamental platform better.
 - Security hardening
 
 **Process:**
+
 1. Open an issue first to discuss
 2. Get feedback from maintainers
 3. Fork and develop on feature branch
@@ -83,6 +91,7 @@ Help us build the fundamental platform better.
 Community grows through word-of-mouth. Help us reach more developers!
 
 **Ways to amplify:**
+
 - **Social media**: Tweet about agents you build or cool features
 - **Blog posts**: Write tutorials on agent development
 - **YouTube**: Create demo videos showing agents in action
@@ -95,6 +104,7 @@ Community grows through word-of-mouth. Help us reach more developers!
 ## Development Setup
 
 ### Prerequisites
+
 - WordPress 6.4+
 - PHP 8.1+
 - Git
@@ -103,20 +113,20 @@ Community grows through word-of-mouth. Help us reach more developers!
 ### Local Development
 
 1. **Clone the repo:**
+
    ```bash
-   git clone https://github.com/renduples/agentic-plugin.git
+   git clone https://github.com/renduples/agent-builder.git
    cd agentic-plugin
    ```
-
 2. **Install in WordPress:**
+
    ```bash
    cd /path/to/wordpress/wp-content/plugins
-   ln -s /path/to/agentic-plugin
+   ln -s /path/to/agent-builder
    ```
-
 3. **Activate in WordPress Admin**
-
 4. **Test your changes:**
+
    - Visit `/wp-admin/` and navigate to Agentic
    - Try the included agents
    - Check the audit log for issues
@@ -138,6 +148,7 @@ if (isset($value)){
 ```
 
 **Check your code:**
+
 ```bash
 # (WordPress developers typically use PHPCS)
 phpcs --standard=WordPress your-file.php
@@ -146,8 +157,8 @@ phpcs --standard=WordPress your-file.php
 ### File Structure
 
 ```
-agentic-plugin/
-├── agentic-plugin.php          # Main plugin file
+agent-builder/
+├── agent-builder.php          # Main plugin file
 ├── includes/                 # Core classes
 │   ├── class-agent-base.php  # Extend this
 │   ├── class-*.php           # Other core
@@ -164,6 +175,7 @@ agentic-plugin/
 Quick way to test the system:
 
 1. Create `library/test-demo/agent.php`:
+
    ```php
    <?php
    /**
@@ -196,7 +208,6 @@ Quick way to test the system:
        }
    }
    ```
-
 2. Go to Agentic → Installed Agents and enable it
 3. Test in Agentic → Agent Chat
 
@@ -253,24 +264,28 @@ Attach relevant images.
 ## Community Guidelines
 
 ### Be Respectful
+
 - Treat all community members with respect
 - No harassment, discrimination, or hate speech
 - Give credit where it's due
 - Assume good intent
 
 ### Be Helpful
+
 - Help newer developers learn
 - Answer questions patiently
 - Share knowledge generously
 - Celebrate others' contributions
 
 ### Be Constructive
+
 - Provide specific, actionable feedback
 - Suggest improvements, not just criticism
 - Help fix issues you report
 - Contribute positively to discussions
 
 ### Be Secure-First
+
 - Never suggest hardcoding secrets
 - Always recommend using WordPress options or .env
 - Report security issues privately to security@agentic-plugin.com
@@ -281,18 +296,21 @@ Attach relevant images.
 ## Levels of Contribution
 
 ### Level 1: User
+
 - Use Agentic
 - Give feedback
 - Report bugs
 - Share your agents
 
 ### Level 2: Contributor
+
 - Fix bugs
 - Improve docs
 - Build demo agents
 - Help in discussions
 
 ### Level 3: Maintainer
+
 - Manage PRs & issues
 - Set roadmap
 - Review agents
@@ -305,6 +323,7 @@ Working your way up? Start anywhere and grow naturally!
 ## Recognition
 
 Contributors are recognized in:
+
 - **GitHub**: Added as collaborator
 - **Website**: Listed in community section
 - **Releases**: Mentioned in changelog
@@ -327,6 +346,6 @@ By contributing, you agree that your contributions will be licensed under GPL v2
 
 ---
 
-**Thank you for making Agentic Plugin better! 🚀**
+**Thank you for making Agent Builder better! 🚀**
 
-Built with ❤️ by the Agentic community
+Built with ❤️ by the Agent Builder community

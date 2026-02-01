@@ -192,7 +192,7 @@ We've built and open-sourced **10 fully functional agents** to help you get star
 ---
 
 #### **[Developer Agent](developer-agent/agent.php)** 👨‍💻
-**What it does:** Your personal AI guide to the Agentic Plugin ecosystem
+**What it does:** Your personal AI guide to the Agent Builder ecosystem
 - ✅ Answers questions about the platform
 - ✅ Helps debug issues
 - ✅ Explains concepts
@@ -239,8 +239,8 @@ We've built and open-sourced **10 fully functional agents** to help you get star
 
 1. **Clone the repo:**
    ```bash
-   git clone https://github.com/renduples/agentic-plugin.git
-   cd agentic-plugin/library
+   git clone https://github.com/renduples/agent-builder.git
+   cd agent-builder/library
    ```
 
 2. **Activate in WordPress:**
@@ -405,8 +405,8 @@ Real examples:
 ## 🆘 Need Help?
 
 - **Docs** – [agentic-plugin.com/roadmap](https://agentic-plugin.com/roadmap/)
-- **GitHub Issues** – [github.com/renduples/agentic-plugin/issues](https://github.com/renduples/agentic-plugin/issues)
-- **GitHub Discussions** – [github.com/renduples/agentic-plugin/discussions](https://github.com/renduples/agentic-plugin/discussions)
+- **GitHub Issues** – [github.com/renduples/agent-builder/issues](https://github.com/renduples/agent-builder/issues)
+- **GitHub Discussions** – [github.com/renduples/agent-builder/discussions](https://github.com/renduples/agent-builder/discussions)
 - **Ask Agent (Product Q&A)** – [agentic-plugin.com/agent-chat](https://agentic-plugin.com/agent-chat/)
 - **Discord** – Chat with developers
 - **Twitter** – @agenticplugin

@@ -17,26 +17,26 @@ Consolidated all important documentation from https://agentic-plugin.com/roadmap
 
 | Website Page | Wiki Page | Content |
 |--------------|-----------|---------|
-| `/roadmap/` | [Roadmap.md](https://github.com/renduples/agentic-plugin/wiki/Roadmap) | Current status, milestones (already existed, enhanced) |
-| `/roadmap/executive-summary/` | [Roadmap.md](https://github.com/renduples/agentic-plugin/wiki/Roadmap) | Goals, non-goals (merged into existing) |
-| `/roadmap/core-architecture/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | WP_Agent_Controller, hooks, memory API |
-| `/roadmap/backend-capabilities/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | Content, admin, developer agents |
-| `/roadmap/frontend-capabilities/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | Chat interface, personalization |
-| `/roadmap/plugin-architecture/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | Agent plugin base class, WooCommerce example |
-| `/roadmap/theme-architecture/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | Theme configuration, block editor integration |
-| `/roadmap/security-guardrails/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | Roles, guardrails, audit logging |
-| `/roadmap/data-flow/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | System architecture diagram |
-| `/roadmap/rest-api/` | [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) | API endpoints and schemas |
-| `/roadmap/use-cases/` | [Use-Cases.md](https://github.com/renduples/agentic-plugin/wiki/Use-Cases) | E-commerce, publishing, maintenance, accessibility |
-| `/roadmap/migration-path/` | [Roadmap.md](https://github.com/renduples/agentic-plugin/wiki/Roadmap) | 5-phase rollout timeline |
-| `/roadmap/discussion-points/` | [Discussion-Points.md](https://github.com/renduples/agentic-plugin/wiki/Discussion-Points) | Privacy, caching, costs, security questions |
-| `/roadmap/roadmap/` | [Roadmap.md](https://github.com/renduples/agentic-plugin/wiki/Roadmap) | Milestones and glossary (merged) |
+| `/roadmap/` | [Roadmap.md](https://github.com/renduples/agent-builder/wiki/Roadmap) | Current status, milestones (already existed, enhanced) |
+| `/roadmap/executive-summary/` | [Roadmap.md](https://github.com/renduples/agent-builder/wiki/Roadmap) | Goals, non-goals (merged into existing) |
+| `/roadmap/core-architecture/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | WP_Agent_Controller, hooks, memory API |
+| `/roadmap/backend-capabilities/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | Content, admin, developer agents |
+| `/roadmap/frontend-capabilities/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | Chat interface, personalization |
+| `/roadmap/plugin-architecture/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | Agent plugin base class, WooCommerce example |
+| `/roadmap/theme-architecture/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | Theme configuration, block editor integration |
+| `/roadmap/security-guardrails/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | Roles, guardrails, audit logging |
+| `/roadmap/data-flow/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | System architecture diagram |
+| `/roadmap/rest-api/` | [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) | API endpoints and schemas |
+| `/roadmap/use-cases/` | [Use-Cases.md](https://github.com/renduples/agent-builder/wiki/Use-Cases) | E-commerce, publishing, maintenance, accessibility |
+| `/roadmap/migration-path/` | [Roadmap.md](https://github.com/renduples/agent-builder/wiki/Roadmap) | 5-phase rollout timeline |
+| `/roadmap/discussion-points/` | [Discussion-Points.md](https://github.com/renduples/agent-builder/wiki/Discussion-Points) | Privacy, caching, costs, security questions |
+| `/roadmap/roadmap/` | [Roadmap.md](https://github.com/renduples/agent-builder/wiki/Roadmap) | Milestones and glossary (merged) |
 
 ---
 
 ## New Wiki Pages Created
 
-### 1. [Architecture.md](https://github.com/renduples/agentic-plugin/wiki/Architecture) (27 KB)
+### 1. [Architecture.md](https://github.com/renduples/agent-builder/wiki/Architecture) (27 KB)
 
 **Sections:**
 - Core Architecture
@@ -72,7 +72,7 @@ Consolidated all important documentation from https://agentic-plugin.com/roadmap
   - Endpoints table
   - Request/response schemas
 
-### 2. [Use-Cases.md](https://github.com/renduples/agentic-plugin/wiki/Use-Cases) (8 KB)
+### 2. [Use-Cases.md](https://github.com/renduples/agent-builder/wiki/Use-Cases) (8 KB)
 
 **Real-world scenarios:**
 1. E-commerce Shopping Assistant
@@ -95,7 +95,7 @@ Consolidated all important documentation from https://agentic-plugin.com/roadmap
    - Content summarization
    - Voice navigation
 
-### 3. [Discussion-Points.md](https://github.com/renduples/agentic-plugin/wiki/Discussion-Points) (11 KB)
+### 3. [Discussion-Points.md](https://github.com/renduples/agent-builder/wiki/Discussion-Points) (11 KB)
 
 **Open questions for community input:**
 1. Privacy & Data Protection
@@ -123,7 +123,7 @@ Consolidated all important documentation from https://agentic-plugin.com/roadmap
    - Agent impersonation
    - Data exfiltration
 
-### 4. [Roadmap.md](https://github.com/renduples/agentic-plugin/wiki/Roadmap) (Updated)
+### 4. [Roadmap.md](https://github.com/renduples/agent-builder/wiki/Roadmap) (Updated)
 
 **Added:**
 - Migration Path section with 5 phases
@@ -163,12 +163,12 @@ Create a simple redirect page at `/roadmap/` that says:
 Our roadmap documentation has moved to the GitHub Wiki for easier 
 community collaboration and updates.
 
-**→ [View Roadmap on GitHub Wiki](https://github.com/renduples/agentic-plugin/wiki/Roadmap)**
+**→ [View Roadmap on GitHub Wiki](https://github.com/renduples/agent-builder/wiki/Roadmap)**
 
 Other documentation:
-- [Architecture](https://github.com/renduples/agentic-plugin/wiki/Architecture)
-- [Use Cases](https://github.com/renduples/agentic-plugin/wiki/Use-Cases)
-- [Discussion Points](https://github.com/renduples/agentic-plugin/wiki/Discussion-Points)
+- [Architecture](https://github.com/renduples/agent-builder/wiki/Architecture)
+- [Use Cases](https://github.com/renduples/agent-builder/wiki/Use-Cases)
+- [Discussion Points](https://github.com/renduples/agent-builder/wiki/Discussion-Points)
 ```
 
 ---
@@ -207,7 +207,7 @@ Other documentation:
 - Modified: Roadmap.md
 
 **Changes pushed to:**
-https://github.com/renduples/agentic-plugin.wiki.git
+https://github.com/renduples/agent-builder.wiki.git
 
 ---
 

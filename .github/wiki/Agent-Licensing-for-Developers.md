@@ -1,12 +1,12 @@
 # Agent Licensing for Developers
 
-**How to monetize your agents using the Agentic Plugin licensing system**
+**How to monetize your agents using the Agent Builder licensing system**
 
 ---
 
 ## Overview
 
-Agentic Plugin supports **per-agent licensing**, allowing you to create and sell premium agents while keeping the core plugin GPL-licensed and free. This guide explains how the licensing system works from a developer's perspective.
+Agent Builder supports **per-agent licensing**, allowing you to create and sell premium agents while keeping the core plugin GPL-licensed and free. This guide explains how the licensing system works from a developer's perspective.
 
 ---
 
@@ -22,7 +22,7 @@ Agentic Plugin supports **per-agent licensing**, allowing you to create and sell
 
 ```
 User Flow:
-1. User installs free Agentic Plugin from WordPress.org
+1. User installs free Agent Builder from WordPress.org
 2. User browses marketplace for your premium agent
 3. User purchases your agent → receives license key (AGT-XXXX-XXXX-XXXX)
 4. User enters license key to install your agent

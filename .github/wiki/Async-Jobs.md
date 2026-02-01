@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Agentic plugin now includes a complete async job queue system for handling long-running agent tasks (like the Agent Builder). This prevents timeout issues and provides real-time progress updates to users.
+The Agent Builder now includes a complete async job queue system for handling long-running agent tasks (like the Agent Builder). This prevents timeout issues and provides real-time progress updates to users.
 
 ## Architecture
 

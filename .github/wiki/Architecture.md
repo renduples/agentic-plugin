@@ -2,7 +2,7 @@
 
 > **Vision**: AI-native WordPress ecosystem with autonomous agents for backend and frontend operations.
 
-This page consolidates the core architectural design of Agentic Plugin, including the agent controller, plugin/theme integration patterns, and security model.
+This page consolidates the core architectural design of Agent Builder, including the agent controller, plugin/theme integration patterns, and security model.
 
 ---
 
@@ -70,7 +70,7 @@ Extension of WordPress's action/filter system for AI decision-making.
 do_action( 'save_post', $post_id );
 $content = apply_filters( 'the_content', $content );
 
-// Agentic Plugin - New paradigm
+// Agent Builder - New paradigm
 do_agent_decision( 'should_publish_post', [
     'post'    => $post,
     'context' => $editorial_context,

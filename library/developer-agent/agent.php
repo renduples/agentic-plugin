@@ -2,7 +2,7 @@
 /**
  * Agent Name: Developer Agent
  * Version: 1.0.0
- * Description: Your guide to the Agentic Plugin ecosystem. Answers questions about the codebase, evaluates feature requests, and helps new developers get started.
+ * Description: Your guide to the Agent Builder ecosystem. Answers questions about the codebase, evaluates feature requests, and helps new developers get started.
  * Author: Agentic Community
  * Author URI: https://agentic-plugin.com
  * Category: Developer
@@ -30,14 +30,14 @@ class Agentic_Developer_Agent extends \Agentic\Agent_Base {
 	 * System prompt defining the agent's expertise and personality
 	 */
 	private const SYSTEM_PROMPT = <<<'PROMPT'
-You are the Developer Agent for Agentic Plugin - an AI-native agent ecosystem for WordPress where agents are installed like plugins.
+You are the Developer Agent for Agent Builder - an AI-native agent ecosystem for WordPress where agents are installed like plugins.
 
 Your primary roles:
 1. **Onboarding** - Help new developers understand the Agentic architecture
 2. **Q&A** - Answer questions about the codebase, APIs, and best practices
 3. **Feature Evaluation** - Assess feature requests for feasibility and alignment with project goals
 
-About Agentic Plugin:
+About Agent Builder:
 - Agents extend from the Agent_Base class with their own system prompts and tools
 - Agents are installed/activated like WordPress plugins
 - Each agent has a specific domain (security, content, e-commerce, etc.)
@@ -140,7 +140,7 @@ PROMPT;
 	 * Get welcome message
 	 */
 	public function get_welcome_message(): string {
-		return "Welcome to Agentic Plugin! I'm here to help you:\n\n" .
+		return "Welcome to Agent Builder! I'm here to help you:\n\n" .
 				"- **Understand the codebase** - Ask about any file, class, or function\n" .
 				"- **Get started** - Learn the architecture and how to build agents\n" .
 				"- **Evaluate features** - Submit ideas and I'll assess feasibility\n" .
@@ -278,7 +278,7 @@ PROMPT;
 	 */
 	private function tool_read_file( array $args ): array {
 		$path      = $this->sanitize_path( $args['path'] ?? '' );
-		$base_path = WP_PLUGIN_DIR . '/agentic-plugin/';
+		$base_path = WP_PLUGIN_DIR . '/agent-builder/';
 		$full_path = $base_path . $path;
 
 		if ( ! file_exists( $full_path ) ) {
@@ -316,7 +316,7 @@ PROMPT;
 	 */
 	private function tool_list_directory( array $args ): array {
 		$path      = $this->sanitize_path( $args['path'] ?? '' );
-		$base_path = WP_PLUGIN_DIR . '/agentic-plugin/';
+		$base_path = WP_PLUGIN_DIR . '/agent-builder/';
 		$full_path = $base_path . $path;
 
 		if ( ! is_dir( $full_path ) ) {
@@ -352,7 +352,7 @@ PROMPT;
 	private function tool_search_code( array $args ): array {
 		$pattern   = $args['pattern'] ?? '';
 		$file_type = $args['file_type'] ?? null;
-		$base_path = WP_PLUGIN_DIR . '/agentic-plugin/';
+		$base_path = WP_PLUGIN_DIR . '/agent-builder/';
 
 		if ( empty( $pattern ) ) {
 			return array( 'error' => 'Search pattern required' );
@@ -419,7 +419,7 @@ PROMPT;
 		$agents = array();
 
 		// Check library directory for agents
-		$library_path = WP_PLUGIN_DIR . '/agentic-plugin/library/';
+		$library_path = WP_PLUGIN_DIR . '/agent-builder/library/';
 
 		if ( is_dir( $library_path ) ) {
 			$dirs = scandir( $library_path );

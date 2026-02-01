@@ -1,6 +1,6 @@
-# Agentic Plugin Wiki
+# Agent Builder Wiki
 
-Welcome to the Agentic Plugin documentation. For assistance please email support@agentic-plugin.com
+Welcome to the Agent Builder documentation. For assistance please email support@agentic-plugin.com
 
 ## 📚 Documentation
 
@@ -40,7 +40,7 @@ Welcome to the Agentic Plugin documentation. For assistance please email support
 
 ## 🔗 Quick Links
 
-- [GitHub Repository](https://github.com/renduples/agentic-plugin)
+- [GitHub Repository](https://github.com/renduples/agent-builder)
 - [WordPress.org Plugin Page](https://wordpress.org/plugins/agentic-plugin/) (pending approval)
 - [Official Website](https://agentic-plugin.com)
 

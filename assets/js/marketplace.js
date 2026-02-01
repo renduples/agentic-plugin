@@ -1,7 +1,7 @@
 /**
  * Agentic Marketplace JavaScript
  *
- * @package Agentic_Plugin
+ * @package Agent_Builder
  * @since 0.2.0
  */
 

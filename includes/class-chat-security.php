@@ -5,9 +5,9 @@
  * MU-plugin style security layer that scans all chat messages for malicious
  * payloads before they reach the LLM. Designed for speed (<1ms overhead).
  *
- * @package    Agentic_Plugin
+ * @package    Agent_Builder
  * @subpackage Includes
- * @author     Agentic Plugin Team <support@agentic-plugin.com>
+ * @author     Agent Builder Team <support@agentic-plugin.com>
  * @license    GPL-2.0-or-later https://www.gnu.org/licenses/gpl-2.0.html
  * @link       https://agentic-plugin.com
  * @since      0.1.0

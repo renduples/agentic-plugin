@@ -1,6 +1,6 @@
-# Security Policy for Agentic Plugin
+# Security Policy for Agent Builder
 
-**Agentic Plugin is built with security as a core principle.** We take security seriously and appreciate the community's help in keeping it safe.
+**Agent Builder is built with security as a core principle.** We take security seriously and appreciate the community's help in keeping it safe.
 
 ---
 
@@ -145,7 +145,7 @@ Credentials are:
 ### For Site Admins
 
 1. **Keep WordPress updated** – Critical for overall security
-2. **Update Agentic Plugin** – Receive security patches immediately
+2. **Update Agent Builder** – Receive security patches immediately
 3. **Limit agent access** – Only enable agents you need
 4. **Review audit logs** – Check weekly for suspicious activity
 5. **Use strong passwords** – For admin accounts that approve agents
@@ -313,7 +313,7 @@ define( 'WP_AUTO_UPDATE_CORE', 'minor' );
 We don't currently have a paid bug bounty program, but we recognize security researchers with:
 
 - 🏅 **Credit** – Your name/handle in security advisory
-- 🎁 **Swag** – Agentic Plugin merchandise
+- 🎁 **Swag** – Agent Builder merchandise
 - 📝 **Case study** – Feature your findings (if you're interested)
 - 🎯 **Priority** – Your agents get priority support
 
@@ -355,4 +355,4 @@ When we release updates, we verify:
 **Last updated**: January 2026  
 **Next review**: April 2026
 
-For the latest security information, check [security.md on GitHub](https://github.com/renduples/agentic-plugin/blob/main/SECURITY.md).
+For the latest security information, check [security.md on GitHub](https://github.com/renduples/agent-builder/blob/main/SECURITY.md).

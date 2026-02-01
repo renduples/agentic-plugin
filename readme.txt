@@ -1,6 +1,5 @@
-=== Agentic Plugin ===
+=== Agent Builder ===
 Contributors: agenticplugin
-Donate link: https://agentic-plugin.com/donate
 Tags: ai, agents, llm, automation, chatbot
 Requires at least: 6.4
 Tested up to: 6.7
@@ -13,7 +12,7 @@ Build and manage AI agents directly in WordPress — no coding required. Describ
 
 == Description ==
 
-Agentic Plugin turns WordPress into an AI-agent ecosystem — similar to how plugins and themes extend your site, but powered by large language models (LLMs).
+Agent Builder turns WordPress into an AI-agent ecosystem — similar to how plugins and themes extend your site, but powered by large language models (LLMs).
 
 Describe your desired AI agent in natural language, and the plugin builds it for you. Install, activate, and manage agents just like regular plugins. Browse a growing library of community agents or create your own.
 
@@ -39,7 +38,7 @@ Key benefits:
 
 == Installation ==
 
-1. Search for "Agentic Plugin" in **Plugins → Add New** and install it (or upload the ZIP via **Add New → Upload Plugin**).
+1. Search for "Agent Builder" in **Plugins → Add New** and install it (or upload the ZIP via **Add New → Upload Plugin**).
 2. Activate the plugin.
 3. Go to **Agentic → Settings** in the WordPress admin menu.
 4. Enter your AI provider API key (OpenAI, Anthropic, etc.) or configure local models.
@@ -93,7 +92,7 @@ xAI (GROK), OpenAI (GPT models), Anthropic (Claude), local Ollama models. More c
 * Security: Removed all exec() and potential vulnerabilities.
 * Simplified namespace to "Agentic".
 * Added System Requirements Checker.
-* Brand consistency updates ("Agentic Plugin").
+* Brand consistency updates ("Agent Builder").
 
 = 0.1.3-alpha - 2026-01-28 =
 * Added System Requirements Checker.

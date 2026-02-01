@@ -1,6 +1,6 @@
 # WordPress.org Plugin Submission Checklist
 
-**Plugin**: Agentic Plugin  
+**Plugin**: Agent Builder  
 **Version**: 0.1.3-alpha  
 **Review Date**: January 28, 2026
 
@@ -15,7 +15,7 @@
 - ✅ Text domain matches plugin slug (`agentic-plugin`)
 
 ### Plugin Headers
-- ✅ Plugin Name: Agentic Plugin
+- ✅ Plugin Name: Agent Builder
 - ✅ Version: 0.1.3-alpha
 - ✅ Requires at least: 6.4
 - ✅ Requires PHP: 8.1
@@ -205,4 +205,4 @@ rm .DS_Store
 ---
 
 **Last Updated**: January 28, 2026  
-**Prepared By**: Agentic Plugin Development Team
+**Prepared By**: Agent Builder Development Team
