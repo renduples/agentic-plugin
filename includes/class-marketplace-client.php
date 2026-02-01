@@ -60,6 +60,8 @@ class Marketplace_Client {
 		add_action( 'wp_ajax_agentic_deactivate_agent', array( $this, 'ajax_deactivate_agent' ) );
 		add_action( 'wp_ajax_agentic_update_agent', array( $this, 'ajax_update_agent' ) );
 		add_action( 'wp_ajax_agentic_rate_agent', array( $this, 'ajax_rate_agent' ) );
+		add_action( 'wp_ajax_agentic_save_developer_api_key', array( $this, 'ajax_save_developer_api_key' ) );
+		add_action( 'wp_ajax_agentic_disconnect_developer', array( $this, 'ajax_disconnect_developer' ) );
 
 		// Schedule update checks.
 		add_action( 'init', array( $this, 'schedule_update_checks' ) );
@@ -166,11 +168,11 @@ class Marketplace_Client {
 	public function add_menu_page(): void {
 		add_submenu_page(
 			'agent-builder',
-			__( 'Agent Licenses', 'agent-builder' ),
-			__( 'Licenses', 'agent-builder' ),
+			__( 'Developer Revenue', 'agent-builder' ),
+			__( 'Revenue', 'agent-builder' ),
 			'manage_options',
-			'agentic-licenses',
-			array( $this, 'render_licenses_page' )
+			'agentic-revenue',
+			array( $this, 'render_revenue_page' )
 		);
 	}
 
@@ -393,10 +395,72 @@ class Marketplace_Client {
 	}
 
 	/**
-	 * Render licenses page
+	 * Render revenue page
 	 */
-	public function render_licenses_page(): void {
-		require_once AGENTIC_PLUGIN_DIR . 'admin/licenses.php';
+	public function render_revenue_page(): void {
+		// Enqueue Chart.js for revenue charts.
+		wp_enqueue_script(
+			'chartjs',
+			'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
+			array(),
+			'4.4.1',
+			true
+		);
+		require_once AGENTIC_PLUGIN_DIR . 'admin/revenue.php';
+	}
+
+	/**
+	 * AJAX: Save developer API key
+	 */
+	public function ajax_save_developer_api_key(): void {
+		check_ajax_referer( 'agentic_save_api_key', '_wpnonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Unauthorized' );
+		}
+
+		$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
+
+		if ( empty( $api_key ) ) {
+			wp_send_json_error( 'API key is required' );
+		}
+
+		// Validate the API key with marketplace.
+		$response = wp_remote_get(
+			$this->api_base . '/wp-json/agentic-marketplace/v1/developer/stats',
+			array(
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $api_key,
+				),
+				'timeout' => 15,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( 'Could not connect to marketplace' );
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		if ( 401 === $code || 403 === $code ) {
+			wp_send_json_error( 'Invalid API key' );
+		}
+
+		update_option( 'agentic_developer_api_key', $api_key );
+		wp_send_json_success();
+	}
+
+	/**
+	 * AJAX: Disconnect developer account
+	 */
+	public function ajax_disconnect_developer(): void {
+		check_ajax_referer( 'agentic_disconnect', '_wpnonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Unauthorized' );
+		}
+
+		delete_option( 'agentic_developer_api_key' );
+		wp_send_json_success();
 	}
 
 	/**

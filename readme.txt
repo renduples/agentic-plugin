@@ -1,6 +1,6 @@
 === Agent Builder ===
 Contributors: agenticplugin
-Tags: ai, agents, llm, automation, chatbot
+Tags: AI, AI Agent, LLM, openAI, xAI, Anthropic, Gemini 
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.1
