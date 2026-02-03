@@ -74,6 +74,9 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 ?>
 <div class="wrap">
 	<h1>Agentic Settings</h1>
+	<p style="margin-bottom: 20px;">
+		Need help? Visit our <a href="https://agentic-plugin.com/support/" target="_blank">Support Center</a> | <a href="https://github.com/renduples/agent-builder/wiki" target="_blank">Documentation</a>
+	</p>
 
 	<?php
 	$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
@@ -81,7 +84,7 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 
 	<h2 class="nav-tab-wrapper">
 		<a href="?page=agentic-settings&tab=general" class="nav-tab <?php echo 'general' === $active_tab ? 'nav-tab-active' : ''; ?>">General</a>
-		<a href="?page=agentic-settings&tab=license" class="nav-tab <?php echo 'license' === $active_tab ? 'nav-tab-active' : ''; ?>">License</a>
+		<a href="?page=agentic-settings&tab=developer" class="nav-tab <?php echo 'developer' === $active_tab ? 'nav-tab-active' : ''; ?>">Developer</a>
 		<a href="?page=agentic-settings&tab=cache" class="nav-tab <?php echo 'cache' === $active_tab ? 'nav-tab-active' : ''; ?>">Cache</a>
 		<a href="?page=agentic-settings&tab=security" class="nav-tab <?php echo 'security' === $active_tab ? 'nav-tab-active' : ''; ?>">Security</a>
 		<a href="?page=agentic-settings&tab=permissions" class="nav-tab <?php echo 'permissions' === $active_tab ? 'nav-tab-active' : ''; ?>">Permissions</a>
@@ -177,127 +180,96 @@ $allow_anon_chat  = get_option( 'agentic_allow_anonymous_chat', false );
 			</tr>
 		</table>
 
-		<?php elseif ( 'license' === $active_tab ) : ?>
-		<h2>License</h2>
-		<p>Enter your license key to unlock premium features including access to the Agent Marketplace.</p>
+		<?php elseif ( 'developer' === $active_tab ) : ?>
+			<?php $developer_api_key = get_option( 'agentic_developer_api_key', '' ); ?>
+		<h2><?php esc_html_e( 'Developer Settings', 'agent-builder' ); ?></h2>
+		<p><?php esc_html_e( 'Connect to the Agent Marketplace to sell your agents and track revenue.', 'agent-builder' ); ?></p>
 		
-			<?php
-			$license_info = \Agentic\License_Manager::get_license_info();
-			$license_key  = \Agentic\License_Manager::get_license_key();
-			$is_valid     = \Agentic\License_Manager::is_valid();
-			?>
-		
-			<?php if ( $is_valid && $license_info && 'active' === $license_info['status'] ) : ?>
+			<?php if ( ! empty( $developer_api_key ) ) : ?>
 			<div class="notice notice-success inline" style="padding: 12px; margin: 15px 0;">
 				<p style="margin: 0; display: flex; align-items: center; gap: 8px;">
 					<span class="dashicons dashicons-yes-alt" style="color: #22c55e;"></span>
-					<strong>License Active</strong>
+					<strong><?php esc_html_e( 'Connected to Marketplace', 'agent-builder' ); ?></strong>
 				</p>
 			</div>
 			
 			<table class="form-table">
 				<tr>
-					<th scope="row">Status</th>
+					<th scope="row"><?php esc_html_e( 'API Key', 'agent-builder' ); ?></th>
 					<td>
-						<span style="color: #22c55e; font-weight: 600;">● Active</span>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">License Key</th>
-					<td>
-						<code style="font-size: 14px;"><?php echo esc_html( $license_key ); ?></code>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">Expires</th>
-					<td>
-						<?php
-						$expires_date = isset( $license_info['expires_at'] ) ? date_i18n( 'F j, Y', strtotime( $license_info['expires_at'] ) ) : 'Unknown';
-						echo esc_html( $expires_date );
-						?>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">Activations</th>
-					<td>
-						<?php
-						$used  = $license_info['activations_used'] ?? 0;
-						$limit = $license_info['activations_limit'] ?? 0;
-						echo esc_html( $used . ' / ' . $limit . ' sites' );
-						?>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">Features</th>
-					<td>
-						<?php
-						$features = $license_info['features'] ?? array();
-						if ( ! empty( $features ) ) {
-							$feature_labels = array(
-								'marketplace_access' => 'Agent Marketplace Access',
-								'agent_upload'       => 'Upload & Sell Agents',
-								'premium_support'    => 'Premium Support',
-							);
-							echo '<ul style="margin: 0; padding-left: 20px;">';
-							foreach ( $features as $feature ) {
-								$label = $feature_labels[ $feature ] ?? ucwords( str_replace( '_', ' ', $feature ) );
-								echo '<li>' . esc_html( $label ) . '</li>';
-							}
-							echo '</ul>';
-						} else {
-							echo 'Standard features';
-						}
-						?>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">Actions</th>
-					<td>
-						<button type="button" class="button" id="agentic-deactivate-license">
-							Deactivate License
+						<code style="font-size: 14px; background: #f0f0f1; padding: 8px 12px; border-radius: 3px;"><?php echo esc_html( substr( $developer_api_key, 0, 8 ) . '...' . substr( $developer_api_key, -4 ) ); ?></code>
+						<button type="button" class="button" id="agentic-update-api-key-btn" style="margin-left: 10px;">
+							<?php esc_html_e( 'Update Key', 'agent-builder' ); ?>
 						</button>
-						<button type="button" class="button" id="agentic-refresh-license" style="margin-left: 8px;">
-							Refresh Status
+						<button type="button" class="button" id="agentic-disconnect-developer" style="margin-left: 5px;">
+							<?php esc_html_e( 'Disconnect', 'agent-builder' ); ?>
 						</button>
+						
+						<div id="agentic-update-api-key-form" style="display: none; margin-top: 15px;">
+							<input type="text" id="agentic-update-api-key-input" class="regular-text" placeholder="<?php esc_attr_e( 'Enter your new Developer API Key', 'agent-builder' ); ?>" style="margin-right: 10px;">
+							<button type="button" class="button button-primary" id="agentic-save-updated-api-key">
+								<?php esc_html_e( 'Save', 'agent-builder' ); ?>
+							</button>
+							<button type="button" class="button" id="agentic-cancel-update-api-key">
+								<?php esc_html_e( 'Cancel', 'agent-builder' ); ?>
+							</button>
+						</div>
+						
 						<p class="description">
-							Deactivate to free up this activation slot for another site.
+							<?php esc_html_e( 'Your marketplace developer API key. Keep this secure.', 'agent-builder' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Revenue Dashboard', 'agent-builder' ); ?></th>
+					<td>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-revenue' ) ); ?>" class="button button-primary">
+							<?php esc_html_e( 'View Revenue &amp; Stats', 'agent-builder' ); ?>
+						</a>
+						<p class="description">
+							<?php esc_html_e( 'Track your agent installations, sales, and earnings.', 'agent-builder' ); ?>
 						</p>
 					</td>
 				</tr>
 			</table>
 		<?php else : ?>
-			<div class="notice notice-warning inline" style="padding: 12px; margin: 15px 0;">
+			<div class="notice notice-info inline" style="padding: 12px; margin: 15px 0;">
 				<p style="margin: 0;">
-					<span class="dashicons dashicons-warning" style="color: #f59e0b;"></span>
-					No active license. Premium features are disabled.
+					<span class="dashicons dashicons-info" style="color: #0073aa;"></span>
+					<?php esc_html_e( 'Not connected. Connect your marketplace developer account to track agent revenue.', 'agent-builder' ); ?>
 				</p>
 			</div>
 			
 			<table class="form-table">
 				<tr>
-					<th scope="row">
-						<label for="agentic-license-key-input">Enter License Key</label>
-					</th>
+					<th scope="row"><?php esc_html_e( 'Connect Account', 'agent-builder' ); ?></th>
 					<td>
-						<input 
-							type="text" 
-							id="agentic-license-key-input" 
-							placeholder="AGNT-XXXX-XXXX-XXXX-XXXX"
-							value="<?php echo esc_attr( $license_key ); ?>"
-							pattern="AGNT-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}"
-							style="width: 350px; font-family: monospace; font-size: 14px; text-transform: uppercase;"
-						/>
-						<button type="button" class="button button-primary" id="agentic-activate-license" style="margin-left: 8px;">
-							Activate License
-						</button>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-revenue' ) ); ?>" class="button button-primary">
+							<?php esc_html_e( 'Connect to Marketplace', 'agent-builder' ); ?>
+						</a>
 						<p class="description">
-							Enter the license key you received after purchase.
+							<?php esc_html_e( 'Register as a developer to sell your agents on the marketplace.', 'agent-builder' ); ?>
 						</p>
-						<div id="agentic-license-message" style="margin-top: 12px;"></div>
 					</td>
 				</tr>
 			</table>
 		<?php endif; ?>
+		
+		<h3><?php esc_html_e( 'Selling Agents', 'agent-builder' ); ?></h3>
+		<div style="padding: 15px; background: #f0f6fc; border-left: 4px solid #2271b1; margin-top: 10px;">
+			<p style="margin-top: 0;"><strong><?php esc_html_e( 'How it works:', 'agent-builder' ); ?></strong></p>
+			<ol style="margin-bottom: 0; padding-left: 20px;">
+				<li><?php esc_html_e( 'Build your agent by extending the Agent_Base class', 'agent-builder' ); ?></li>
+				<li><?php esc_html_e( 'Submit to the marketplace for review', 'agent-builder' ); ?></li>
+				<li><?php esc_html_e( 'Set your price (or make it free)', 'agent-builder' ); ?></li>
+				<li><?php esc_html_e( 'Earn 70% of each sale (80% for >$10k/month)', 'agent-builder' ); ?></li>
+			</ol>
+			<p style="margin-bottom: 0; margin-top: 15px;">
+				<a href="https://github.com/renduples/agent-builder/wiki/Selling-Agents-on-the-Marketplace" target="_blank">
+					<?php esc_html_e( 'Read the developer guide →', 'agent-builder' ); ?>
+				</a>
+			</p>
+		</div>
 
 		<?php elseif ( 'cache' === $active_tab ) : ?>
 		<h2>Response Caching</h2>

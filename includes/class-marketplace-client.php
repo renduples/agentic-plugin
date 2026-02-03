@@ -314,40 +314,6 @@ class Marketplace_Client {
 	 * Render marketplace page
 	 */
 	public function render_marketplace_page(): void {
-		// Check if user has a valid license.
-		$has_license = \Agentic\License_Manager::is_valid();
-
-		if ( ! $has_license ) {
-			?>
-			<div class="wrap">
-				<h1><?php esc_html_e( 'Agent Marketplace', 'agent-builder' ); ?></h1>
-				
-				<div class="notice notice-warning" style="padding: 20px; margin: 20px 0;">
-					<h2 style="margin-top: 0;"><?php esc_html_e( 'License Required', 'agent-builder' ); ?></h2>
-					<p><?php esc_html_e( 'A valid license is required to access the Agent Marketplace and download premium agents.', 'agent-builder' ); ?></p>
-					<p>
-						<a href="https://agentic-plugin.com/pricing" class="button button-primary" target="_blank">
-							<?php esc_html_e( 'Purchase License ($10/year)', 'agent-builder' ); ?>
-						</a>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-settings' ) ); ?>" class="button">
-							<?php esc_html_e( 'Enter License Key', 'agent-builder' ); ?>
-						</a>
-					</p>
-					<p style="margin: 0;">
-						<strong><?php esc_html_e( 'What you get with a license:', 'agent-builder' ); ?></strong>
-					</p>
-					<ul style="margin-left: 20px;">
-						<li><?php esc_html_e( 'Access to 100+ premium agents', 'agent-builder' ); ?></li>
-						<li><?php esc_html_e( 'One-click agent installation', 'agent-builder' ); ?></li>
-						<li><?php esc_html_e( 'Upload and sell your own agents', 'agent-builder' ); ?></li>
-						<li><?php esc_html_e( 'Priority support', 'agent-builder' ); ?></li>
-					</ul>
-				</div>
-			</div>
-			<?php
-			return;
-		}
-
 		?>
 		<div class="wrap agentic-marketplace-wrap">
 			<h1 class="wp-heading-inline"><?php esc_html_e( 'Add New Agent', 'agent-builder' ); ?></h1>
@@ -469,18 +435,6 @@ class Marketplace_Client {
 	public function ajax_browse_agents(): void {
 		check_ajax_referer( 'agentic_marketplace', 'nonce' );
 
-		// Require valid license for marketplace access.
-		if ( ! \Agentic\License_Manager::is_valid() ) {
-			wp_send_json_error(
-				array(
-					'message'    => 'A valid license is required to access the Agent Marketplace.',
-					'code'       => 'license_required',
-					'renew_url'  => 'https://agentic-plugin.com/pricing',
-					'show_popup' => true,
-				)
-			);
-		}
-
 		$params = array(
 			'page'      => isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1,
 			'per_page'  => isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 12,
@@ -505,15 +459,7 @@ class Marketplace_Client {
 	 */
 	public function ajax_get_agent(): void {
 		check_ajax_referer( 'agentic_marketplace', 'nonce' );
-		// Require valid license for agent installation.
-		if ( ! \Agentic\License_Manager::is_valid() ) {
-			wp_send_json_error(
-				array(
-					'message' => 'A valid license is required to install agents from the marketplace.',
-					'code'    => 'license_required',
-				)
-			);
-		}
+
 		$agent_id = isset( $_POST['agent_id'] ) ? absint( $_POST['agent_id'] ) : 0;
 
 		if ( ! $agent_id ) {

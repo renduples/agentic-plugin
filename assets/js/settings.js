@@ -284,4 +284,135 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	}
+
+	// Developer tab - API Key update functionality
+	const updateApiKeyBtn = document.getElementById('agentic-update-api-key-btn');
+	const updateApiKeyForm = document.getElementById('agentic-update-api-key-form');
+	const updateApiKeyInput = document.getElementById('agentic-update-api-key-input');
+	const saveUpdatedKeyBtn = document.getElementById('agentic-save-updated-api-key');
+	const cancelUpdateBtn = document.getElementById('agentic-cancel-update-api-key');
+	const disconnectBtn = document.getElementById('agentic-disconnect-developer');
+
+	// Check for api-key parameter in URL (user returning from registration)
+	const urlParams = new URLSearchParams(window.location.search);
+	const apiKeyFromUrl = urlParams.get('api-key');
+	
+	if (apiKeyFromUrl && urlParams.get('tab') === 'developer') {
+		// User just registered and returned with API key
+		if (updateApiKeyForm && updateApiKeyInput) {
+			// Show the update form with pre-filled key
+			updateApiKeyForm.style.display = 'block';
+			updateApiKeyInput.value = apiKeyFromUrl;
+			updateApiKeyInput.focus();
+			
+			// Show a notice
+			const devTabContent = document.querySelector('.form-table');
+			if (devTabContent) {
+				const notice = document.createElement('div');
+				notice.className = 'notice notice-info inline';
+				notice.style.cssText = 'padding: 12px; margin: 15px 0;';
+				notice.innerHTML = '<p style="margin: 0;"><strong>Welcome back!</strong> Your new developer API key has been pre-filled below. Click "Save" to connect your account.</p>';
+				devTabContent.parentNode.insertBefore(notice, devTabContent);
+			}
+			
+			// Clean URL (remove api-key parameter)
+			const cleanUrl = new URL(window.location);
+			cleanUrl.searchParams.delete('api-key');
+			window.history.replaceState({}, '', cleanUrl);
+		}
+	}
+
+	if (updateApiKeyBtn && updateApiKeyForm) {
+		updateApiKeyBtn.addEventListener('click', function() {
+			updateApiKeyForm.style.display = 'block';
+			updateApiKeyInput.focus();
+		});
+	}
+
+	if (cancelUpdateBtn && updateApiKeyForm) {
+		cancelUpdateBtn.addEventListener('click', function() {
+			updateApiKeyForm.style.display = 'none';
+			updateApiKeyInput.value = '';
+		});
+	}
+
+	if (saveUpdatedKeyBtn && updateApiKeyInput) {
+		saveUpdatedKeyBtn.addEventListener('click', async function() {
+			const newApiKey = updateApiKeyInput.value.trim();
+			
+			if (!newApiKey) {
+				alert('Please enter a valid API key.');
+				return;
+			}
+
+			saveUpdatedKeyBtn.disabled = true;
+			saveUpdatedKeyBtn.textContent = 'Saving...';
+
+			try {
+				const response = await fetch('/wp-admin/admin-ajax.php', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: new URLSearchParams({
+						action: 'agentic_save_developer_api_key',
+						api_key: newApiKey,
+						nonce: agenticMarketplace?.nonce || ''
+					})
+				});
+
+				const data = await response.json();
+
+				if (data.success) {
+					alert('API key updated successfully! Reloading page...');
+					window.location.reload();
+				} else {
+					alert('Failed to update API key: ' + (data.data?.message || 'Unknown error'));
+				}
+			} catch (error) {
+				alert('Error updating API key: ' + error.message);
+			} finally {
+				saveUpdatedKeyBtn.disabled = false;
+				saveUpdatedKeyBtn.textContent = 'Save';
+			}
+		});
+	}
+
+	if (disconnectBtn) {
+		disconnectBtn.addEventListener('click', async function() {
+			if (!confirm('Are you sure you want to disconnect your developer account? Your revenue data will no longer be accessible from this plugin.')) {
+				return;
+			}
+
+			disconnectBtn.disabled = true;
+			disconnectBtn.textContent = 'Disconnecting...';
+
+			try {
+				const response = await fetch('/wp-admin/admin-ajax.php', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: new URLSearchParams({
+						action: 'agentic_disconnect_developer',
+						nonce: agenticMarketplace?.nonce || ''
+					})
+				});
+
+				const data = await response.json();
+
+				if (data.success) {
+					alert('Developer account disconnected successfully! Reloading page...');
+					window.location.reload();
+				} else {
+					alert('Failed to disconnect: ' + (data.data?.message || 'Unknown error'));
+				}
+			} catch (error) {
+				alert('Error disconnecting: ' + error.message);
+			} finally {
+				disconnectBtn.disabled = false;
+				disconnectBtn.textContent = 'Disconnect';
+			}
+		});
+	}
 });

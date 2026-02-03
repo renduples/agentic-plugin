@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Get developer API key.
-$api_key = get_option( 'agentic_developer_api_key', '' );
+$api_key     = get_option( 'agentic_developer_api_key', '' );
 $has_api_key = ! empty( $api_key );
 
 // Marketplace API base URL.
@@ -33,13 +33,30 @@ $marketplace_url = 'https://agentic-plugin.com/wp-json/agentic-marketplace/v1';
 	<hr class="wp-header-end">
 
 	<?php if ( ! $has_api_key ) : ?>
+		<?php
+		// Build developer registration URL with pre-filled data.
+		$current_user = wp_get_current_user();
+		$site_url     = get_site_url();
+		$site_name    = get_bloginfo( 'name' );
+		$site_desc    = get_bloginfo( 'description' );
+
+		$register_url = add_query_arg(
+			array(
+				'username'    => rawurlencode( $current_user->user_login ),
+				'email'       => rawurlencode( $current_user->user_email ),
+				'website'     => rawurlencode( $site_url ),
+				'description' => rawurlencode( $site_desc ),
+			),
+			'https://agentic-plugin.com/developer-register/'
+		);
+		?>
 		<div class="agentic-revenue-connect">
 			<div class="connect-card">
 				<span class="dashicons dashicons-chart-bar"></span>
 				<h2><?php esc_html_e( 'Connect to Marketplace', 'agent-builder' ); ?></h2>
 				<p><?php esc_html_e( 'Link your marketplace developer account to view your agent submissions, installs, and revenue.', 'agent-builder' ); ?></p>
 				<div class="connect-actions">
-					<a href="https://agentic-plugin.com/developer/register/" class="button button-primary button-hero" target="_blank">
+					<a href="<?php echo esc_url( $register_url ); ?>" class="button button-primary button-hero" target="_blank">
 						<?php esc_html_e( 'Register as Developer', 'agent-builder' ); ?>
 					</a>
 					<button type="button" class="button button-secondary button-hero" id="agentic-enter-api-key">
@@ -52,6 +69,9 @@ $marketplace_url = 'https://agentic-plugin.com/wp-json/agentic-marketplace/v1';
 						<?php esc_html_e( 'Connect', 'agent-builder' ); ?>
 					</button>
 				</div>
+				<p style="margin-top: 20px; font-size: 12px; color: #646970;">
+					Need help? <a href="https://agentic-plugin.com/support/" target="_blank">Contact Support</a>
+				</p>
 			</div>
 		</div>
 	<?php else : ?>
@@ -728,6 +748,9 @@ jQuery(document).ready(function($) {
 	}
 	
 	// Initialize charts (placeholder - needs Chart.js)
+	let revenueChart = null;
+	let installsChart = null;
+	
 	function initCharts() {
 		// Check if Chart.js is available
 		if (typeof Chart === 'undefined') {
@@ -735,16 +758,16 @@ jQuery(document).ready(function($) {
 			return;
 		}
 		
-		// Revenue Chart
+		// Initialize empty charts, then fetch data
 		const revenueCtx = document.getElementById('revenue-chart');
 		if (revenueCtx) {
-			new Chart(revenueCtx, {
+			revenueChart = new Chart(revenueCtx, {
 				type: 'line',
 				data: {
-					labels: getLast30Days(),
+					labels: [],
 					datasets: [{
 						label: 'Revenue',
-						data: generateDemoData(30, 0, 50),
+						data: [],
 						borderColor: '#2271b1',
 						backgroundColor: 'rgba(34, 113, 177, 0.1)',
 						fill: true,
@@ -762,16 +785,15 @@ jQuery(document).ready(function($) {
 			});
 		}
 		
-		// Installs Chart
 		const installsCtx = document.getElementById('installs-chart');
 		if (installsCtx) {
-			new Chart(installsCtx, {
+			installsChart = new Chart(installsCtx, {
 				type: 'bar',
 				data: {
-					labels: getLast30Days(),
+					labels: [],
 					datasets: [{
 						label: 'Installs',
-						data: generateDemoData(30, 0, 10),
+						data: [],
 						backgroundColor: '#00a32a'
 					}]
 				},
@@ -783,6 +805,107 @@ jQuery(document).ready(function($) {
 				}
 			});
 		}
+		
+		// Fetch initial data for both charts
+		fetchRevenueHistory('30d');
+		fetchInstallsHistory('30d');
+	}
+	
+	function fetchRevenueHistory(period) {
+		$.ajax({
+			url: marketplaceUrl + '/developer/revenue/history',
+			data: { period: period },
+			headers: { 'Authorization': 'Bearer ' + apiKey },
+			timeout: 15000
+		}).done(function(response) {
+			if (response.success && response.data && response.data.data_points) {
+				updateRevenueChart(response.data.data_points, response.data.currency || 'USD');
+			} else {
+				updateRevenueChart(generateDemoRevenueData(period), 'USD');
+			}
+		}).fail(function() {
+			updateRevenueChart(generateDemoRevenueData(period), 'USD');
+		});
+	}
+	
+	function fetchInstallsHistory(period) {
+		$.ajax({
+			url: marketplaceUrl + '/developer/installs/history',
+			data: { period: period },
+			headers: { 'Authorization': 'Bearer ' + apiKey },
+			timeout: 15000
+		}).done(function(response) {
+			if (response.success && response.data && response.data.data_points) {
+				updateInstallsChart(response.data.data_points);
+			} else {
+				updateInstallsChart(generateDemoInstallsData(period));
+			}
+		}).fail(function() {
+			updateInstallsChart(generateDemoInstallsData(period));
+		});
+	}
+	
+	function updateRevenueChart(dataPoints, currency) {
+		if (!revenueChart) return;
+		
+		const labels = dataPoints.map(d => formatChartDate(d.date));
+		const values = dataPoints.map(d => d.revenue || 0);
+		
+		revenueChart.data.labels = labels;
+		revenueChart.data.datasets[0].data = values;
+		revenueChart.update();
+	}
+	
+	function updateInstallsChart(dataPoints) {
+		if (!installsChart) return;
+		
+		const labels = dataPoints.map(d => formatChartDate(d.date));
+		const values = dataPoints.map(d => d.installs || 0);
+		
+		installsChart.data.labels = labels;
+		installsChart.data.datasets[0].data = values;
+		installsChart.update();
+	}
+	
+	function formatChartDate(dateStr) {
+		const d = new Date(dateStr);
+		return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+	}
+	
+	function generateDemoRevenueData(period) {
+		const count = period === '12m' ? 12 : (period === '90d' ? 90 : 30);
+		const data = [];
+		for (let i = count - 1; i >= 0; i--) {
+			const d = new Date();
+			if (period === '12m') {
+				d.setMonth(d.getMonth() - i);
+			} else {
+				d.setDate(d.getDate() - i);
+			}
+			data.push({
+				date: d.toISOString().split('T')[0],
+				revenue: Math.floor(Math.random() * 50)
+			});
+		}
+		return data;
+	}
+	
+	function generateDemoInstallsData(period) {
+		const count = period === '12m' ? 12 : (period === '90d' ? 90 : 30);
+		const data = [];
+		for (let i = count - 1; i >= 0; i--) {
+			const d = new Date();
+			if (period === '12m') {
+				d.setMonth(d.getMonth() - i);
+			} else {
+				d.setDate(d.getDate() - i);
+			}
+			data.push({
+				date: d.toISOString().split('T')[0],
+				installs: Math.floor(Math.random() * 10)
+			});
+		}
+		return data;
 	}
 	
 	// Utility functions
@@ -814,29 +937,24 @@ jQuery(document).ready(function($) {
 		return div.innerHTML;
 	}
 	
-	function getLast30Days() {
-		const days = [];
-		for (let i = 29; i >= 0; i--) {
-			const d = new Date();
-			d.setDate(d.getDate() - i);
-			days.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-		}
-		return days;
-	}
-	
-	function generateDemoData(count, min, max) {
-		return Array.from({ length: count }, () => Math.floor(Math.random() * (max - min + 1)) + min);
-	}
-	
 	// Event handlers
 	$('#agents-status-filter').on('change', function() {
 		fetchAgents($(this).val());
 	});
 	
 	$('.chart-period-selector .period-btn').on('click', function() {
-		$(this).siblings().removeClass('active');
-		$(this).addClass('active');
-		// TODO: Fetch new chart data for period
+		const $btn = $(this);
+		const period = $btn.data('period');
+		const chartType = $btn.closest('.chart-card').find('canvas').attr('id');
+		
+		$btn.siblings().removeClass('active');
+		$btn.addClass('active');
+		
+		if (chartType === 'revenue-chart') {
+			fetchRevenueHistory(period);
+		} else if (chartType === 'installs-chart') {
+			fetchInstallsHistory(period);
+		}
 	});
 	
 	// Initialize

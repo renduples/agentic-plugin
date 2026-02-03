@@ -29,24 +29,63 @@ $llm           = new LLM_Client();
 $is_configured = $llm->is_configured();
 $provider      = $llm->get_provider();
 $model         = $llm->get_model();
+
+// Get actual count of activated agents.
+$active_agents = get_option( 'agentic_active_agents', array() );
+$active_count  = is_array( $active_agents ) ? count( $active_agents ) : 0;
+
+// Check plugin license status.
+$plugin_license_key = get_option( 'agentic_plugin_license_key', '' );
+$license_status     = 'free'; // Default to free tier.
+$license_display    = 'Free';
+
+if ( ! empty( $plugin_license_key ) ) {
+	// Check license status via marketplace API.
+	$response = wp_remote_get(
+		'https://agentic-plugin.com/wp-json/agentic-marketplace/v1/licenses/status',
+		array(
+			'timeout' => 5,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $plugin_license_key,
+			),
+		)
+	);
+
+	if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( isset( $data['success'] ) && $data['success'] && isset( $data['license']['status'] ) ) {
+			$license_status = $data['license']['status'];
+			$tier           = $data['license']['tier'] ?? 'pro';
+			
+			if ( 'active' === $license_status ) {
+				$license_display = '<span style="color: #00a32a; font-weight: 600;">● ' . ucfirst( $tier ) . '</span>';
+			} elseif ( 'grace_period' === $license_status ) {
+				$license_display = '<span style="color: #dba617; font-weight: 600;">⚠ ' . ucfirst( $tier ) . ' (Expiring)</span>';
+			} else {
+				$license_display = '<span style="color: #d63638;">✕ Expired</span> <a href="https://agentic-plugin.com/pricing/" target="_blank">Renew</a>';
+			}
+		}
+	}
+} else {
+	$license_display = 'Free <a href="https://agentic-plugin.com/pricing/" target="_blank" style="font-size: 12px;">(Upgrade)</a>';
+}
 ?>
 <div class="wrap agentic-admin">
 	<h1>
 		<span class="dashicons dashicons-superhero" style="font-size: 30px; margin-right: 10px;"></span>
 		Agent Builder
 	</h1>
+	<p style="margin-bottom: 20px;">
+		Need help? Visit our <a href="https://agentic-plugin.com/support/" target="_blank">Support Center</a> | <a href="https://github.com/renduples/agent-builder/wiki" target="_blank">Documentation</a>
+	</p>
 
 	<div class="agentic-dashboard-grid">
 		<div class="agentic-card">
 			<h2>Status</h2>
 			<table class="widefat">
 				<tr>
-					<td><strong>Version</strong></td>
-					<td><?php echo esc_html( AGENTIC_PLUGIN_VERSION ); ?></td>
-				</tr>
-				<tr>
-					<td><strong>Mode</strong></td>
-					<td><?php echo esc_html( ucfirst( get_option( 'agentic_agent_mode', 'supervised' ) ) ); ?></td>
+					<td><strong>License</strong></td>
+					<td><?php echo wp_kses_post( $license_display ); ?></td>
 				</tr>
 				<tr>
 					<td><strong>AI Provider</strong></td>
@@ -54,7 +93,16 @@ $model         = $llm->get_model();
 				</tr>
 				<tr>
 					<td><strong>Model</strong></td>
-					<td><?php echo $is_configured ? esc_html( $model ) : 'None'; ?></td>
+					<td>
+						<?php
+						if ( $is_configured ) {
+							$mode = ucfirst( get_option( 'agentic_agent_mode', 'supervised' ) );
+							echo esc_html( $model ) . ' <span style="color: #646970;">(' . esc_html( $mode ) . ')</span>';
+						} else {
+							echo 'None';
+						}
+						?>
+					</td>
 				</tr>
 			</table>
 		</div>
@@ -76,9 +124,89 @@ $model         = $llm->get_model();
 				</tr>
 				<tr>
 					<td><strong>Active Agents</strong></td>
-					<td><?php echo esc_html( (int) ( $stats['active_agents'] ?? 0 ) ); ?></td>
+					<td><?php echo esc_html( $active_count ); ?></td>
 				</tr>
 			</table>
+		</div>
+
+		<div class="agentic-card">
+			<h2>Marketplace</h2>
+			<?php
+			// Fetch marketplace stats from API.
+			$marketplace_stats = array(
+				'latest_agent'   => array(
+					'name' => 'N/A',
+					'url'  => '',
+				),
+				'popular_agent'  => array(
+					'name' => 'N/A',
+					'url'  => '',
+				),
+				'user_sales'     => 0,
+				'user_revenue'   => 0.00,
+			);
+
+			// Get developer API key for user-specific stats.
+			$dev_api_key = get_option( 'agentic_developer_api_key', '' );
+
+			$request_args = array( 'timeout' => 5 );
+			if ( ! empty( $dev_api_key ) ) {
+				$request_args['headers'] = array(
+					'Authorization' => 'Bearer ' . $dev_api_key,
+				);
+			}
+
+			$response = wp_remote_get(
+				'https://agentic-plugin.com/wp-json/agentic-marketplace/v1/stats/dashboard',
+				$request_args
+			);
+
+			if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+				$data = json_decode( wp_remote_retrieve_body( $response ), true );
+				if ( isset( $data['success'] ) && $data['success'] ) {
+					$marketplace_stats = array_merge( $marketplace_stats, $data['stats'] ?? array() );
+				}
+			}
+			?>
+			<table class="widefat">
+				<tr>
+					<td><strong>New Agent</strong></td>
+					<td>
+						<?php
+						if ( ! empty( $marketplace_stats['latest_agent']['url'] ) ) {
+							echo '<a href="' . esc_url( $marketplace_stats['latest_agent']['url'] ) . '" target="_blank">' . esc_html( $marketplace_stats['latest_agent']['name'] ) . '</a>';
+						} else {
+							echo esc_html( $marketplace_stats['latest_agent']['name'] );
+						}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td><strong>Popular Agent</strong></td>
+					<td>
+						<?php
+						if ( ! empty( $marketplace_stats['popular_agent']['url'] ) ) {
+							echo '<a href="' . esc_url( $marketplace_stats['popular_agent']['url'] ) . '" target="_blank">' . esc_html( $marketplace_stats['popular_agent']['name'] ) . '</a>';
+						} else {
+							echo esc_html( $marketplace_stats['popular_agent']['name'] );
+						}
+						?>
+					</td>
+				</tr>
+				<tr>
+					<td><strong>Agent Sales</strong></td>
+					<td><?php echo esc_html( number_format( (int) $marketplace_stats['user_sales'] ) ); ?></td>
+				</tr>
+				<tr>
+					<td><strong>Total Revenue</strong></td>
+					<td>$<?php echo esc_html( number_format( (float) $marketplace_stats['user_revenue'], 2 ) ); ?></td>
+				</tr>
+			</table>
+			<p style="margin-top: 15px;">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-revenue' ) ); ?>" class="button button-primary">
+					<?php echo ( $marketplace_stats['user_revenue'] > 0 ) ? 'View Revenue' : 'Earn Revenue'; ?>
+				</a>
+			</p>
 		</div>
 
 		<div class="agentic-card">
@@ -103,15 +231,15 @@ $model         = $llm->get_model();
 					View Approval Queue
 				</a>
 			</p>
-			<p>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-audit' ) ); ?>" class="button">
-					View Audit Log
-				</a>
-			</p>
 		</div>
 
 		<div class="agentic-card agentic-card-wide">
-			<h2>Recent Activity</h2>
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+				<h2 style="margin: 0;">Recent Activity</h2>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=agentic-audit' ) ); ?>" class="button">
+					View Audit Log
+				</a>
+			</div>
 			<?php
 			$recent = $audit->get_recent( 10 );
 			if ( empty( $recent ) ) :
@@ -130,7 +258,12 @@ $model         = $llm->get_model();
 					<tbody>
 						<?php foreach ( $recent as $entry ) : ?>
 						<tr>
-							<td><?php echo esc_html( human_time_diff( strtotime( $entry['created_at'] ) ) ); ?> ago</td>
+							<td>
+								<?php
+								$timestamp = strtotime( $entry['created_at'] );
+								echo esc_html( wp_date( 'M j, Y g:i a', $timestamp ) );
+								?>
+							</td>
 							<td><?php echo esc_html( $entry['agent_id'] ); ?></td>
 							<td><?php echo esc_html( $entry['action'] ); ?></td>
 							<td><?php echo esc_html( $entry['target_type'] ); ?></td>

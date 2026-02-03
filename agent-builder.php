@@ -3,7 +3,7 @@
  * Plugin Name:       Agent Builder
  * Plugin URI:        https://agentic-plugin.com
  * Description:       Build AI agents without writing code. Describe the AI agent you want and let WordPress build it for you.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Agent Builder Team
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'AGENTIC_PLUGIN_VERSION', '1.1.0' );
+define( 'AGENTIC_PLUGIN_VERSION', '1.2.0' );
 define( 'AGENTIC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AGENTIC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'AGENTIC_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -341,10 +341,6 @@ final class Plugin {
 		// System requirements checker.
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-system-checker.php';
 
-		// License management.
-		include_once AGENTIC_PLUGIN_DIR . 'includes/class-license-manager.php';
-		include_once AGENTIC_PLUGIN_DIR . 'includes/license-ajax-handlers.php';
-
 		// Marketplace components.
 		include_once AGENTIC_PLUGIN_DIR . 'includes/class-marketplace-client.php';
 
@@ -461,25 +457,6 @@ final class Plugin {
 			array(),
 			AGENTIC_PLUGIN_VERSION,
 			true
-		);
-
-		// Enqueue license management script.
-		wp_enqueue_script(
-			'agentic-license',
-			AGENTIC_PLUGIN_URL . 'assets/js/license.js',
-			array( 'jquery' ),
-			AGENTIC_PLUGIN_VERSION,
-			true
-		);
-
-		wp_localize_script(
-			'agentic-license',
-			'agenticLicense',
-			array(
-				'nonce'      => wp_create_nonce( 'agentic_license_nonce' ),
-				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
-				'pricingUrl' => 'https://agentic-plugin.com/pricing/',
-			)
 		);
 
 		include AGENTIC_PLUGIN_DIR . 'admin/settings.php';

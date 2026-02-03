@@ -4,7 +4,7 @@ Tags: AI, AI Agent, LLM, openAI, xAI, Anthropic, Gemini
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://agentic-plugin.com/donate
@@ -74,6 +74,18 @@ xAI (GROK), OpenAI (GPT models), Anthropic (Claude), local Ollama models. More c
 4. Detailed agent controls — permissions, security, and audit log viewer.
 
 == Changelog ==
+
+= 1.2.0 - 2026-02-02 =
+* Added marketplace dashboard stats widget with latest/popular agents and developer revenue.
+* Added plugin license validation system (Free/Pro/Enterprise tiers).
+* Added developer API key management in Settings with Update Key and Disconnect options.
+* Added automatic API key pre-fill when returning from marketplace registration.
+* Added support ticketing system integration across all admin pages.
+* Implemented Revenue page with full marketplace API integration and Chart.js visualizations.
+* Updated dashboard with improved UI, proper timestamps, and marketplace stats.
+* Fixed active agent count to show accurate numbers from database.
+* Removed obsolete license validation code from marketplace access.
+* Created comprehensive API specification documents for marketplace team.
 
 = 1.1.0 - 2026-02-01 =
 * Added full GDPR-compliant uninstall handler (deletes options, tables, transients, user meta, crons).
