@@ -75,7 +75,7 @@ xAI (GROK), OpenAI (GPT models), Anthropic (Claude), local Ollama models. More c
 
 == Changelog ==
 
-= 1.2.0 - 2026-02-02 =
+= 1.1.1 - 2026-02-02 =
 * Added marketplace dashboard stats widget with latest/popular agents and developer revenue.
 * Added plugin license validation system (Free/Pro/Enterprise tiers).
 * Added developer API key management in Settings with Update Key and Disconnect options.
